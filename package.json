@@ -1,5 +1,5 @@
 {
-  "name": "js-buxclient",
+  "name": "@buxorg/js-buxclient",
   "version": "1.0.1",
   "description": "TypeScript library for connecting to a Bux server",
   "author": "Siggi <github@icellan.com>",
