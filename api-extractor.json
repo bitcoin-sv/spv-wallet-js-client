@@ -1,9 +1,9 @@
 {
   "projectFolder": ".",
-  "mainEntryPointFilePath": "<projectFolder>/build/index.d.ts",
+  "mainEntryPointFilePath": "./build/index.d.ts",
   "bundledPackages": [],
   "compiler": {
-    "tsconfigFilePath": "<projectFolder>/tsconfig.json",
+    "tsconfigFilePath": "./tsconfig.json",
     "overrideTsconfig": {
       "compilerOptions": {
         "outDir": "build"
@@ -12,7 +12,7 @@
   },
   "dtsRollup": {
     "enabled": true,
-    "untrimmedFilePath": "<projectFolder>/dist/index.d.ts"
+    "untrimmedFilePath": "./dist/index.d.ts"
   },
   "apiReport": {
     "enabled": false
