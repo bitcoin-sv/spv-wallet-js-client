@@ -1,0 +1,75 @@
+# Make sure to check the documentation at http://goreleaser.com
+# ---------------------------
+# General
+# ---------------------------
+before:
+  hooks:
+    - make test
+snapshot:
+  name_template: "{{ .Tag }}"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^.github:'
+      - '^test:'
+
+# ---------------------------
+# Builder
+# ---------------------------
+build:
+  skip: true
+
+# ---------------------------
+# Publishers
+# ---------------------------
+# publishers:
+#  - name: npm
+#    cmd: make publish
+#    dir: "."
+
+# ---------------------------
+# Github Release
+# ---------------------------
+release:
+  prerelease: true
+  name_template: "Release v{{.Version}}"
+
+# ---------------------------
+# Announce
+# ---------------------------
+announce:
+
+  # See more at: https://goreleaser.com/customization/announce/#slack
+  slack:
+    enabled: false
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Changelog: https://github.com/BuxOrg/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
+    channel: '#releases'
+    # username: ''
+    # icon_emoji: ''
+    # icon_url: ''
+
+  # See more at: https://goreleaser.com/customization/announce/#twitter
+  twitter:
+    enabled: false
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out!'
+
+  # See more at: https://goreleaser.com/customization/announce/#discord
+  discord:
+    enabled: false
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Changelog: https://github.com/BuxOrg/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
+    author: 'TonicBot'
+    #color: '80200120' #50C878
+    #icon_url: 'https://tonicpow.com/images/apple-touch-icon.png'
+
+  # See more at: https://goreleaser.com/customization/announce/#reddit
+  reddit:
+    enabled: false
+    # Application ID for Reddit Application
+    application_id: ""
+    # Username for your Reddit account
+    username: ""
+    # Defaults to `{{ .GitURL }}/releases/tag/{{ .Tag }}`
+    # url_template: 'https://github.com/BuxOrg/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
+    # Defaults to `{{ .ProjectName }} {{ .Tag }} is out!`
+    title_template: '{{ .ProjectName }} {{ .Tag }} is out!'

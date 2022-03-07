@@ -1,0 +1,33 @@
+# Basic dependabot.yml to update npm and Github Actions
+
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    target-branch: 'master'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+      # Check for npm updates at 10am UTC (5am EST)
+      time: '10:00'
+    reviewers:
+      - 'mrz1836'
+    assignees:
+      - 'mrz1836'
+    # Labels must be created first
+    labels:
+      - 'update'
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    target-branch: "master"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    reviewers:
+      - "mrz1836"
+    assignees:
+      - "mrz1836"
+    labels:
+      - "chore"
+    open-pull-requests-limit: 10

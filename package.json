@@ -1,17 +1,32 @@
 {
   "name": "@buxorg/js-buxclient",
-  "version": "1.0.2",
-  "description": "TypeScript library for connecting to a Bux server",
+  "version": "1.0.3",
+  "description": "TypeScript library for connecting to a BUX server",
   "author": "Siggi <github@icellan.com>",
-  "homepage": "https://github.com/BuxOrg/js-buxclient",
+  "homepage": "https://getbux.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/BuxOrg/js-buxclient"
   },
+  "bugs": {
+    "url": "https://github.com/BuxOrg/js-buxclient/issues"
+  },
   "license": "Open BSV",
   "keywords": [
     "bux",
+    "bitcoin",
+    "bitcoinsv",
     "bsv"
+  ],
+  "contributors": [
+    {
+      "name": "Siggi",
+      "url": "https://github.com/icellan/"
+    },
+    {
+      "name": "MrZ",
+      "url": "https://github.com/mrz1836/"
+    }
   ],
   "main": "dist/typescript-npm-package.cjs.js",
   "module": "dist/typescript-npm-package.esm.js",
@@ -22,6 +37,7 @@
   "scripts": {
     "dev": "rollup -c -w",
     "build": "rollup -c",
+    "deploy": "npm publish --access public",
     "prebuild:types": "rimraf ./build",
     "build:types": "tsc -p ./tsconfig.json --outDir build --declaration true && api-extractor run",
     "predocs": "rimraf ./docs",
