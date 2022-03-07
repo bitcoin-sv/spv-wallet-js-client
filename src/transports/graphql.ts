@@ -167,7 +167,7 @@ class TransportGraphQL implements TransportService {
       }`;
     const variables = { metadata };
 
-    return this.doGraphQLMutation(query, variables, 'access_keys');
+    return this.doGraphQLMutation(query, variables, 'access_key');
   }
 
   // Revoke the access key with the given id
