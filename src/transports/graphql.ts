@@ -126,6 +126,28 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLQuery(query, variables, 'xpub');
   }
 
+  // Get a single access key by ID
+  async GetAccessKey(id: string): Promise<AccessKey> {
+    const query = gql`
+      query ($id: String) {
+        access_key (
+          id: $id
+        ) {
+          id
+          xpub_id
+          key
+          metadata
+          created_at
+          updated_at
+          deleted_at
+          revoked_at
+        }
+      }`;
+    const variables = { id };
+
+    return this.doGraphQLQuery(query, variables, 'access_key');
+  }
+
   // Get all access keys for the xpub
   async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
     const query = gql`
@@ -190,36 +212,6 @@ class TransportGraphQL implements TransportService {
     const variables = { id };
 
     return this.doGraphQLMutation(query, variables, 'access_key_revoke');
-  }
-
-  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
-    const query = gql`
-        mutation ($outputs: [TransactionOutputInput]!, $metadata: Metadata) {
-          new_transaction (
-            transaction_config: {
-              outputs: $outputs
-              change_number_of_destinations: 3
-              change_destinations_strategy: "random"
-            }
-            metadata:$metadata
-          ) ${graphqlDraftTransactionFields} 
-        }`;
-    const variables = { outputs: recipients, metadata }
-
-    return this.doGraphQLMutation(query, variables, 'new_transaction');
-  }
-
-  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
-    const query = gql`
-      mutation ($transactionConfig: TransactionConfigInput!, $metadata: Metadata) {
-        new_transaction(
-          transaction_config: $transactionConfig
-          metadata: $metadata
-        ) ` + graphqlDraftTransactionFields + `
-      }`;
-    const variables = { transactionConfig, metadata }
-
-    return this.doGraphQLMutation(query, variables, 'new_transaction');
   }
 
   async GetDestinationByID(id: string): Promise<Destination> {
@@ -399,6 +391,36 @@ class TransportGraphQL implements TransportService {
     };
 
     return this.doGraphQLQuery(query, variables, 'transactions');
+  }
+
+  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
+    const query = gql`
+        mutation ($outputs: [TransactionOutputInput]!, $metadata: Metadata) {
+          new_transaction (
+            transaction_config: {
+              outputs: $outputs
+              change_number_of_destinations: 3
+              change_destinations_strategy: "random"
+            }
+            metadata:$metadata
+          ) ${graphqlDraftTransactionFields} 
+        }`;
+    const variables = { outputs: recipients, metadata }
+
+    return this.doGraphQLMutation(query, variables, 'new_transaction');
+  }
+
+  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
+    const query = gql`
+      mutation ($transactionConfig: TransactionConfigInput!, $metadata: Metadata) {
+        new_transaction(
+          transaction_config: $transactionConfig
+          metadata: $metadata
+        ) ` + graphqlDraftTransactionFields + `
+      }`;
+    const variables = { transactionConfig, metadata }
+
+    return this.doGraphQLMutation(query, variables, 'new_transaction');
   }
 
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {

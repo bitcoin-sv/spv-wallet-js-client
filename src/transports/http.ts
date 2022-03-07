@@ -55,15 +55,20 @@ class TransportHTTP implements TransportService {
    * Get access keys
    * @returns AccessKeys
    */
-  async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
-    const params: any = {};
-    if (metadata) {
-      params.metadata = JSON.stringify(metadata);
-    }
+  async GetAccessKey(id: string): Promise<AccessKey> {
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key?id=${id}`, {});
+  }
 
-    const queryParams = new URLSearchParams(params).toString();
-    return await this.doHTTPRequest(`${this.serverUrl}/access-keys?${queryParams}`, {
-      method: 'GET',
+  /**
+   * Get access keys
+   * @returns AccessKeys
+   */
+  async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        metadata,
+      }),
     });
   }
 
@@ -82,7 +87,7 @@ class TransportHTTP implements TransportService {
    * @returns AccessKeys
    */
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return await this.doHTTPRequest(`${this.serverUrl}/access-keys`, {
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key`, {
       method: 'POST',
       body: JSON.stringify({
         metadata,
@@ -91,49 +96,11 @@ class TransportHTTP implements TransportService {
   }
 
   /**
-   * Initiate a new draft transaction to the given recipients
-   * @param recipients Recipients The recipients of the transaction
-   * @param metadata Metadata The metadata to record on the draft transaction
-   * @constructor
-   */
-  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
-    const transactionConfig: TransactionConfigInput = {
-      outputs: recipients
-    }
-
-    return await this.doHTTPRequest(`${this.serverUrl}/transactions/new`, {
-      method: 'POST',
-      body: JSON.stringify({
-        config: transactionConfig,
-        metadata,
-      })
-    });
-  }
-
-  /**
-   * Initiate a new draft transaction using the given configuration
-   * @param transactionConfig TransactionConfig The config to use for the new draft transaction
-   * @param metadata Metadata The metadata to record on the draft transaction
-   * @returns DraftTransaction
-   */
-  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.doHTTPRequest(`${this.serverUrl}/transactions/new`, {
-      method: 'POST',
-      body: JSON.stringify({
-        config: transactionConfig,
-        metadata,
-      })
-    });
-  }
-
-  /**
    * Get information about an existing destination
    * @returns Destination
    */
   async GetDestinationByID(id: string): Promise<Destination> {
-    return await this.doHTTPRequest(`${this.serverUrl}/destination?id=${id}`, {
-      method: 'GET',
-    });
+    return await this.doHTTPRequest(`${this.serverUrl}/destination?id=${id}`, {});
   }
 
   /**
@@ -141,9 +108,7 @@ class TransportHTTP implements TransportService {
    * @returns Destination
    */
   async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return await this.doHTTPRequest(`${this.serverUrl}/destination?locking_script=${locking_script}`, {
-      method: 'GET',
-    });
+    return await this.doHTTPRequest(`${this.serverUrl}/destination?locking_script=${locking_script}`, {});
   }
 
   /**
@@ -151,9 +116,7 @@ class TransportHTTP implements TransportService {
    * @returns Destination
    */
   async GetDestinationByAddress(address: string): Promise<Destination> {
-    return await this.doHTTPRequest(`${this.serverUrl}/destination?address=${address}`, {
-      method: 'GET',
-    });
+    return await this.doHTTPRequest(`${this.serverUrl}/destination?address=${address}`, {});
   }
 
   /**
@@ -162,14 +125,11 @@ class TransportHTTP implements TransportService {
    * @constructor
    */
   async GetDestinations(metadata: Metadata): Promise<Destinations> {
-    const params: any = {};
-    if (metadata) {
-      params.metadata = JSON.stringify(metadata);
-    }
-
-    const queryParams = new URLSearchParams(params).toString();
-    return await this.doHTTPRequest(`${this.serverUrl}/destinations?${queryParams}`, {
-      method: 'GET',
+    return await this.doHTTPRequest(`${this.serverUrl}/destination/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        metadata,
+      })
     });
   }
 
@@ -179,7 +139,7 @@ class TransportHTTP implements TransportService {
    * @returns Destination
    */
   async NewDestination(metadata: Metadata): Promise<Destination> {
-    return await this.doHTTPRequest(`${this.serverUrl}/destinations`, {
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
       method: 'POST',
       body: JSON.stringify({
         metadata,
@@ -203,10 +163,46 @@ class TransportHTTP implements TransportService {
    * @constructor
    */
   async GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions> {
-    return await this.doHTTPRequest(`${this.serverUrl}/transactions`, {
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction/search`, {
       method: 'POST',
       body: JSON.stringify({
         conditions,
+        metadata,
+      })
+    });
+  }
+
+  /**
+   * Initiate a new draft transaction to the given recipients
+   * @param recipients Recipients The recipients of the transaction
+   * @param metadata Metadata The metadata to record on the draft transaction
+   * @constructor
+   */
+  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
+    const transactionConfig: TransactionConfigInput = {
+      outputs: recipients
+    }
+
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction`, {
+      method: 'POST',
+      body: JSON.stringify({
+        config: transactionConfig,
+        metadata,
+      })
+    });
+  }
+
+  /**
+   * Initiate a new draft transaction using the given configuration
+   * @param transactionConfig TransactionConfig The config to use for the new draft transaction
+   * @param metadata Metadata The metadata to record on the draft transaction
+   * @returns DraftTransaction
+   */
+  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction`, {
+      method: 'POST',
+      body: JSON.stringify({
+        config: transactionConfig,
         metadata,
       })
     });
@@ -220,7 +216,7 @@ class TransportHTTP implements TransportService {
    * @constructor
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
-    return await this.doHTTPRequest(`${this.serverUrl}/transactions/record`, {
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction/record`, {
       method: 'POST',
       body: JSON.stringify({
         hex,
@@ -237,7 +233,7 @@ class TransportHTTP implements TransportService {
    * @constructor
    */
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.doHTTPRequest(`${this.serverUrl}/xpubs`, {
+    return await this.doHTTPRequest(`${this.serverUrl}/xpub`, {
       method: 'POST',
       body: JSON.stringify({
         key: rawXPub,

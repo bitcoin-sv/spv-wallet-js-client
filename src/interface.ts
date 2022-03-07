@@ -196,6 +196,7 @@ export interface TransportService {
   IsSignRequest(): boolean;
   RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
   GetXPub(): Promise<XPub>;
+  GetAccessKey(id: string): Promise<AccessKey>;
   GetAccessKeys(metadata: Metadata): Promise<AccessKeys>;
   CreateAccessKey(metadata: Metadata): Promise<AccessKey>;
   RevokeAccessKey(id: string): Promise<AccessKey>

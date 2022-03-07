@@ -102,6 +102,10 @@ class BuxClient implements TransportService {
     return await this.client.transport.GetXPub();
   }
 
+  async GetAccessKey(id: string): Promise<AccessKey> {
+    return await this.client.transport.GetAccessKey(id);
+  }
+
   async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
     return await this.client.transport.GetAccessKeys(metadata);
   }
@@ -112,14 +116,6 @@ class BuxClient implements TransportService {
 
   async RevokeAccessKey(id: string): Promise<AccessKey> {
     return await this.client.transport.RevokeAccessKey(id);
-  }
-
-  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.client.transport.DraftToRecipients(recipients, metadata);
-  }
-
-  async DraftTransaction(transactionConfig: TransactionConfig, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.client.transport.DraftTransaction(transactionConfig, metadata);
   }
 
   async GetDestinationByID(id: string): Promise<Destination> {
@@ -148,6 +144,14 @@ class BuxClient implements TransportService {
 
   async GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions> {
     return await this.client.transport.GetTransactions(conditions, metadata);
+  }
+
+  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
+    return await this.client.transport.DraftToRecipients(recipients, metadata);
+  }
+
+  async DraftTransaction(transactionConfig: TransactionConfig, metadata: Metadata): Promise<DraftTransaction> {
+    return await this.client.transport.DraftTransaction(transactionConfig, metadata);
   }
 
   FinalizeTransaction(draftTransaction: DraftTransaction): String {
