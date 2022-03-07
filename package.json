@@ -1,19 +1,17 @@
 {
   "name": "js-buxclient",
   "version": "1.0.0",
-  "description": "TypeScript library npm package boilerplate",
-  "author": "Jason Sturges <jason@jsonsturges.com> (https://jasonsturges.com)",
-  "homepage": "https://github.com/jasonsturges/typescript-npm-package",
+  "description": "TypeScript library for connecting to a Bux server",
+  "author": "Siggi <github@icellan.com>",
+  "homepage": "https://github.com/BuxOrg/js-buxclient",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jasonsturges/typescript-npm-package"
+    "url": "https://github.com/BuxOrg/js-buxclient"
   },
-  "license": "ISC",
+  "license": "Open BSV",
   "keywords": [
-    "typescript",
-    "npm",
-    "package",
-    "boilerplate"
+    "bux",
+    "bsv"
   ],
   "main": "dist/typescript-npm-package.cjs.js",
   "module": "dist/typescript-npm-package.esm.js",
@@ -29,6 +27,7 @@
     "predocs": "rimraf ./docs",
     "docs": "typedoc src --out docs",
     "clean": "rimraf ./build ./dist ./docs",
+    "pub": "yarn build && yarn publish",
     "test": "jest"
   },
   "devDependencies": {
