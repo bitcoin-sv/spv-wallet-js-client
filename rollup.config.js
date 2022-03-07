@@ -14,6 +14,7 @@ export default [
       name: "typescriptNpmPackage",
       file: pkg.browser,
       format: "umd",
+      sourcemap: true,
     },
     external: ['bsv'],
     plugins: [
@@ -22,7 +23,7 @@ export default [
       }),
       commonjs(),
       json(),
-      typescript({ tsconfig: "./tsconfig.json" }),
+      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
       nodePolyfills(),
     ],
   },
@@ -36,11 +37,11 @@ export default [
   {
     input: "src/index.ts",
     output: [
-      { file: pkg.main, format: "cjs" },
-      { file: pkg.module, format: "es" },
+      { file: pkg.main, format: "cjs", sourcemap: true },
+      { file: pkg.module, format: "es", sourcemap: true },
     ],
     plugins: [
-      typescript({ tsconfig: "./tsconfig.json" }),
+      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
       excludeDependenciesFromBundle( { peerDependencies: true } ),
     ],
   },
