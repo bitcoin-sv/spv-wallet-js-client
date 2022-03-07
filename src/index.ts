@@ -99,55 +99,55 @@ class BuxClient implements TransportService {
   }
 
   async GetXPub(): Promise<XPub> {
-    return this.client.transport.GetXPub();
+    return await this.client.transport.GetXPub();
   }
 
   async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
-    return this.client.transport.GetAccessKeys(metadata);
+    return await this.client.transport.GetAccessKeys(metadata);
   }
 
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return this.client.transport.CreateAccessKey(metadata);
+    return await this.client.transport.CreateAccessKey(metadata);
   }
 
   async RevokeAccessKey(id: string): Promise<AccessKey> {
-    return this.client.transport.RevokeAccessKey(id);
+    return await this.client.transport.RevokeAccessKey(id);
   }
 
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
-    return this.client.transport.DraftToRecipients(recipients, metadata);
+    return await this.client.transport.DraftToRecipients(recipients, metadata);
   }
 
   async DraftTransaction(transactionConfig: TransactionConfig, metadata: Metadata): Promise<DraftTransaction> {
-    return this.client.transport.DraftTransaction(transactionConfig, metadata);
+    return await this.client.transport.DraftTransaction(transactionConfig, metadata);
   }
 
   async GetDestinationByID(id: string): Promise<Destination> {
-    return this.client.transport.GetDestinationByID(id);
+    return await this.client.transport.GetDestinationByID(id);
   }
 
   async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return this.client.transport.GetDestinationByLockingScript(locking_script);
+    return await this.client.transport.GetDestinationByLockingScript(locking_script);
   }
 
   async GetDestinationByAddress(address: string): Promise<Destination> {
-    return this.client.transport.GetDestinationByAddress(address);
+    return await this.client.transport.GetDestinationByAddress(address);
   }
 
   async GetDestinations(metadata: Metadata): Promise<Destinations> {
-    return this.client.transport.GetDestinations(metadata);
+    return await this.client.transport.GetDestinations(metadata);
   }
 
   async NewDestination(metadata: Metadata): Promise<Destination> {
-    return this.client.transport.NewDestination(metadata);
+    return await this.client.transport.NewDestination(metadata);
   }
 
   async GetTransaction(txID: string): Promise<Transaction> {
-    return this.client.transport.GetTransaction(txID);
+    return await this.client.transport.GetTransaction(txID);
   }
 
   async GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions> {
-    return this.client.transport.GetTransactions(conditions, metadata);
+    return await this.client.transport.GetTransactions(conditions, metadata);
   }
 
   FinalizeTransaction(draftTransaction: DraftTransaction): String {
@@ -201,11 +201,11 @@ class BuxClient implements TransportService {
   }
 
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
-    return this.client.transport.RecordTransaction(hex, referenceID, metadata);
+    return await this.client.transport.RecordTransaction(hex, referenceID, metadata);
   }
 
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return this.client.transport.RegisterXpub(rawXPub, metadata);  }
+    return await this.client.transport.RegisterXpub(rawXPub, metadata);  }
 }
 
 export default BuxClient;
