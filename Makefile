@@ -20,8 +20,12 @@ clean: ## Remove previous builds and any test cache data
 	@if [ -d $(DISTRIBUTIONS_DIR) ]; then rm -r $(DISTRIBUTIONS_DIR); fi
 	@if [ -d node_modules ]; then rm -r node_modules; fi
 
-install: ## Installs the dependencies for the packge
+install: ## Installs the dependencies for the package
 	@yarn install
+
+install-all-contributors: ## Installs all contributors locally
+	@echo "installing all-contributors cli tool..."
+	@yarn global add all-contributors-cli
 
 outdated: ## Checks for outdated packages via npm
 	@yarn outdated
@@ -34,3 +38,7 @@ release:: ## Run after releasing - deploy to npm
 
 test: ## Will run unit tests
 	@yarn run test
+
+update-contributors: ## Regenerates the contributors html/list
+	@echo "generating contributor html..."
+	@all-contributors generate
