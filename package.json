@@ -59,7 +59,7 @@
     "@types/jest": "^27.4.1",
     "babel-jest": "^27.5.1",
     "babel-plugin-import": "^1.13.3",
-    "bsv": "1.5.6",
+    "bsv": "2.0.10",
     "eslint": "^8.8.0",
     "jest": "^27.5.1",
     "prettier": "^2.5.1",
@@ -80,6 +80,6 @@
     "jest-fetch-mock": "^3.0.3"
   },
   "peerDependencies": {
-    "bsv": "1.5.6"
+    "bsv": "2.0.10"
   }
 }
