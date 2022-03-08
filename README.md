@@ -25,8 +25,6 @@
 <br />
 
 ## Installation
-There is a peer dependency on the [bsv](https://github.com/moneybutton/bsv/tree/bsv-legacy) library. This version of the JS Bux client
-supports version 1.x of the bsv library.
 
 Install all npm packages
 ```bash
@@ -34,6 +32,9 @@ $ make install
 ```
 
 See more scripts in the [package.json](package.json) file or the [makefile](Makefile).
+
+> There is a peer dependency on the [bsv library](https://github.com/moneybutton/bsv/tree/bsv-legacy).
+> This version of the JS BUX client supports version `1.x` of the [bsv library](https://github.com/moneybutton/bsv/tree/bsv-legacy).
 
 <br />
 
@@ -49,9 +50,9 @@ const transportType = 'http'; // or graphql
 const Xpriv = bsv.HDPrivateKey.fromRandom();
 
 const buxClient = new BuxClient(server, {
+  signRequest: true,
   transportType,
   xPriv,
-  signRequest: true,
 });
 ```
 
@@ -59,6 +60,32 @@ const buxClient = new BuxClient(server, {
 
 ## Documentation
 View more [BUX documentation](https://getbux.io).
+
+<br />
+
+### Connection options
+
+| Option          |  Description                                    |                     |
+|-----------------|-------------------------------------------------|---------------------|
+| accessKeyString | Hex private part of an access key               | string              |
+| debug           | Whether to turn debugging on                    | boolean             |
+| signRequest     | Whether to sign all requests sent to the server | boolean             |
+| transportType   | Transport type to use for server requests       | "http" or "graphql" |
+| xPriv           | bsv HDPrivateKey instance                       |                     |
+| xPrivString     | HD Private key string                           | "xprv....."         |
+| xPub            | bsv HD Public key instance                      |                     |
+| xPubString      | HD Public key string                            | "xpub....."         |
+
+<br />
+
+### Connection as a BUX admin
+
+You can add the admin key to the BUX client after initialisation to support admin requests (IE: registering an xPub).
+
+```javascript
+const adminKey = 'xprv.....';
+buxClient.SetAdminKey(adminKey);
+```
 
 <details>
 <summary><strong><code>Release Deployment</code></strong></summary>
@@ -106,30 +133,6 @@ update-contributors           Regenerates the contributors html/list
 
 ## Code Standards
 Please read our [standards document](.github/CODE_STANDARDS.md)
-
-<br />
-
-### Connection options
-
-| Option          |  Description                                    |                     |
-|-----------------|-------------------------------------------------|---------------------|
-| accessKeyString | Hex private part of an access key               | string              |
-| debug           | Whether to turn debugging on                    | boolean             |
-| signRequest     | Whether to sign all requests sent to the server | boolean             |
-| transportType   | Transport type to use for server requests       | "http" or "graphql" |
-| xPriv           | bsv HDPrivateKey instance                       |                     |
-| xPrivString     | HD Private key string                           | "xprv....."         |
-| xPub            | bsv HD Public key instance                      |                     |
-| xPubString      | HD Public key string                            | "xpub....."         |
-
-### Connection as a Bux admin
-
-You can add the admin key to the Bux client after initialisation to support admin requests (registering an xPub).
-
-```javascript
-const adminKey = 'xprv.....';
-buxClient.SetAdminKey(adminKey);
-```
 
 <br />
 
