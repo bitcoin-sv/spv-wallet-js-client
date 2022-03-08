@@ -26,7 +26,7 @@
   description: "Any question or concern"
   name: "question"
 - color: c2e0c6
-  description: "Unit tests, mocking, integration testing"
+  description: "Unit tests, mocking, integration tests"
   name: "test"
 - color: fbca04
   description: "Anything GUI related"
