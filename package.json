@@ -1,6 +1,6 @@
 {
   "name": "@buxorg/js-buxclient",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "TypeScript library for connecting to a BUX server",
   "author": "Siggi <github@icellan.com>",
   "homepage": "https://getbux.io",
@@ -38,7 +38,7 @@
     "build": "rollup -c",
     "build:types": "tsc -p ./tsconfig.json --outDir build --declaration true && api-extractor run",
     "clean": "rimraf ./build ./dist ./docs",
-    "deploy": "npm publish --access public",
+    "deploy": "yarn pub --access public",
     "dev": "rollup -c -w",
     "docs": "typedoc src --out docs",
     "prebuild:types": "rimraf ./build",
