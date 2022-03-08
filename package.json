@@ -35,14 +35,14 @@
     "dist"
   ],
   "scripts": {
-    "dev": "rollup -c -w",
     "build": "rollup -c",
-    "deploy": "npm publish --access public",
-    "prebuild:types": "rimraf ./build",
     "build:types": "tsc -p ./tsconfig.json --outDir build --declaration true && api-extractor run",
-    "predocs": "rimraf ./docs",
-    "docs": "typedoc src --out docs",
     "clean": "rimraf ./build ./dist ./docs",
+    "deploy": "npm publish --access public",
+    "dev": "rollup -c -w",
+    "docs": "typedoc src --out docs",
+    "prebuild:types": "rimraf ./build",
+    "predocs": "rimraf ./docs",
     "pub": "yarn build && yarn publish",
     "test": "jest"
   },
@@ -59,7 +59,7 @@
     "@types/jest": "^27.4.1",
     "babel-jest": "^27.5.1",
     "babel-plugin-import": "^1.13.3",
-    "bsv": "1.5.6",
+    "bsv": "^1.5.6",
     "eslint": "^8.8.0",
     "jest": "^27.5.1",
     "prettier": "^2.5.1",
@@ -70,7 +70,7 @@
     "ts-node": "^10.4.0",
     "tslib": "^2.3.1",
     "typedoc": "^0.22.11",
-    "typescript": "^4.5.5"
+    "typescript": "^4.6.2"
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
@@ -80,6 +80,6 @@
     "jest-fetch-mock": "^3.0.3"
   },
   "peerDependencies": {
-    "bsv": "1.5.6"
+    "bsv": "^1.5.6"
   }
 }
