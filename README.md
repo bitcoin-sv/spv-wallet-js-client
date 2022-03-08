@@ -58,7 +58,7 @@ const buxClient = new BuxClient(server, {
 <br />
 
 ## Documentation
-Visit [our live website](https://getbux.io).
+View more [BUX documentation](https://getbux.io).
 
 <details>
 <summary><strong><code>Release Deployment</code></strong></summary>
@@ -82,21 +82,23 @@ make help
 
 List of all current commands:
 ```text
-audit                Checks for vulnerabilities in dependencies
-clean                Remove previous builds and any test cache data
-help                 Show this help message
-install              Installs the dependencies for the package
-outdated             Checks for outdated packages via npm
-publish              Will publish the version to npm
-release              Full production release (creates release in Github)
-release              Run after releasing - deploy to npm
-release-snap         Test the full release (build binaries)
-release-test         Full production test release (everything except deploy)
-replace-version      Replaces the version in HTML/JS (pre-deploy)
-tag                  Generate a new tag and push (tag version=0.0.0)
-tag-remove           Remove a tag if found (tag-remove version=0.0.0)
-tag-update           Update an existing tag to current commit (tag-update version=0.0.0)
-test                 Will run unit tests
+audit                         Checks for vulnerabilities in dependencies
+clean                         Remove previous builds and any test cache data
+help                          Show this help message
+install                       Installs the dependencies for the package
+install-all-contributors      Installs all contributors locally
+outdated                      Checks for outdated packages via npm
+publish                       Will publish the version to npm
+release                       Full production release (creates release in Github)
+release                       Run after releasing - deploy to npm
+release-snap                  Test the full release (build binaries)
+release-test                  Full production test release (everything except deploy)
+replace-version               Replaces the version in HTML/JS (pre-deploy)
+tag                           Generate a new tag and push (tag version=0.0.0)
+tag-remove                    Remove a tag if found (tag-remove version=0.0.0)
+tag-update                    Update an existing tag to current commit (tag-update version=0.0.0)
+test                          Will run unit tests
+update-contributors           Regenerates the contributors html/list
 ```
 </details>
 
