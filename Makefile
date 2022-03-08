@@ -11,7 +11,7 @@ ifeq ($(REPO_OWNER),)
 	REPO_OWNER="BuxOrg"
 endif
 
-.PHONY: clean release test
+.PHONY: clean publish release test
 
 audit: ## Checks for vulnerabilities in dependencies
 	@yarn audit
