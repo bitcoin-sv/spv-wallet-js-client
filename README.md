@@ -87,6 +87,8 @@ const adminKey = 'xprv.....';
 buxClient.SetAdminKey(adminKey);
 ```
 
+<br />
+
 <details>
 <summary><strong><code>Release Deployment</code></strong></summary>
 <br/>
