@@ -1,12 +1,12 @@
 # [BUX: JS Client](https://www.npmjs.com/package/@buxorg/js-buxclient)
 > Get started using [BUX](https://getbux.io) in five minutes
 
-[![last commit](https://img.shields.io/github/last-commit/BuxOrg/js-buxclient.svg?style=flat)](https://github.com/BuxOrg/js-buxclient/commits/master)
-[![version](https://img.shields.io/github/release-pre/BuxOrg/js-buxclient.svg?style=flat)](https://github.com/BuxOrg/js-buxclient/releases)
-[![Npm](https://img.shields.io/npm/v/js-buxclient?style=flat)](https://www.npmjs.com/package/@buxorg/js-buxclient)
-[![license](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat)](/LICENSE)
-[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/BuxOrg/js-buxclient&style=flat&v=3)](https://mergify.io)
-[![Sponsor](https://img.shields.io/badge/sponsor-BuxOrg-181717.svg?logo=github&style=flat&v=1)](https://github.com/sponsors/BuxOrg)
+[![last commit](https://img.shields.io/github/last-commit/BuxOrg/js-buxclient.svg?style=flat&v=2)](https://github.com/BuxOrg/js-buxclient/commits/master)
+[![version](https://img.shields.io/github/release-pre/BuxOrg/js-buxclient.svg?style=flat&v=2)](https://github.com/BuxOrg/js-buxclient/releases)
+[![Npm](https://img.shields.io/npm/v/@buxorg/js-buxclient?style=flat&v=2)](https://www.npmjs.com/package/@buxorg/js-buxclient)
+[![license](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat&v=2)](/LICENSE)
+[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/BuxOrg/js-buxclient&style=flat&v=2)](https://mergify.io)
+[![Sponsor](https://img.shields.io/badge/sponsor-BuxOrg-181717.svg?logo=github&style=flat&v=2)](https://github.com/sponsors/BuxOrg)
 
 ## Table of Contents
 - [What is BUX?](#what-is-bux)
@@ -170,4 +170,4 @@ Thank you to these wonderful people ([emoji key](https://allcontributors.org/doc
 <br />
 
 ## License
-[![License](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat)](/LICENSE)
+[![License](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat&v=2)](/LICENSE)
