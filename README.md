@@ -134,7 +134,7 @@ update-contributors           Regenerates the contributors html/list
 <br />
 
 ## Code Standards
-Please read our [standards document](.github/CODE_STANDARDS.md)
+Please read our [code standards document](.github/CODE_STANDARDS.md)
 
 <br />
 
