@@ -27,7 +27,7 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.org/
       - name: Install all deps
-        run: npm ci
+        run: make install
       - name: Publish to NPM
         run: make publish
         env:
