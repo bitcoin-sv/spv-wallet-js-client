@@ -90,14 +90,34 @@ buxClient.SetAdminKey(adminKey);
 <br />
 
 <details>
-<summary><strong><code>Release Deployment</code></strong></summary>
+<summary><strong><code>Library Deployment</code></strong></summary>
 <br/>
 
-[goreleaser](https://github.com/goreleaser/goreleaser) for easy binary or library deployment to Github and can be installed via: `brew install goreleaser`.
+Releases are automatically created when you create a new [git tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging)!
+
+If you want to manually make releases, please install GoReleaser:
+
+[goreleaser](https://github.com/goreleaser/goreleaser) for easy binary or library deployment to Github and can be installed:
+- **using make:** `make install-releaser`
+- **using brew:** `brew install goreleaser`
 
 The [.goreleaser.yml](.goreleaser.yml) file is used to configure [goreleaser](https://github.com/goreleaser/goreleaser).
 
-Use `make release-snap` to create a snapshot version of the release, and finally `make release` to ship to production.
+<br/>
+
+### Automatic Releases on Tag Creation (recommended)
+Automatic releases via [Github Actions](.github/workflows/release.yml) from creating a new tag:
+```shell
+make tag version=1.2.3
+```
+
+<br/>
+
+### Manual Releases (optional)
+Use `make release-snap` to create a snapshot version of the release, and finally `make release` to ship to production (manually).
+
+<br/>
+
 </details>
 
 <details>
