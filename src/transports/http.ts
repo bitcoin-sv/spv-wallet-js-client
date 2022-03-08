@@ -244,13 +244,14 @@ class TransportHTTP implements TransportService {
 
   async doHTTPRequest(url: string, options: any) {
     let headers = {...options.headers,
-      'content-type': 'application/json',
-      'auth_xpub': this.options.xPubString,
+      'content-type': 'application/json'
     }
 
     if (this.options.signRequest && (this.options.xPriv || this.options.accessKey)) {
       // @ts-ignore
       headers = setSignature(headers, this.options.xPriv || this.options.accessKey, options.body || "");
+    } else {
+      headers['auth_xpub'] = this.options.xPubString;
     }
 
     const httpOptions = {...options,
