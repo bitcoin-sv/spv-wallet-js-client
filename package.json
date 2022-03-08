@@ -64,7 +64,7 @@
     "jest": "^27.5.1",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "rollup": "^2.66.1",
+    "rollup": "^2.70.0",
     "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.22",
     "rollup-plugin-polyfill-node": "^0.8.0",
     "ts-node": "^10.4.0",
