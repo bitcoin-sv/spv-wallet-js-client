@@ -43,7 +43,7 @@ Here's the [getting started](https://getbux.io) with BUX
 
 ```javascript
 import bsv from 'bsv';
-import BuxClient from 'js-buxclient';
+import { BuxClient } from 'js-buxclient';
 
 const server = "http://localhost:3003/v1"
 const transportType = 'http'; // or graphql
