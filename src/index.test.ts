@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals'
 import fetchMock from "jest-fetch-mock"
 
-import BuxClient from "./index";
+import { BuxClient } from "./index";
 import {
   Client,
   ClientOptions,
@@ -65,8 +65,8 @@ describe('BuxClient class', () => {
       adminKey: "test-admin-key",
       debug: true,
       transportType: "graphql",
-      xPrivString: xPrivString,
-      xPubString: xPubString,
+      xPrivString,
+      xPubString,
     }
     const buxClient = new BuxClient("https://bux.org/v1", options);
     expect(buxClient).toBeInstanceOf(BuxClient);
@@ -77,8 +77,8 @@ describe('BuxClient class', () => {
       adminKey: "test-admin-key",
       debug: true,
       transportType: "graphql",
-      xPrivString: xPrivString,
-      xPubString: xPubString,
+      xPrivString,
+      xPubString,
     }
     const buxClient = new BuxClient("https://bux.org/v1", options);
     expect(buxClient).toBeInstanceOf(BuxClient);

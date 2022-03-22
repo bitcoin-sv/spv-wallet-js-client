@@ -16,6 +16,9 @@ import {
   Transactions,
   TransportService, XPub
 } from "./interface";
+import {
+  getGraphQLMiddleware,
+} from "./transports/graphql";
 
 class BuxClient implements TransportService {
   client: Client;
@@ -154,7 +157,13 @@ class BuxClient implements TransportService {
     return await this.client.transport.DraftTransaction(transactionConfig, metadata);
   }
 
-  FinalizeTransaction(draftTransaction: DraftTransaction): String {
+  async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Transaction> {
+    const draft = await this.DraftToRecipients(recipients, metadata);
+    const finalized = this.FinalizeTransaction(draft);
+    return this.RecordTransaction(finalized, draft.id, metadata)
+  }
+
+  FinalizeTransaction(draftTransaction: DraftTransaction): string {
     if (!this.options?.xPriv) {
       throw new Error("cannot sign transaction without an xPriv")
     }
@@ -209,7 +218,17 @@ class BuxClient implements TransportService {
   }
 
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.client.transport.RegisterXpub(rawXPub, metadata);  }
+    return await this.client.transport.RegisterXpub(rawXPub, metadata);
+  }
+
+  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
+    return await this.client.transport.RegisterXpubWithToken(rawXPub, token, metadata);
+  }
 }
 
-export default BuxClient;
+export {
+  BuxClient,
+  getGraphQLMiddleware,
+};
+export * from "./authentication";
+export * from "./interface";

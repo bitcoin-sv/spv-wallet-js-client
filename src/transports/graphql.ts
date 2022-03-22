@@ -3,7 +3,10 @@ import { ApolloClient, ApolloLink, concat, gql } from '@apollo/client/core';
 import { InMemoryCache } from '@apollo/client/cache';
 import { HttpLink } from '@apollo/client/link/http';
 import { print } from 'graphql/language/printer';
-import {AuthHeader, setSignature} from "../authentication";
+import {
+  AuthHeader,
+  setSignature,
+} from "../authentication";
 import {
   AccessKey,
   AccessKeys,
@@ -21,7 +24,7 @@ import {
   XPub,
 } from "../interface";
 
-function getGraphQLMiddleware(options: ClientOptions) {
+export const getGraphQLMiddleware = function(options: ClientOptions) {
   return new ApolloLink((operation, forward) => {
     // add the authorization to the headers
     const {query, variables, operationName} = operation;
@@ -454,16 +457,33 @@ class TransportGraphQL implements TransportService {
 
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     const query = gql`
-      mutation ($metadata: Metadata) {
+      mutation ($xpub: String!, $metadata: Metadata) {
         xpub(
-          xpub: "` + rawXPub + `"
+          xpub: $xpub
           metadata: $metadata
         ) {
           id
         }
       }`;
+    const variables = { xpub: rawXPub, metadata }
 
-    return this.doGraphQLAdminMutation(query, {}, 'xpub');
+    return this.doGraphQLAdminMutation(query, variables, 'xpub');
+  }
+
+  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
+    const query = gql`
+      mutation ($xpub: String!, $token: String!, $metadata: Metadata) {
+        xpub_with_token(
+          xpub: $xpub
+          token: $token
+          metadata: $metadata
+        ) {
+          id
+        }
+      }`;
+    const variables = { xpub: rawXPub, token, metadata }
+
+    return this.doGraphQLMutation(query, variables, 'xpub_with_token');
   }
 
   private async doGraphQLQuery(query: any, variables: any, resultId: string) {
@@ -491,7 +511,7 @@ class TransportGraphQL implements TransportService {
   }
 
   private async doGraphQLClientQuery(client: ApolloClient<object>, query: any, variables: any, resultId: string) {
-    const { error, data} = await client.query({
+    const { error, data } = await client.query({
       query,
       variables,
     }).catch(e => {
@@ -506,7 +526,7 @@ class TransportGraphQL implements TransportService {
   }
 
   private async doGraphQLClientMutate(client: ApolloClient<object>, query: any, variables: any, resultId: string) {
-    const { data} = await client.mutate({
+    const { data } = await client.mutate({
       mutation: query,
       variables,
     }).catch(e => {

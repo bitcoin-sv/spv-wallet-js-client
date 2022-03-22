@@ -4,6 +4,7 @@ import typescript from "@rollup/plugin-typescript";
 import json from "@rollup/plugin-json";
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import excludeDependenciesFromBundle from "rollup-plugin-exclude-dependencies-from-bundle";
+import dts from 'rollup-plugin-dts'
 import pkg from "./package.json";
 
 export default [
@@ -44,5 +45,16 @@ export default [
       typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
       excludeDependenciesFromBundle( { peerDependencies: true } ),
     ],
+  },
+
+  {
+    // path to your declaration files root
+    input: './dist/dts/src/index.d.ts',
+    output: [
+      { file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es' },
+      { file: 'dist/typescript-npm-package.esm.d.ts', format: 'es' },
+      { file: 'dist/typescript-npm-package.umd.d.ts', format: 'es' }
+    ],
+    plugins: [dts()],
   },
 ];

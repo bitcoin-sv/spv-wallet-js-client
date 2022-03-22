@@ -242,6 +242,24 @@ class TransportHTTP implements TransportService {
     });
   }
 
+  /**
+   * Register a new xPub in the database (requires admin key)
+   * @param rawXPub string The raw string version of the XPub (xpub.....)
+   * @param token string The server token that can be used to register the xpub
+   * @param metadata Metadata The metadata to record on the xPub
+   * @constructor
+   */
+  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
+    return await this.doHTTPRequest(`${this.serverUrl}/xpub/with-token`, {
+      method: 'POST',
+      body: JSON.stringify({
+        key: rawXPub,
+        token,
+        metadata,
+      })
+    });
+  }
+
   async doHTTPRequest(url: string, options: any) {
     let headers = {...options.headers,
       'content-type': 'application/json'

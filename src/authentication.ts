@@ -75,7 +75,7 @@ const setSignatureHeaders = function(headers: { [key: string]: string }, authDat
   return headers;
 }
 
-const createSignature = function(signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string) {
+export const createSignature = function(signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string) {
 
   // No key?
   if (!signingKey) {
