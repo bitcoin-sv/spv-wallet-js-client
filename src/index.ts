@@ -105,6 +105,10 @@ class BuxClient implements TransportService {
     return await this.client.transport.GetXPub();
   }
 
+  async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
+    return await this.client.transport.UpdateXPubMetadata(metadata);
+  }
+
   async GetAccessKey(id: string): Promise<AccessKey> {
     return await this.client.transport.GetAccessKey(id);
   }
@@ -139,6 +143,18 @@ class BuxClient implements TransportService {
 
   async NewDestination(metadata: Metadata): Promise<Destination> {
     return await this.client.transport.NewDestination(metadata);
+  }
+
+  async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
+    return await this.client.transport.UpdateDestinationMetadataByID(id, metadata);
+  }
+
+  async UpdateDestinationMetadataByLockingScript(locking_script: string, metadata: Metadata): Promise<Destination> {
+    return await this.client.transport.UpdateDestinationMetadataByLockingScript(locking_script, metadata);
+  }
+
+  async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
+    return await this.client.transport.UpdateDestinationMetadataByAddress(address, metadata);
   }
 
   async GetTransaction(txID: string): Promise<Transaction> {
@@ -215,6 +231,10 @@ class BuxClient implements TransportService {
 
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
     return await this.client.transport.RecordTransaction(hex, referenceID, metadata);
+  }
+
+  async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
+    return await this.client.transport.UpdateTransactionMetadata(txID, metadata);
   }
 
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {

@@ -197,6 +197,7 @@ export interface TransportService {
   RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
   RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub>;
   GetXPub(): Promise<XPub>;
+  UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;
   GetAccessKey(id: string): Promise<AccessKey>;
   GetAccessKeys(metadata: Metadata): Promise<AccessKeys>;
   CreateAccessKey(metadata: Metadata): Promise<AccessKey>;
@@ -206,11 +207,15 @@ export interface TransportService {
   GetDestinationByAddress(address: string): Promise<Destination>
   GetDestinations(metadata: Metadata): Promise<Destinations>
   NewDestination(metadata: Metadata): Promise<Destination>;
+  UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination>;
+  UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination>;
+  UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination>;
   GetTransaction(txID: string): Promise<Transaction>;
   GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
+  UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
 }
 
 export interface ClientOptions {

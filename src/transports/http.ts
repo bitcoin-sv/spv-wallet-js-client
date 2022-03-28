@@ -52,6 +52,19 @@ class TransportHTTP implements TransportService {
   }
 
   /**
+   * Update Xpub metadata
+   * @returns XPub
+   */
+  async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
+    return await this.doHTTPRequest(`${this.serverUrl}/xpub`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        metadata,
+      }),
+    });
+  }
+
+  /**
    * Get access keys
    * @returns AccessKeys
    */
@@ -148,6 +161,48 @@ class TransportHTTP implements TransportService {
   }
 
   /**
+   * Update Update destination metadata by id
+   * @returns Destination
+   */
+  async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        id,
+        metadata,
+      }),
+    });
+  }
+
+  /**
+   * Update Update destination metadata by address
+   * @returns Destination
+   */
+  async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        address,
+        metadata,
+      }),
+    });
+  }
+
+  /**
+   * Update Update destination metadata by lockingScript
+   * @returns Destination
+   */
+  async UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination> {
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        lockingScript,
+        metadata,
+      }),
+    });
+  }
+
+  /**
    * Get a transaction by ID
    * @param txID string Transaction ID to retrieve
    * @returns Transaction
@@ -223,6 +278,20 @@ class TransportHTTP implements TransportService {
         reference_id: referenceID,
         metadata,
       })
+    });
+  }
+
+  /**
+   * Update Update transaction metadata
+   * @returns Transaction
+   */
+  async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        id: txID,
+        metadata,
+      }),
     });
   }
 

@@ -99,6 +99,23 @@ describe('GetXpub', () => {
   });
 });
 
+describe('UpdateXPubMetadata', () => {
+  const HttpUrl = `/xpub`;
+  const metadata: Metadata = {
+    "test-key": "test-value",
+  };
+  test('result', async () => {
+    // @ts-ignore
+    fetchMock.mockIf(/^.*$/, mockResponse(xpubJSON, HttpUrl, "xpub_metadata"));
+
+    await runTests(testClients, async (buxClient: TransportService) => {
+      const xPub = await buxClient.UpdateXPubMetadata(metadata);
+      expect(typeof xPub).toBe('object');
+      expect(xPub).toStrictEqual(JSON.parse(xpubJSON));
+    });
+  });
+});
+
 describe('GetAccessKey', () => {
   const HttpUrl = `/access-key?id=${accessKeyID}`;
   test('result', async () => {
@@ -227,6 +244,57 @@ describe('NewDestination', () => {
   });
 });
 
+describe('UpdateDestinationMetadataByID', () => {
+  const HttpUrl = `/destination`;
+  const metadata: Metadata = {
+    "test-key": "test-value",
+  };
+  test('result', async () => {
+    // @ts-ignore
+    fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination_metadata"));
+
+    await runTests(testClients, async (buxClient: TransportService) => {
+      const destination = await buxClient.UpdateDestinationMetadataByID(destinationID, metadata);
+      expect(typeof destination).toBe('object');
+      expect(destination).toStrictEqual(JSON.parse(destinationJSON));
+    });
+  });
+});
+
+describe('UpdateDestinationMetadataByLockingScript', () => {
+  const HttpUrl = `/destination`;
+  const metadata: Metadata = {
+    "test-key": "test-value",
+  };
+  test('result', async () => {
+    // @ts-ignore
+    fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination_metadata"));
+
+    await runTests(testClients, async (buxClient: TransportService) => {
+      const destination = await buxClient.UpdateDestinationMetadataByLockingScript(destinationLockingScript, metadata);
+      expect(typeof destination).toBe('object');
+      expect(destination).toStrictEqual(JSON.parse(destinationJSON));
+    });
+  });
+});
+
+describe('UpdateDestinationMetadataByAddress', () => {
+  const HttpUrl = `/destination`;
+  const metadata: Metadata = {
+    "test-key": "test-value",
+  };
+  test('result', async () => {
+    // @ts-ignore
+    fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination_metadata"));
+
+    await runTests(testClients, async (buxClient: TransportService) => {
+      const destination = await buxClient.UpdateDestinationMetadataByAddress(destinationAddress, metadata);
+      expect(typeof destination).toBe('object');
+      expect(destination).toStrictEqual(JSON.parse(destinationJSON));
+    });
+  });
+});
+
 describe('GetTransaction', () => {
   const HttpUrl = `/transaction?id=${transactionID}`;
   test('result', async () => {
@@ -302,6 +370,24 @@ describe('Finalize transaction', () => {
     }).toThrow("transaction could not be fully signed")
   });
 });
+
+describe('UpdateTransactionMetadata', () => {
+  const HttpUrl = `/transaction`;
+  const metadata: Metadata = {
+    "test-key": "test-value",
+  };
+  test('result', async () => {
+    // @ts-ignore
+    fetchMock.mockIf(/^.*$/, mockResponse(transactionJSON, HttpUrl, "transaction_metadata"));
+
+    await runTests(testClients, async (buxClient: TransportService) => {
+      const transaction = await buxClient.UpdateTransactionMetadata(transactionID, metadata);
+      expect(typeof transaction).toBe('object');
+      expect(transaction).toStrictEqual(JSON.parse(transactionJSON));
+    });
+  });
+});
+
 
 const runTests = async function(testClients: TestClients, test: Function) {
   for (let i = 0; i < testClients.length; i++) {
