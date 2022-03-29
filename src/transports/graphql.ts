@@ -454,7 +454,7 @@ class TransportGraphQL implements TransportService {
     const query = gql`
       {
         transaction (
-          tx_id:"${txID}"
+          id:"${txID}"
         ) {
           id
           hex
@@ -571,9 +571,9 @@ class TransportGraphQL implements TransportService {
 
   async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
     const query = gql`
-      mutation ($tx_id: String!, $metadata: Metadata!) {
+      mutation ($id: String!, $metadata: Metadata!) {
         transaction_metadata (
-        tx_id: $tx_id
+          id: $id
           metadata: $metadata
       ) {
           id
@@ -594,7 +594,7 @@ class TransportGraphQL implements TransportService {
       }
 	  `;
     const variables = {
-      tx_id: txID,
+      id: txID,
       metadata,
     }
 
