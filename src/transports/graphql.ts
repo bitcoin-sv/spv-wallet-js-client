@@ -390,7 +390,7 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLMutation(query, variables, 'destination_metadata');
   }
 
-  // UpdateDestinationMetadataByID updates the destination metadata by id
+  // UpdateDestinationMetadataByAddress updates the destination metadata by address
   async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
     const query = gql`
       mutation ($address: String, $metadata: Metadata!) {
