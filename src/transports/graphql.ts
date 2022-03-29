@@ -129,6 +129,30 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLQuery(query, variables, 'xpub');
   }
 
+  // UpdateXPubMetadata update the metadata of the logged in xpub
+  async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
+    const query = gql`
+    mutation ($metadata: Metadata!) {
+  	  xpub_metadata (
+  	    metadata: $metadata
+  	  ) {
+		    id
+		    current_balance
+		    next_internal_num
+		    next_external_num
+		    metadata
+		    created_at
+		    updated_at
+		    deleted_at
+	    }
+	  }`
+    const variables = {
+      metadata,
+    };
+
+    return this.doGraphQLMutation(query, variables, 'xpub_metadata');
+  }
+
   // Get a single access key by ID
   async GetAccessKey(id: string): Promise<AccessKey> {
     const query = gql`
@@ -336,11 +360,101 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLMutation(query, variables, 'destination');
   }
 
+  // UpdateDestinationMetadataByID updates the destination metadata by id
+  async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
+    const query = gql`
+      mutation ($id: String, $metadata: Metadata!) {
+  	    destination_metadata (
+		      id: $id
+  	      metadata: $metadata
+  	    ) {
+          id
+          xpub_id
+          locking_script
+          type
+          chain
+          num
+          address
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }
+    `;
+    const variables = {
+      id,
+      metadata,
+    };
+
+    return this.doGraphQLMutation(query, variables, 'destination_metadata');
+  }
+
+  // UpdateDestinationMetadataByAddress updates the destination metadata by address
+  async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
+    const query = gql`
+      mutation ($address: String, $metadata: Metadata!) {
+  	    destination_metadata (
+		      address: $address
+  	      metadata: $metadata
+  	    ) {
+          id
+          xpub_id
+          locking_script
+          type
+          chain
+          num
+          address
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }
+    `;
+    const variables = {
+      address,
+      metadata,
+    };
+
+    return this.doGraphQLMutation(query, variables, 'destination_metadata');
+  }
+
+  // UpdateDestinationMetadataByLockingScript updates the destination metadata by lockingScript
+  async UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination> {
+    const query = gql`
+      mutation ($lockingScript: String, $metadata: Metadata!) {
+  	    destination_metadata (
+		      lockingScript: $lockingScript
+  	      metadata: $metadata
+  	    ) {
+          id
+          xpub_id
+          locking_script
+          type
+          chain
+          num
+          address
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }
+    `;
+    const variables = {
+      lockingScript,
+      metadata,
+    }
+
+    return this.doGraphQLMutation(query, variables, 'destination_metadata');
+  }
+
   async GetTransaction(txID: string): Promise<Transaction> {
     const query = gql`
       {
         transaction (
-          tx_id:"${txID}"
+          id:"${txID}"
         ) {
           id
           hex
@@ -453,6 +567,38 @@ class TransportGraphQL implements TransportService {
     const variables = { hex, referenceID, metadata }
 
     return this.doGraphQLMutation(query, variables, 'transaction');
+  }
+
+  async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
+    const query = gql`
+      mutation ($id: String!, $metadata: Metadata!) {
+        transaction_metadata (
+          id: $id
+          metadata: $metadata
+      ) {
+          id
+          hex
+          block_hash
+          block_height
+          fee
+          number_of_inputs
+          number_of_outputs
+          output_value
+          total_value
+          direction
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }
+	  `;
+    const variables = {
+      id: txID,
+      metadata,
+    }
+
+    return this.doGraphQLMutation(query, variables, 'transaction_metadata');
   }
 
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
