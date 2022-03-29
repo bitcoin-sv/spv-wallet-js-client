@@ -9,6 +9,9 @@ updates:
       interval: 'daily'
       # Check for npm updates at 10am UTC (5am EST)
       time: '10:00'
+    ignore:
+      - dependency-name: "@types/bsv"
+      - dependency-name: "bsv"
     reviewers:
       - 'mrz1836'
     assignees:
