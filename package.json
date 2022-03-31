@@ -69,7 +69,7 @@
     "rollup": "^2.70.0",
     "rollup-plugin-dts": "^4.2.0",
     "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.22",
-    "rollup-plugin-polyfill-node": "^0.8.0",
+    "rollup-plugin-polyfill-node": "^0.9.0",
     "ts-node": "^10.4.0",
     "tslib": "^2.3.1",
     "typedoc": "^0.22.11",
