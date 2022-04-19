@@ -1,3 +1,4 @@
+import bsv from 'bsv';
 import {
   AccessKey,
   AccessKeys,
@@ -8,6 +9,8 @@ import {
   DraftTransaction,
   Metadata,
   QueryParams,
+  PaymailAddress,
+  PaymailAddresses,
   Recipients,
   Transaction,
   TransactionConfigInput,
@@ -20,14 +23,17 @@ import {setSignature} from "../authentication";
 class TransportHTTP implements TransportService {
   serverUrl: string;
   options: ClientOptions;
+  adminKey: bsv.HDPrivateKey | null;
 
   constructor(serverUrl: string, options: ClientOptions) {
     this.serverUrl = serverUrl;
     this.options = options;
+    this.adminKey = null;
   }
 
   SetAdminKey(adminKey: string): void {
     this.options.adminKey = adminKey;
+    this.adminKey = bsv.HDPrivateKey.fromString(adminKey)
   }
 
   SetDebug(debug: boolean): void {
@@ -44,6 +50,54 @@ class TransportHTTP implements TransportService {
 
   IsSignRequest(): boolean {
     return !!this.options.signRequest;
+  }
+
+  async AdminGetStatus(): Promise<any> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/status`, {});
+  }
+
+  async AdminGetStats(): Promise<any> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/stats`, {});
+  }
+
+  async AdminGetPaymail(address: string): Promise<PaymailAddress> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/get`, {
+      method: 'POST',
+      body: JSON.stringify({
+        address,
+      })
+    });
+  }
+
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata): Promise<PaymailAddresses> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/list`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/create`, {
+      method: 'POST',
+      body: JSON.stringify({
+        xPubID,
+        address,
+        public_name,
+        avatar,
+      })
+    });
+  }
+
+  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, {
+      method: 'POST',
+      body: JSON.stringify({
+        address,
+      })
+    });
   }
 
   /**
@@ -325,7 +379,7 @@ class TransportHTTP implements TransportService {
    * @constructor
    */
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.doHTTPRequest(`${this.serverUrl}/xpub`, {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/xpub`, {
       method: 'POST',
       body: JSON.stringify({
         key: rawXPub,
@@ -352,14 +406,26 @@ class TransportHTTP implements TransportService {
     });
   }
 
+  async doHTTPAdminRequest(url: string, options: any) {
+    if (!this.adminKey) {
+      throw new Error("Admin key has not been set. Cannot do admin queries");
+    }
+    return this._doHTTPRequest(url, options, this.adminKey)
+  }
+
   async doHTTPRequest(url: string, options: any) {
+    const signingKey = this.options.adminKey;
+    return this._doHTTPRequest(url, options, signingKey)
+  }
+
+  async _doHTTPRequest(url: string, options: any, signingKey: any) {
     let headers = {...options.headers,
       'content-type': 'application/json'
     }
 
-    if (this.options.signRequest && (this.options.xPriv || this.options.accessKey)) {
+    if (this.options.signRequest && signingKey) {
       // @ts-ignore
-      headers = setSignature(headers, this.options.xPriv || this.options.accessKey, options.body || "");
+      headers = setSignature(headers, signingKey, options.body || "");
     } else {
       headers['auth_xpub'] = this.options.xPubString;
     }

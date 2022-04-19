@@ -105,6 +105,17 @@ export interface TransactionInput {
   destination: Destination;
 }
 
+export interface PaymailAddress {
+  id: string;
+  xpub_id: string;
+  alias: string;
+  domain: string;
+  public_name: string;
+  avatar: string;
+}
+
+export interface PaymailAddresses extends Array<PaymailAddress> {}
+
 export interface PaymailP4 {
   alias: string;
   domain: string;
@@ -195,6 +206,12 @@ export interface TransportService {
   SetSignRequest(debug: boolean): void;
   IsSignRequest(): boolean;
   RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
+  AdminGetStatus(): Promise<boolean>
+  AdminGetStats(): Promise<any>
+  AdminGetPaymail(address: string): Promise<PaymailAddress>
+  AdminGetPaymails(conditions: Conditions, metadata: Metadata): Promise<PaymailAddresses>
+  AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress>
+  AdminDeletePaymail(address: string): Promise<PaymailAddress>
   RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub>;
   GetXPub(): Promise<XPub>;
   UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;

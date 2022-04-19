@@ -17,6 +17,8 @@ import {
   DraftTransaction,
   Metadata,
   QueryParams,
+  PaymailAddress,
+  PaymailAddresses,
   Recipients,
   Transaction,
   TransactionConfigInput,
@@ -72,9 +74,16 @@ class TransportGraphQL implements TransportService {
     this.options = options;
   }
 
-  SetAdminKey(adminKey: string): void {
-    this.options.adminKey = adminKey;
-    const adminXpriv = bsv.HDPrivateKey.fromString(adminKey);
+  SetAdminKey(adminKey: bsv.HDPrivateKey | string): void {
+    let adminXpriv;
+    if (typeof adminKey === "string") {
+      this.options.adminKey = adminKey;
+      adminXpriv = bsv.HDPrivateKey.fromString(adminKey);
+    } else {
+      adminXpriv = adminKey;
+      this.options.adminKey = adminKey.toString();
+    }
+
     const adminXPub = adminXpriv.hdPublicKey;
     const adminXPubString = adminXPub.toString();
 
@@ -82,7 +91,7 @@ class TransportGraphQL implements TransportService {
     const adminAuthMiddleware = getGraphQLMiddleware({
       ...this.options,
       xPriv: adminXpriv,
-      xPrivString: adminKey,
+      xPrivString: this.options.adminKey,
       xPub: adminXPub,
       xPubString: adminXPubString
     });
@@ -108,6 +117,117 @@ class TransportGraphQL implements TransportService {
 
   IsSignRequest(): boolean {
     return !!this.options.signRequest;
+  }
+
+  async AdminGetStatus(): Promise<any> {
+    const query = gql`
+      query {
+        admin_get_status
+      }`;
+    const variables = {};
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_get_status');
+  }
+
+  async AdminGetStats(): Promise<any> {
+    const query = gql`
+      query {
+        admin_stats {
+          id
+        }
+      }`;
+    const variables = {};
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_stats');
+  }
+
+  async AdminGetPaymail(address: string): Promise<PaymailAddress> {
+    const query = gql`
+      query ($address: String!) {
+        admin_paymail_get (
+          address: $address
+        ) {
+          id
+          xpub_id
+          alias
+          domain
+          public_name
+          avatar
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { address };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_paymail_get');
+  }
+
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata): Promise<PaymailAddresses> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata) {
+        admin_paymail_list (
+          conditions: $conditions
+          metadata: $metadata
+        ) {
+          id
+          xpub_id
+          alias
+          domain
+          public_name
+          avatar
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { conditions, metadata };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_paymail_list');
+  }
+
+  async AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+    const query = gql`
+      mutation (
+        $xpub_id: String!
+        $address: String!
+        $public_name: String!
+        $avatar: String!
+      ) {
+        admin_paymail_create (
+          xpub_id: $xpub_id
+          address: $address
+          public_name: $public_name
+          avatar: $avatar
+        ) {
+          id
+          xpub_id
+          alias
+          domain
+          public_name
+          avatar
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { xPubID, address, public_name, avatar };
+
+    return this.doGraphQLAdminMutation(query, variables, 'admin_paymail_create');
+  }
+
+  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
+    const query = gql`
+      mutation (
+        $address: String!
+      ) {
+        admin_paymail_delete (
+          address: $address
+        )
+      }`;
+    const variables = { address };
+
+    return this.doGraphQLAdminMutation(query, variables, 'admin_paymail_delete');
   }
 
   // Get a new destination to receive funds on

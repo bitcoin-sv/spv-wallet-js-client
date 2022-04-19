@@ -12,6 +12,8 @@ import {
   DraftTransaction,
   Metadata,
   QueryParams,
+  PaymailAddress,
+  PaymailAddresses,
   Recipients,
   Transaction,
   TransactionConfig,
@@ -102,6 +104,30 @@ class BuxClient implements TransportService {
 
   IsSignRequest(): boolean {
     return this.client.transport.IsSignRequest();
+  }
+
+  async AdminGetStatus(): Promise<boolean> {
+    return await this.client.transport.AdminGetStatus();
+  }
+
+  async AdminGetStats(): Promise<any> {
+    return await this.client.transport.AdminGetStats();
+  }
+
+  async AdminGetPaymail(address: string): Promise<PaymailAddress> {
+    return await this.client.transport.AdminGetPaymail(address);
+  }
+
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata): Promise<PaymailAddresses> {
+    return await this.client.transport.AdminGetPaymails(conditions, metadata);
+  }
+
+  async AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+    return await this.client.transport.AdminCreatePaymail(xPubID, address, public_name, avatar);
+  }
+
+  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
+    return await this.client.transport.AdminDeletePaymail(address);
   }
 
   async GetXPub(): Promise<XPub> {
