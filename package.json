@@ -58,7 +58,7 @@
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/bsv": "github:chainbow/bsv-types",
     "@types/jest": "^27.4.1",
-    "babel-jest": "^27.5.1",
+    "babel-jest": "^28.0.1",
     "babel-plugin-import": "^1.13.3",
     "bsv": "^1.5.6",
     "eslint": "^8.8.0",
