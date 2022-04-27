@@ -199,19 +199,19 @@ export interface TransportService {
   GetXPub(): Promise<XPub>;
   UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;
   GetAccessKey(id: string): Promise<AccessKey>;
-  GetAccessKeys(metadata: Metadata): Promise<AccessKeys>;
+  GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>;
   CreateAccessKey(metadata: Metadata): Promise<AccessKey>;
   RevokeAccessKey(id: string): Promise<AccessKey>
   GetDestinationByID(id: string): Promise<Destination>
   GetDestinationByLockingScript(locking_script: string): Promise<Destination>
   GetDestinationByAddress(address: string): Promise<Destination>
-  GetDestinations(metadata: Metadata): Promise<Destinations>
+  GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
   NewDestination(metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination>;
   GetTransaction(txID: string): Promise<Transaction>;
-  GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions>;
+  GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
@@ -245,3 +245,10 @@ export interface AccessKey {
 }
 
 export interface AccessKeys extends Array<AccessKey> {}
+
+export interface QueryParams {
+  page?: number;
+  page_size?: number;
+  order_by_field?: string;
+  sort_direction?: string;
+}

@@ -16,6 +16,7 @@ import {
   Destinations,
   DraftTransaction,
   Metadata,
+  QueryParams,
   Recipients,
   Transaction,
   TransactionConfigInput,
@@ -176,11 +177,13 @@ class TransportGraphQL implements TransportService {
   }
 
   // Get all access keys for the xpub
-  async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
+  async GetAccessKeys(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
     const query = gql`
-      query ($metadata: Metadata) {
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
         access_keys (
+          conditions: $conditions
           metadata: $metadata
+          params: $params
         ) {
           id
           xpub_id
@@ -192,7 +195,7 @@ class TransportGraphQL implements TransportService {
           revoked_at
         }
       }`;
-    const variables = { metadata };
+    const variables = { conditions, metadata, params };
 
     return this.doGraphQLQuery(query, variables, 'access_keys');
   }
@@ -313,11 +316,13 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLQuery(query, {}, 'destination');
   }
 
-  async GetDestinations(metadata: Metadata): Promise<Destinations> {
+  async GetDestinations(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Destinations> {
     const query = gql`
-      query ($metadata: Metadata) {
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
         destinations (
+          conditions: $conditions
           metadata: $metadata
+          params: $params
         ) {
           id
           xpub_id
@@ -333,7 +338,7 @@ class TransportGraphQL implements TransportService {
         }
       }
     `;
-    const variables = { metadata };
+    const variables = { conditions, metadata, params };
 
     return this.doGraphQLQuery(query, variables, 'destinations');
   }
@@ -477,12 +482,13 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLQuery(query, {}, 'transaction');
   }
 
-  async GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions> {
+  async GetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
     const query = gql`
-        query ($conditions: Map, $metadata: Metadata) {
+        query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
           transactions (
             conditions: $conditions
             metadata: $metadata
+            params: $params
           ) {
             id
             hex
@@ -505,6 +511,7 @@ class TransportGraphQL implements TransportService {
     const variables = {
       conditions,
       metadata,
+      params,
     };
 
     return this.doGraphQLQuery(query, variables, 'transactions');

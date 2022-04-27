@@ -7,14 +7,17 @@ import {
   Client,
   ClientOptions,
   Conditions,
-  Destination, Destinations,
+  Destination,
+  Destinations,
   DraftTransaction,
   Metadata,
+  QueryParams,
   Recipients,
   Transaction,
   TransactionConfig,
   Transactions,
-  TransportService, XPub
+  TransportService,
+  XPub,
 } from "./interface";
 import {
   getGraphQLMiddleware,
@@ -113,8 +116,8 @@ class BuxClient implements TransportService {
     return await this.client.transport.GetAccessKey(id);
   }
 
-  async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
-    return await this.client.transport.GetAccessKeys(metadata);
+  async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
+    return await this.client.transport.GetAccessKeys(conditions, metadata, queryParams);
   }
 
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
@@ -137,8 +140,8 @@ class BuxClient implements TransportService {
     return await this.client.transport.GetDestinationByAddress(address);
   }
 
-  async GetDestinations(metadata: Metadata): Promise<Destinations> {
-    return await this.client.transport.GetDestinations(metadata);
+  async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
+    return await this.client.transport.GetDestinations(conditions, metadata, queryParams);
   }
 
   async NewDestination(metadata: Metadata): Promise<Destination> {
@@ -161,8 +164,8 @@ class BuxClient implements TransportService {
     return await this.client.transport.GetTransaction(txID);
   }
 
-  async GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions> {
-    return await this.client.transport.GetTransactions(conditions, metadata);
+  async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
+    return await this.client.transport.GetTransactions(conditions, metadata, queryParams);
   }
 
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {

@@ -138,7 +138,7 @@ describe('GetAccessKeys', () => {
     fetchMock.mockIf(/^.*$/, mockResponse(accessKeysJSON, HttpUrl, "access_keys"));
 
     await runTests(testClients, async (buxClient: TransportService) => {
-      const accessKeys = await buxClient.GetAccessKeys({});
+      const accessKeys = await buxClient.GetAccessKeys({}, {}, {});
       expect(typeof accessKeys).toBe('object');
       expect(accessKeys).toStrictEqual([JSON.parse(accessKeyJSON)]);
     });
@@ -223,7 +223,7 @@ describe('GetDestinations', () => {
     fetchMock.mockIf(/^.*$/, mockResponse(destinationsJSON, HttpUrl, "destinations"));
 
     await runTests(testClients, async (buxClient: TransportService) => {
-      const destinations = await buxClient.GetDestinations({});
+      const destinations = await buxClient.GetDestinations({}, {}, {});
       expect(typeof destinations).toBe('object');
       expect(destinations).toStrictEqual(JSON.parse(destinationsJSON));
     });
@@ -327,7 +327,7 @@ describe('GetTransactions', () => {
       const metadata: Metadata = {
         run_id: "3108aa426fc7102488bb0ffd",
       }
-      const transactions = await buxClient.GetTransactions(conditions, metadata);
+      const transactions = await buxClient.GetTransactions(conditions, metadata, {});
       expect(typeof transactions).toBe('object');
       expect(transactions).toStrictEqual(JSON.parse(transactionsJSON));
     });

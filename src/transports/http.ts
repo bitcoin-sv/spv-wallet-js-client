@@ -1,16 +1,19 @@
-import bsv from 'bsv';
 import {
   AccessKey,
   AccessKeys,
   ClientOptions,
   Conditions,
-  Destination, Destinations,
+  Destination,
+  Destinations,
   DraftTransaction,
   Metadata,
+  QueryParams,
   Recipients,
   Transaction,
-  TransactionConfig, TransactionConfigInput, Transactions,
-  TransportService, XPub
+  TransactionConfigInput,
+  Transactions,
+  TransportService,
+  XPub,
 } from "../interface";
 import {setSignature} from "../authentication";
 
@@ -74,13 +77,21 @@ class TransportHTTP implements TransportService {
 
   /**
    * Get access keys
+   * @param conditions Conditions A key value map to filter the access keys on
+   * @param metadata Metadata The metadata to filter on
+   * @param queryParams Query parameters for the database query (page, pageSize, orderBy, sortBy)
    * @returns AccessKeys
    */
-  async GetAccessKeys(metadata: Metadata): Promise<AccessKeys> {
+  async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
     return await this.doHTTPRequest(`${this.serverUrl}/access-key/search`, {
       method: 'POST',
       body: JSON.stringify({
+        conditions,
         metadata,
+        page: queryParams?.page || 0,
+        page_size: queryParams?.page_size || 0,
+        order_by_field: queryParams?.order_by_field || "",
+        sort_direction: queryParams?.sort_direction || "",
       }),
     });
   }
@@ -134,14 +145,21 @@ class TransportHTTP implements TransportService {
 
   /**
    * Get a list of destinations
+   * @param conditions Conditions A key value map to filter the destinations on
    * @param metadata Metadata The metadata to filter on
+   * @param queryParams Query parameters for the database query (page, pageSize, orderBy, sortBy)
    * @constructor
    */
-  async GetDestinations(metadata: Metadata): Promise<Destinations> {
+  async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination/search`, {
       method: 'POST',
       body: JSON.stringify({
+        conditions,
         metadata,
+        page: queryParams?.page || 0,
+        page_size: queryParams?.page_size || 0,
+        order_by_field: queryParams?.order_by_field || "",
+        sort_direction: queryParams?.sort_direction || "",
       })
     });
   }
@@ -215,14 +233,19 @@ class TransportHTTP implements TransportService {
    * Get a list of transactions
    * @param conditions Conditions A key value map to filter the transactions on
    * @param metadata Metadata The metadata to filter on
+   * @param queryParams Query parameters for the database query (page, pageSize, orderBy, sortBy)
    * @constructor
    */
-  async GetTransactions(conditions: Conditions, metadata: Metadata): Promise<Transactions> {
+  async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction/search`, {
       method: 'POST',
       body: JSON.stringify({
         conditions,
         metadata,
+        page: queryParams?.page || 0,
+        page_size: queryParams?.page_size || 0,
+        order_by_field: queryParams?.order_by_field || "",
+        sort_direction: queryParams?.sort_direction || "",
       })
     });
   }
