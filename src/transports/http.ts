@@ -2,6 +2,7 @@ import bsv from 'bsv';
 import {
   AccessKey,
   AccessKeys,
+  BlockHeaders,
   ClientOptions,
   Conditions,
   Destination,
@@ -16,7 +17,9 @@ import {
   TransactionConfigInput,
   Transactions,
   TransportService,
+  Utxos,
   XPub,
+  XPubs,
 } from "../interface";
 import {setSignature} from "../authentication";
 
@@ -31,9 +34,14 @@ class TransportHTTP implements TransportService {
     this.adminKey = null;
   }
 
-  SetAdminKey(adminKey: string): void {
-    this.options.adminKey = adminKey;
-    this.adminKey = bsv.HDPrivateKey.fromString(adminKey)
+  SetAdminKey(adminKey: bsv.HDPrivateKey | string): void {
+    if (typeof adminKey === "string") {
+      this.options.adminKey = adminKey;
+      this.adminKey = bsv.HDPrivateKey.fromString(adminKey);
+    } else {
+      this.adminKey = adminKey;
+      this.options.adminKey = adminKey.toString();
+    }
   }
 
   SetDebug(debug: boolean): void {
@@ -60,6 +68,69 @@ class TransportHTTP implements TransportService {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/stats`, {});
   }
 
+  async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<BlockHeaders> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetDestinations(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Destinations> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/get`, {
       method: 'POST',
@@ -69,8 +140,19 @@ class TransportHTTP implements TransportService {
     });
   }
 
-  async AdminGetPaymails(conditions: Conditions, metadata: Metadata): Promise<PaymailAddresses> {
-    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/list`, {
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<PaymailAddresses> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/count`, {
       method: 'POST',
       body: JSON.stringify({
         conditions,
@@ -96,6 +178,69 @@ class TransportHTTP implements TransportService {
       method: 'POST',
       body: JSON.stringify({
         address,
+      })
+    });
+  }
+
+  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetUtxos(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Utxos> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetXPubs(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<XPubs> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
       })
     });
   }
@@ -146,6 +291,22 @@ class TransportHTTP implements TransportService {
         page_size: queryParams?.page_size || 0,
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
+      }),
+    });
+  }
+
+  /**
+   * Get access keys count
+   * @param conditions Conditions A key value map to filter the access keys on
+   * @param metadata Metadata The metadata to filter on
+   * @returns number
+   */
+  async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
       }),
     });
   }
@@ -215,6 +376,22 @@ class TransportHTTP implements TransportService {
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
       })
+    });
+  }
+
+  /**
+   * Get destinations count
+   * @param conditions Conditions A key value map to filter the destinations on
+   * @param metadata Metadata The metadata to filter on
+   * @returns number
+   */
+  async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPRequest(`${this.serverUrl}/destination/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      }),
     });
   }
 
@@ -301,6 +478,22 @@ class TransportHTTP implements TransportService {
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
       })
+    });
+  }
+
+  /**
+   * Get transactions count
+   * @param conditions Conditions A key value map to filter the transactions on
+   * @param metadata Metadata The metadata to filter on
+   * @returns number
+   */
+  async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      }),
     });
   }
 

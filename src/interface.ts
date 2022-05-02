@@ -16,15 +16,31 @@ export interface Metadata {
 }
 
 export interface XPub {
-  created_at?: Date;
-  updated_at?: Date;
   metadata?: Metadata;
-  deleted_at?: Date;
   id: string;
   current_balance: number;
   next_internal_num: number;
   next_external_num: number;
+  created_at?: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
 }
+
+export interface XPubs extends Array<XPub> {}
+
+
+export interface AccessKey {
+  id: string;
+  xpub_id: string;
+  key?: string;
+  metadata?: Metadata;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
+  revoked_at?: Date;
+}
+
+export interface AccessKeys extends Array<AccessKey> {}
 
 export interface Destination {
   id: string;
@@ -36,8 +52,27 @@ export interface Destination {
   address: string;
   draft_id: string;
   metadata: Metadata;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
 }
 export interface Destinations extends Array<Destination> {}
+
+export interface BlockHeader {
+  id: string;
+  height: number;
+  time: number;
+  nonce: number;
+  version: number;
+  hash_previous_block: string;
+  hash_merkle_root: string;
+  bits: string;
+  synced: string | null;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
+}
+export interface BlockHeaders extends Array<BlockHeader> {}
 
 export interface IDs extends Array<string> {}
 
@@ -52,10 +87,12 @@ export interface Transaction {
   output_value: number;
   total_value: number;
   metadata?: Metadata;
-  created_at: string;
-  updated_at?: string | null;
-  deleted_at?: string | null;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
 }
+
+export interface Transactions extends Array<Transaction> {}
 
 export interface MapProtocol {
   app?: string;
@@ -112,6 +149,9 @@ export interface PaymailAddress {
   domain: string;
   public_name: string;
   avatar: string;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
 }
 
 export interface PaymailAddresses extends Array<PaymailAddress> {}
@@ -184,20 +224,34 @@ export type ChangeStrategy = "default" | "random" | "nominations";
 export type DraftStatus = "draft" | "canceled" | "expired" | "complete";
 
 export interface DraftTransaction {
-  created_at: string;
-  updated_at?: string;
-  metadata?: Metadata;
-  deleted_at?: Date;
   id: string;
   hex: string;
+  metadata?: Metadata;
   xpub_id: string;
   expires_at: Date;
   configuration: TransactionConfig;
   status: DraftStatus;
   final_tx_id?: string;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
 }
 
-export interface Transactions extends Array<Transaction> {}
+export interface Utxo {
+  id: string;
+  xpub_id: string;
+  satoshis: number;
+  script_pub_key: string;
+  type: string;
+  draft_id?: string;
+  reserved_at?: Date;
+  spending_tx_id?: string;
+  created_at: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
+}
+
+export interface Utxos extends Array<Utxo> {}
 
 export interface TransportService {
   SetAdminKey(adminKey: string): void;
@@ -208,27 +262,43 @@ export interface TransportService {
   RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
   AdminGetStatus(): Promise<boolean>
   AdminGetStats(): Promise<any>
+  AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>
+  AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number>
+  AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders>
+  AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number>
+  AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
+  AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminGetPaymail(address: string): Promise<PaymailAddress>
-  AdminGetPaymails(conditions: Conditions, metadata: Metadata): Promise<PaymailAddresses>
+  AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses>
+  AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress>
   AdminDeletePaymail(address: string): Promise<PaymailAddress>
+  AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>
+  AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>
+  AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>
+  AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>
+  AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs>;
+  AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
   RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub>;
   GetXPub(): Promise<XPub>;
   UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;
   GetAccessKey(id: string): Promise<AccessKey>;
   GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>;
+  GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number>;
   CreateAccessKey(metadata: Metadata): Promise<AccessKey>;
   RevokeAccessKey(id: string): Promise<AccessKey>
   GetDestinationByID(id: string): Promise<Destination>
   GetDestinationByLockingScript(locking_script: string): Promise<Destination>
   GetDestinationByAddress(address: string): Promise<Destination>
   GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
+  GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   NewDestination(metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination>;
   GetTransaction(txID: string): Promise<Transaction>;
   GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
+  GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
@@ -249,19 +319,6 @@ export interface ClientOptions {
   xPubString?: string;
   xPubID?: string;
 }
-
-export interface AccessKey {
-  id: string;
-  xpub_id: string;
-  key?: string;
-  metadata?: Metadata;
-  created_at?: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
-  revoked_at?: Date;
-}
-
-export interface AccessKeys extends Array<AccessKey> {}
 
 export interface QueryParams {
   page?: number;
