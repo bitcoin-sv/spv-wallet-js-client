@@ -10,6 +10,7 @@ import {
 import {
   AccessKey,
   AccessKeys,
+  BlockHeaders,
   ClientOptions,
   Conditions,
   Destination,
@@ -17,12 +18,16 @@ import {
   DraftTransaction,
   Metadata,
   QueryParams,
+  PaymailAddress,
+  PaymailAddresses,
   Recipients,
   Transaction,
   TransactionConfigInput,
   Transactions,
   TransportService,
+  Utxos,
   XPub,
+  XPubs,
 } from "../interface";
 
 export const getGraphQLMiddleware = function(options: ClientOptions) {
@@ -72,9 +77,16 @@ class TransportGraphQL implements TransportService {
     this.options = options;
   }
 
-  SetAdminKey(adminKey: string): void {
-    this.options.adminKey = adminKey;
-    const adminXpriv = bsv.HDPrivateKey.fromString(adminKey);
+  SetAdminKey(adminKey: bsv.HDPrivateKey | string): void {
+    let adminXpriv;
+    if (typeof adminKey === "string") {
+      this.options.adminKey = adminKey;
+      adminXpriv = bsv.HDPrivateKey.fromString(adminKey);
+    } else {
+      adminXpriv = adminKey;
+      this.options.adminKey = adminKey.toString();
+    }
+
     const adminXPub = adminXpriv.hdPublicKey;
     const adminXPubString = adminXPub.toString();
 
@@ -82,7 +94,7 @@ class TransportGraphQL implements TransportService {
     const adminAuthMiddleware = getGraphQLMiddleware({
       ...this.options,
       xPriv: adminXpriv,
-      xPrivString: adminKey,
+      xPrivString: this.options.adminKey,
       xPub: adminXPub,
       xPubString: adminXPubString
     });
@@ -108,6 +120,306 @@ class TransportGraphQL implements TransportService {
 
   IsSignRequest(): boolean {
     return !!this.options.signRequest;
+  }
+
+  async AdminGetStatus(): Promise<any> {
+    const query = gql`
+      query {
+        admin_get_status
+      }`;
+    const variables = {};
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_get_status');
+  }
+
+  async AdminGetStats(): Promise<any> {
+    const query = gql`
+      query {
+        admin_get_stats {
+          balance
+          destinations
+          transactions
+          paymails
+          utxos
+          xpubs
+          transactions_per_day
+          utxos_per_type
+        }
+      }`;
+    const variables = {};
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_get_stats');
+  }
+
+  async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
+        admin_access_keys_list (
+          conditions: $conditions
+          metadata: $metadata
+          params: $params
+        ) {
+          id
+          xpub_id
+          key
+          metadata
+          created_at
+          updated_at
+          deleted_at
+          revoked_at
+        }
+      }`;
+    const variables = { conditions, metadata, params: queryParams };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_access_keys_list');
+  }
+
+  async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return this.adminCount(conditions, metadata, 'admin_access_keys_count');
+  }
+
+  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
+        admin_block_headers_list (
+          conditions: $conditions
+          metadata: $metadata
+          params: $params
+        ) {
+          id
+          height
+          time
+          nonce
+          version
+          hash_previous_block
+          hash_merkle_root
+          bits
+          synced
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { conditions, metadata, params: queryParams };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_block_headers_list');
+  }
+
+  async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return this.adminCount(conditions, metadata, 'admin_block_headers_count');
+  }
+
+  async AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
+        admin_destinations_list (
+          conditions: $conditions
+          metadata: $metadata
+          params: $params
+        ) {
+          id
+          xpub_id
+          locking_script
+          type
+          chain
+          num
+          address
+          draft_id
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { conditions, metadata, params: queryParams };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_destinations_list');
+  }
+
+  async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return this.adminCount(conditions, metadata, 'admin_destinations_count');
+  }
+
+  async AdminGetPaymail(address: string): Promise<PaymailAddress> {
+    const query = gql`
+      query ($address: String!) {
+        admin_paymail_get (
+          address: $address
+        ) {
+          id
+          xpub_id
+          alias
+          domain
+          public_name
+          avatar
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { address };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_paymail_get');
+  }
+
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata): Promise<PaymailAddresses> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata) {
+        admin_paymails_list (
+          conditions: $conditions
+          metadata: $metadata
+        ) {
+          id
+          xpub_id
+          alias
+          domain
+          public_name
+          avatar
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { conditions, metadata };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_paymails_list');
+  }
+
+  async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return this.adminCount(conditions, metadata, 'admin_paymails_count');
+  }
+
+  async AdminCreatePaymail(xpub_id: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+    const query = gql`
+      mutation (
+        $xpub_id: String!
+        $address: String!
+        $public_name: String!
+        $avatar: String!
+      ) {
+        admin_paymail_create (
+          xpub_id: $xpub_id
+          address: $address
+          public_name: $public_name
+          avatar: $avatar
+        ) {
+          id
+          xpub_id
+          alias
+          domain
+          public_name
+          avatar
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { xpub_id, address, public_name, avatar };
+
+    return this.doGraphQLAdminMutation(query, variables, 'admin_paymail_create');
+  }
+
+  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
+    const query = gql`
+      mutation (
+        $address: String!
+      ) {
+        admin_paymail_delete (
+          address: $address
+        )
+      }`;
+    const variables = { address };
+
+    return this.doGraphQLAdminMutation(query, variables, 'admin_paymail_delete');
+  }
+
+  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
+        admin_transactions_list (
+          conditions: $conditions
+          metadata: $metadata
+          params: $params
+        ) {
+          id
+          hex
+          block_hash
+          block_height
+          fee
+          number_of_inputs
+          number_of_outputs
+          output_value
+          total_value
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { conditions, metadata, params: queryParams };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_transactions_list');
+  }
+
+  async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return this.adminCount(conditions, metadata, 'admin_transactions_count');
+  }
+
+  async AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
+        admin_utxos_list (
+          conditions: $conditions
+          metadata: $metadata
+          params: $params
+        ) {
+          id
+          xpub_id
+          satoshis
+          script_pub_key
+          type
+          draft_id
+          reserved_at
+          spending_tx_id
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { conditions, metadata, params: queryParams };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_utxos_list');
+  }
+
+  async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return this.adminCount(conditions, metadata, 'admin_utxos_count');
+  }
+
+  async AdminGetXPubs(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<XPubs> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
+        admin_xpubs_list (
+          conditions: $conditions
+          metadata: $metadata
+          params: $params
+        ) {
+          id
+          current_balance
+          next_internal_num
+          next_external_num
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { conditions, metadata, params };
+
+    return this.doGraphQLAdminQuery(query, variables, 'admin_xpubs_list');
+  }
+
+  async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return this.adminCount(conditions, metadata, 'admin_xpubs_count');
   }
 
   // Get a new destination to receive funds on
@@ -198,6 +510,20 @@ class TransportGraphQL implements TransportService {
     const variables = { conditions, metadata, params };
 
     return this.doGraphQLQuery(query, variables, 'access_keys');
+  }
+
+  // Get all access keys for the xpub
+  async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata) {
+        access_keys_count (
+          conditions: $conditions
+          metadata: $metadata
+        )
+      }`;
+    const variables = { conditions, metadata };
+
+    return this.doGraphQLQuery(query, variables, 'access_keys_count');
   }
 
   // Create a new access key for the xpub
@@ -341,6 +667,20 @@ class TransportGraphQL implements TransportService {
     const variables = { conditions, metadata, params };
 
     return this.doGraphQLQuery(query, variables, 'destinations');
+  }
+
+  async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata) {
+        destinations_count (
+          conditions: $conditions
+          metadata: $metadata
+        )
+      }
+    `;
+    const variables = { conditions, metadata };
+
+    return this.doGraphQLQuery(query, variables, 'destinations_count');
   }
 
   // Create a new destination to receive funds on
@@ -517,6 +857,24 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLQuery(query, variables, 'transactions');
   }
 
+  async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    const query = gql`
+        query ($conditions: Map, $metadata: Metadata) {
+          transactions_count (
+            conditions: $conditions
+            metadata: $metadata
+          )
+        }
+      `;
+
+    const variables = {
+      conditions,
+      metadata,
+    };
+
+    return this.doGraphQLQuery(query, variables, 'transactions_count');
+  }
+
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
     const query = gql`
         mutation ($outputs: [TransactionOutputInput]!, $metadata: Metadata) {
@@ -637,6 +995,19 @@ class TransportGraphQL implements TransportService {
     const variables = { xpub: rawXPub, token, metadata }
 
     return this.doGraphQLMutation(query, variables, 'xpub_with_token');
+  }
+
+  private adminCount(conditions: Conditions, metadata: Metadata, method: string) {
+    const query = gql`
+      query ($conditions: Map, $metadata: Metadata) {
+        ${method} (
+          conditions: $conditions
+          metadata: $metadata
+        )
+      }`;
+    const variables = { conditions, metadata };
+
+    return this.doGraphQLAdminQuery(query, variables, method);
   }
 
   private async doGraphQLQuery(query: any, variables: any, resultId: string) {

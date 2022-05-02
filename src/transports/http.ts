@@ -1,6 +1,8 @@
+import bsv from 'bsv';
 import {
   AccessKey,
   AccessKeys,
+  BlockHeaders,
   ClientOptions,
   Conditions,
   Destination,
@@ -8,26 +10,38 @@ import {
   DraftTransaction,
   Metadata,
   QueryParams,
+  PaymailAddress,
+  PaymailAddresses,
   Recipients,
   Transaction,
   TransactionConfigInput,
   Transactions,
   TransportService,
+  Utxos,
   XPub,
+  XPubs,
 } from "../interface";
 import {setSignature} from "../authentication";
 
 class TransportHTTP implements TransportService {
   serverUrl: string;
   options: ClientOptions;
+  adminKey: bsv.HDPrivateKey | null;
 
   constructor(serverUrl: string, options: ClientOptions) {
     this.serverUrl = serverUrl;
     this.options = options;
+    this.adminKey = null;
   }
 
-  SetAdminKey(adminKey: string): void {
-    this.options.adminKey = adminKey;
+  SetAdminKey(adminKey: bsv.HDPrivateKey | string): void {
+    if (typeof adminKey === "string") {
+      this.options.adminKey = adminKey;
+      this.adminKey = bsv.HDPrivateKey.fromString(adminKey);
+    } else {
+      this.adminKey = adminKey;
+      this.options.adminKey = adminKey.toString();
+    }
   }
 
   SetDebug(debug: boolean): void {
@@ -44,6 +58,191 @@ class TransportHTTP implements TransportService {
 
   IsSignRequest(): boolean {
     return !!this.options.signRequest;
+  }
+
+  async AdminGetStatus(): Promise<any> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/status`, {});
+  }
+
+  async AdminGetStats(): Promise<any> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/stats`, {});
+  }
+
+  async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<BlockHeaders> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetDestinations(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Destinations> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetPaymail(address: string): Promise<PaymailAddress> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/get`, {
+      method: 'POST',
+      body: JSON.stringify({
+        address,
+      })
+    });
+  }
+
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<PaymailAddresses> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminCreatePaymail(xpub_id: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/create`, {
+      method: 'POST',
+      body: JSON.stringify({
+        xpub_id,
+        address,
+        public_name,
+        avatar,
+      })
+    });
+  }
+
+  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, {
+      method: 'POST',
+      body: JSON.stringify({
+        address,
+      })
+    });
+  }
+
+  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetUtxos(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Utxos> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
+  }
+
+  async AdminGetXPubs(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<XPubs> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        params,
+      })
+    });
+  }
+
+  async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      })
+    });
   }
 
   /**
@@ -92,6 +291,22 @@ class TransportHTTP implements TransportService {
         page_size: queryParams?.page_size || 0,
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
+      }),
+    });
+  }
+
+  /**
+   * Get access keys count
+   * @param conditions Conditions A key value map to filter the access keys on
+   * @param metadata Metadata The metadata to filter on
+   * @returns number
+   */
+  async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
       }),
     });
   }
@@ -161,6 +376,22 @@ class TransportHTTP implements TransportService {
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
       })
+    });
+  }
+
+  /**
+   * Get destinations count
+   * @param conditions Conditions A key value map to filter the destinations on
+   * @param metadata Metadata The metadata to filter on
+   * @returns number
+   */
+  async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPRequest(`${this.serverUrl}/destination/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      }),
     });
   }
 
@@ -251,6 +482,22 @@ class TransportHTTP implements TransportService {
   }
 
   /**
+   * Get transactions count
+   * @param conditions Conditions A key value map to filter the transactions on
+   * @param metadata Metadata The metadata to filter on
+   * @returns number
+   */
+  async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      }),
+    });
+  }
+
+  /**
    * Initiate a new draft transaction to the given recipients
    * @param recipients Recipients The recipients of the transaction
    * @param metadata Metadata The metadata to record on the draft transaction
@@ -325,7 +572,7 @@ class TransportHTTP implements TransportService {
    * @constructor
    */
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.doHTTPRequest(`${this.serverUrl}/xpub`, {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/xpub`, {
       method: 'POST',
       body: JSON.stringify({
         key: rawXPub,
@@ -352,14 +599,26 @@ class TransportHTTP implements TransportService {
     });
   }
 
+  async doHTTPAdminRequest(url: string, options: any) {
+    if (!this.adminKey) {
+      throw new Error("Admin key has not been set. Cannot do admin queries");
+    }
+    return this._doHTTPRequest(url, options, this.adminKey)
+  }
+
   async doHTTPRequest(url: string, options: any) {
+    const signingKey = this.options.adminKey;
+    return this._doHTTPRequest(url, options, signingKey)
+  }
+
+  async _doHTTPRequest(url: string, options: any, signingKey: any) {
     let headers = {...options.headers,
       'content-type': 'application/json'
     }
 
-    if (this.options.signRequest && (this.options.xPriv || this.options.accessKey)) {
+    if (this.options.signRequest && signingKey) {
       // @ts-ignore
-      headers = setSignature(headers, this.options.xPriv || this.options.accessKey, options.body || "");
+      headers = setSignature(headers, signingKey, options.body || "");
     } else {
       headers['auth_xpub'] = this.options.xPubString;
     }

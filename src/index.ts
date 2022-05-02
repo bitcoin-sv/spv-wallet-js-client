@@ -4,6 +4,7 @@ import TransportGraphQL from "./transports/graphql";
 import {
   AccessKey,
   AccessKeys,
+  BlockHeaders,
   Client,
   ClientOptions,
   Conditions,
@@ -12,12 +13,16 @@ import {
   DraftTransaction,
   Metadata,
   QueryParams,
+  PaymailAddress,
+  PaymailAddresses,
   Recipients,
   Transaction,
   TransactionConfig,
   Transactions,
   TransportService,
+  Utxos,
   XPub,
+  XPubs
 } from "./interface";
 import {
   getGraphQLMiddleware,
@@ -104,8 +109,84 @@ class BuxClient implements TransportService {
     return this.client.transport.IsSignRequest();
   }
 
+  async AdminGetStatus(): Promise<boolean> {
+    return await this.client.transport.AdminGetStatus();
+  }
+
+  async AdminGetStats(): Promise<any> {
+    return await this.client.transport.AdminGetStats();
+  }
+
+  async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
+    return await this.client.transport.AdminGetAccessKeys(conditions, metadata, queryParams);
+  }
+
+  async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.AdminGetAccessKeysCount(conditions, metadata);
+  }
+
+  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders> {
+    return await this.client.transport.AdminGetBlockHeaders(conditions, metadata, queryParams);
+  }
+
+  async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.AdminGetBlockHeadersCount(conditions, metadata);
+  }
+
+  async AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
+    return await this.client.transport.AdminGetDestinations(conditions, metadata, queryParams);
+  }
+
+  async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.AdminGetDestinationsCount(conditions, metadata);
+  }
+
+  async AdminGetPaymail(address: string): Promise<PaymailAddress> {
+    return await this.client.transport.AdminGetPaymail(address);
+  }
+
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses> {
+    return await this.client.transport.AdminGetPaymails(conditions, metadata, queryParams);
+  }
+
+  async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.AdminGetPaymailsCount(conditions, metadata);
+  }
+
+  async AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+    return await this.client.transport.AdminCreatePaymail(xPubID, address, public_name, avatar);
+  }
+
+  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
+    return await this.client.transport.AdminDeletePaymail(address);
+  }
+
+  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
+    return await this.client.transport.AdminGetTransactions(conditions, metadata, queryParams);
+  }
+
+  async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.AdminGetTransactionsCount(conditions, metadata);
+  }
+
+  async AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
+    return await this.client.transport.AdminGetUtxos(conditions, metadata, queryParams);
+  }
+
+  async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.AdminGetUtxosCount(conditions, metadata);
+  }
+
   async GetXPub(): Promise<XPub> {
     return await this.client.transport.GetXPub();
+  }
+
+  async AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs> {
+    return await this.client.transport.AdminGetXPubs(conditions, metadata, queryParams);
+  }
+
+  async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.AdminGetXPubsCount(conditions, metadata);
   }
 
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
@@ -118,6 +199,10 @@ class BuxClient implements TransportService {
 
   async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
     return await this.client.transport.GetAccessKeys(conditions, metadata, queryParams);
+  }
+
+  async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.GetAccessKeysCount(conditions, metadata);
   }
 
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
@@ -144,6 +229,10 @@ class BuxClient implements TransportService {
     return await this.client.transport.GetDestinations(conditions, metadata, queryParams);
   }
 
+  async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.GetDestinationsCount(conditions, metadata);
+  }
+
   async NewDestination(metadata: Metadata): Promise<Destination> {
     return await this.client.transport.NewDestination(metadata);
   }
@@ -162,6 +251,10 @@ class BuxClient implements TransportService {
 
   async GetTransaction(txID: string): Promise<Transaction> {
     return await this.client.transport.GetTransaction(txID);
+  }
+
+  async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.GetTransactionsCount(conditions, metadata);
   }
 
   async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
