@@ -143,6 +143,7 @@ class TransportGraphQL implements TransportService {
           utxos
           xpubs
           transactions_per_day
+          utxos_per_type
         }
       }`;
     const variables = {};
@@ -288,7 +289,7 @@ class TransportGraphQL implements TransportService {
     return this.adminCount(conditions, metadata, 'admin_paymails_count');
   }
 
-  async AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+  async AdminCreatePaymail(xpub_id: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
     const query = gql`
       mutation (
         $xpub_id: String!
@@ -313,7 +314,7 @@ class TransportGraphQL implements TransportService {
           deleted_at
         }
       }`;
-    const variables = { xPubID, address, public_name, avatar };
+    const variables = { xpub_id, address, public_name, avatar };
 
     return this.doGraphQLAdminMutation(query, variables, 'admin_paymail_create');
   }
