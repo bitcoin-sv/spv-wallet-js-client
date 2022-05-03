@@ -5,7 +5,7 @@
 [![version](https://img.shields.io/github/release-pre/BuxOrg/js-buxclient.svg?style=flat&v=2)](https://github.com/BuxOrg/js-buxclient/releases)
 [![Npm](https://img.shields.io/npm/v/@buxorg/js-buxclient?style=flat&v=2)](https://www.npmjs.com/package/@buxorg/js-buxclient)
 [![license](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat&v=2)](/LICENSE)
-[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/BuxOrg/js-buxclient&style=flat&v=2)](https://mergify.io)
+[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/BuxOrg/js-buxclient&style=flat&v=2)](https://mergify.io)
 [![Sponsor](https://img.shields.io/badge/sponsor-BuxOrg-181717.svg?logo=github&style=flat&v=2)](https://github.com/sponsors/BuxOrg)
 
 ## Table of Contents
