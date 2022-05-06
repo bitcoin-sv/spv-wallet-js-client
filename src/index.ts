@@ -337,6 +337,10 @@ class BuxClient implements TransportService {
     return await this.client.transport.RegisterXpub(rawXPub, metadata);
   }
 
+  async NewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+    return await this.client.transport.NewXpub(rawXPub, metadata);
+  }
+
   async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
     return await this.client.transport.RegisterXpubWithToken(rawXPub, token, metadata);
   }

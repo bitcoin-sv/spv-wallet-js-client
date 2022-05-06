@@ -326,7 +326,17 @@ class TransportGraphQL implements TransportService {
       ) {
         admin_paymail_delete (
           address: $address
-        )
+        ) {
+          id
+          xpub_id
+          alias
+          domain
+          public_name
+          avatar
+          created_at
+          updated_at
+          deleted_at
+        }
       }`;
     const variables = { address };
 
@@ -966,7 +976,7 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLMutation(query, variables, 'transaction_metadata');
   }
 
-  async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+  async NewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     const query = gql`
       mutation ($xpub: String!, $metadata: Metadata) {
         xpub(
@@ -979,6 +989,10 @@ class TransportGraphQL implements TransportService {
     const variables = { xpub: rawXPub, metadata }
 
     return this.doGraphQLAdminMutation(query, variables, 'xpub');
+  }
+
+  async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+    return this.NewXpub(rawXPub, metadata)
   }
 
   async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {

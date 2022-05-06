@@ -571,7 +571,7 @@ class TransportHTTP implements TransportService {
    * @param metadata Metadata The metadata to record on the xPub
    * @constructor
    */
-  async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+  async NewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/xpub`, {
       method: 'POST',
       body: JSON.stringify({
@@ -579,6 +579,16 @@ class TransportHTTP implements TransportService {
         metadata,
       })
     });
+  }
+
+  /**
+   *  Alias for NewXpub
+   * @param rawXPub string The raw string version of the XPub (xpub.....)
+   * @param metadata Metadata The metadata to record on the xPub
+   * @constructor
+   */
+  async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+    return this.NewXpub(rawXPub, metadata)
   }
 
   /**

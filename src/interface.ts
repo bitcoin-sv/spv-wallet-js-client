@@ -259,6 +259,7 @@ export interface TransportService {
   IsDebug(): boolean;
   SetSignRequest(debug: boolean): void;
   IsSignRequest(): boolean;
+  NewXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
   RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
   AdminGetStatus(): Promise<boolean>
   AdminGetStats(): Promise<any>
