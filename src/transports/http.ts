@@ -607,7 +607,7 @@ class TransportHTTP implements TransportService {
   }
 
   async doHTTPRequest(url: string, options: any) {
-    const signingKey = this.options.adminKey;
+    const signingKey = this.options.xPriv || this.options.accessKey;
     return this._doHTTPRequest(url, options, signingKey)
   }
 
