@@ -47,7 +47,7 @@ import { BuxClient } from 'js-buxclient';
 
 const server = "http://localhost:3003/v1"
 const transportType = 'http'; // or graphql
-const Xpriv = bsv.HDPrivateKey.fromRandom();
+const xPriv = bsv.HDPrivateKey.fromRandom();
 
 const buxClient = new BuxClient(server, {
   signRequest: true,
