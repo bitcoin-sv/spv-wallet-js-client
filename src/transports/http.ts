@@ -2,6 +2,7 @@ import bsv from 'bsv';
 import {
   AccessKey,
   AccessKeys,
+  AdminStats,
   BlockHeaders,
   ClientOptions,
   Conditions,
@@ -21,7 +22,7 @@ import {
   XPub,
   XPubs,
 } from "../interface";
-import {setSignature} from "../authentication";
+import { AuthHeader, setSignature } from "../authentication";
 
 class TransportHTTP implements TransportService {
   serverUrl: string;
@@ -64,7 +65,7 @@ class TransportHTTP implements TransportService {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/status`, {});
   }
 
-  async AdminGetStats(): Promise<any> {
+  async AdminGetStats(): Promise<AdminStats> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/stats`, {});
   }
 
@@ -363,7 +364,7 @@ class TransportHTTP implements TransportService {
    * @param conditions Conditions A key value map to filter the destinations on
    * @param metadata Metadata The metadata to filter on
    * @param queryParams Query parameters for the database query (page, pageSize, orderBy, sortBy)
-   * @constructor
+   * @returns {Destination}
    */
   async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination/search`, {
@@ -465,7 +466,7 @@ class TransportHTTP implements TransportService {
    * @param conditions Conditions A key value map to filter the transactions on
    * @param metadata Metadata The metadata to filter on
    * @param queryParams Query parameters for the database query (page, pageSize, orderBy, sortBy)
-   * @constructor
+   * @returns {Transaction}
    */
   async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction/search`, {
@@ -501,7 +502,7 @@ class TransportHTTP implements TransportService {
    * Initiate a new draft transaction to the given recipients
    * @param recipients Recipients The recipients of the transaction
    * @param metadata Metadata The metadata to record on the draft transaction
-   * @constructor
+   * @returns {DraftTransaction}
    */
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
     const transactionConfig: TransactionConfigInput = {
@@ -538,7 +539,7 @@ class TransportHTTP implements TransportService {
    * @param hex string Hex string of the transaction
    * @param referenceID string The reference ID of the draft transaction used to create the transaction
    * @param metadata Metadata The metadata to record on the transaction
-   * @constructor
+   * @returns {Transaction}
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction/record`, {
@@ -569,7 +570,7 @@ class TransportHTTP implements TransportService {
    * Register a new xPub in the database (requires admin key)
    * @param rawXPub string The raw string version of the XPub (xpub.....)
    * @param metadata Metadata The metadata to record on the xPub
-   * @constructor
+   * @returns {XPub}
    */
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/xpub`, {
@@ -586,7 +587,7 @@ class TransportHTTP implements TransportService {
    * @param rawXPub string The raw string version of the XPub (xpub.....)
    * @param token string The server token that can be used to register the xpub
    * @param metadata Metadata The metadata to record on the xPub
-   * @constructor
+   * @returns {XPub}
    */
   async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
     return await this.doHTTPRequest(`${this.serverUrl}/xpub/with-token`, {
@@ -620,7 +621,7 @@ class TransportHTTP implements TransportService {
       // @ts-ignore
       headers = setSignature(headers, signingKey, options.body || "");
     } else {
-      headers['auth_xpub'] = this.options.xPubString;
+      headers[AuthHeader] = this.options.xPubString;
     }
 
     const httpOptions = {...options,

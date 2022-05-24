@@ -10,6 +10,7 @@ import {
 import {
   AccessKey,
   AccessKeys,
+  AdminStats,
   BlockHeaders,
   ClientOptions,
   Conditions,
@@ -132,7 +133,7 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLAdminQuery(query, variables, 'admin_get_status');
   }
 
-  async AdminGetStats(): Promise<any> {
+  async AdminGetStats(): Promise<AdminStats> {
     const query = gql`
       query {
         admin_get_stats {
