@@ -140,7 +140,7 @@ class TransportGraphQL implements TransportService {
           balance
           destinations
           transactions
-          paymails
+          paymail_addresses
           utxos
           xpubs
           transactions_per_day
