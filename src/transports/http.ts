@@ -247,6 +247,20 @@ class TransportHTTP implements TransportService {
   }
 
   /**
+   * Record a new transaction into the database as the admin
+   * @param hex string Hex string of the transaction
+   * @returns {Transaction}
+   */
+  async AdminRecordTransaction(hex: string): Promise<Transaction> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/record`, {
+      method: 'POST',
+      body: JSON.stringify({
+        hex,
+      })
+    });
+  }
+
+  /**
    * Get xpub info
    * @returns XPub
    */

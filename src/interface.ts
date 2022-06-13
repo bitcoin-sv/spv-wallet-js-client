@@ -592,6 +592,7 @@ export interface TransportService {
   AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs>;
   AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
+  AdminRecordTransaction(hex: string): Promise<Transaction>;
   RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub>;
   GetXPub(): Promise<XPub>;
   UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;

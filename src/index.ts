@@ -365,6 +365,16 @@ class BuxClient implements TransportService {
   }
 
   /**
+   * Admin only: Record a transaction without any of the normal checks
+   *
+   * @param {string} txHex  Hex string of the transaction
+   * @return {Transaction}
+   */
+  async AdminRecordTransaction(txHex: string): Promise<Transaction> {
+    return await this.client.transport.AdminRecordTransaction(txHex);
+  }
+
+  /**
    * Get information about the xpub from the server of the current user
    *
    * @return {XPub}

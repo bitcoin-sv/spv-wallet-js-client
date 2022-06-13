@@ -423,6 +423,33 @@ class TransportGraphQL implements TransportService {
     return this.adminCount(conditions, metadata, 'admin_xpubs_count');
   }
 
+  async AdminRecordTransaction(hex: string): Promise<Transaction> {
+    const query = gql`
+      mutation($hex: String!) {
+        admin_transaction (
+          hex: $hex
+        ) {
+          id
+          hex
+          block_hash
+          block_height
+          fee
+          number_of_inputs
+          number_of_outputs
+          output_value
+          total_value
+          direction
+          metadata
+          created_at
+          updated_at
+          deleted_at
+        }
+      }`;
+    const variables = { hex }
+
+    return this.doGraphQLAdminMutation(query, variables, 'admin_transaction');
+  }
+
   // Get a new destination to receive funds on
   async GetXPub(): Promise<XPub> {
     const query = gql`
