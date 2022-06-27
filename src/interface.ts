@@ -517,6 +517,7 @@ export interface Utxo {
   draft_id?: string;
   reserved_at?: Date;
   spending_tx_id?: string;
+  transaction?: Transaction
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -613,6 +614,9 @@ export interface TransportService {
   GetTransaction(txID: string): Promise<Transaction>;
   GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
   GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
+  GetUtxo(id: string): Promise<Utxo>;
+  GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>;
+  GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;

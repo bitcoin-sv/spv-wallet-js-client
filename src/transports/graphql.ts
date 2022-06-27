@@ -29,6 +29,7 @@ import {
   Utxos,
   XPub,
   XPubs,
+  Utxo,
 } from "../interface";
 
 export const getGraphQLMiddleware = function(options: ClientOptions) {
@@ -901,6 +902,88 @@ class TransportGraphQL implements TransportService {
     };
 
     return this.doGraphQLQuery(query, variables, 'transactions_count');
+  }
+
+  async GetUtxo(id: string): Promise<Utxo> {
+    const query = gql`
+      {
+        utxo (
+          id:"${id}"
+        ) {
+          id
+          transaction_id
+          xpub_id
+          output_index
+          satoshis
+          script_pub_key
+          type
+          draft_id
+          reserved_at
+          spending_tx_id
+          metadata
+          transaction
+          created_at
+          updated_at
+          deleted_at
+        }
+      }
+    `;
+
+    return this.doGraphQLQuery(query, {}, 'utxo');
+  }
+
+  async GetUtxos(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Utxos> {
+    const query = gql`
+        query ($conditions: Map, $metadata: Metadata, $params: QueryParams) {
+          utxos (
+            conditions: $conditions
+            metadata: $metadata
+            params: $params
+          ) {
+            id
+            transaction_id
+            xpub_id
+            output_index
+            satoshis
+            script_pub_key
+            type
+            draft_id
+            reserved_at
+            spending_tx_id
+            metadata
+            transaction
+            created_at
+            updated_at
+            deleted_at
+          }
+        }
+      `;
+
+    const variables = {
+      conditions,
+      metadata,
+      params,
+    };
+
+    return this.doGraphQLQuery(query, variables, 'utxos');
+  }
+
+  async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    const query = gql`
+        query ($conditions: Map, $metadata: Metadata) {
+          utxos_count (
+            conditions: $conditions
+            metadata: $metadata
+          )
+        }
+      `;
+
+    const variables = {
+      conditions,
+      metadata,
+    };
+
+    return this.doGraphQLQuery(query, variables, 'utxos_count');
   }
 
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
