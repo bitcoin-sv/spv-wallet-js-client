@@ -21,6 +21,7 @@ import {
   Utxos,
   XPub,
   XPubs,
+  Utxo,
 } from "../interface";
 import { AuthHeader, setSignature } from "../authentication";
 
@@ -504,6 +505,52 @@ class TransportHTTP implements TransportService {
    */
   async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction/count`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+      }),
+    });
+  }
+
+  /**
+   * Get a utxo by ID
+   * @param id string Utxo ID to retrieve
+   * @returns Utxo
+   */
+  async GetUtxo(id: string): Promise<Utxo> {
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo?id=${id}`, {});
+  }
+
+  /**
+   * Get a list of utxos
+   * @param conditions Conditions A key value map to filter the utxos on
+   * @param metadata Metadata The metadata to filter on
+   * @param queryParams Query parameters for the database query (page, pageSize, orderBy, sortBy)
+   * @returns {Utxos}
+   */
+  async GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo/search`, {
+      method: 'POST',
+      body: JSON.stringify({
+        conditions,
+        metadata,
+        page: queryParams?.page || 0,
+        page_size: queryParams?.page_size || 0,
+        order_by_field: queryParams?.order_by_field || "",
+        sort_direction: queryParams?.sort_direction || "",
+      })
+    });
+  }
+
+  /**
+   * Get utxos count
+   * @param conditions Conditions A key value map to filter the utxos on
+   * @param metadata Metadata The metadata to filter on
+   * @returns number
+   */
+  async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo/count`, {
       method: 'POST',
       body: JSON.stringify({
         conditions,

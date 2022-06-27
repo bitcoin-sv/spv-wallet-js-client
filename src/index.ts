@@ -24,6 +24,7 @@ import {
   Utxos,
   XPub,
   XPubs,
+  Utxo,
 } from "./interface";
 import {
   getGraphQLMiddleware,
@@ -587,6 +588,39 @@ class BuxClient implements TransportService {
    */
   async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.client.transport.GetTransactionsCount(conditions, metadata);
+  }
+
+  /**
+   * Get all details of the utxo by the given ID
+   *
+   * @param {string} id Utxo ID
+   * @return {Utxo}
+   */
+  async GetUtxo(id: string): Promise<Utxo> {
+    return await this.client.transport.GetUtxo(id);
+  }
+
+  /**
+   * Get a list of all utxos for the current user, filtered by conditions, metadata and queryParams
+   *
+   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @return {Utxos}
+   */
+  async GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
+    return await this.client.transport.GetUtxos(conditions, metadata, queryParams);
+  }
+
+  /**
+   * Get a count of all utxos for the current user, filtered by conditions, metadata and queryParams
+   *
+   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @return {number}
+   */
+  async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.client.transport.GetUtxosCount(conditions, metadata);
   }
 
   /**
