@@ -453,6 +453,7 @@ export interface TransactionConfig {
   fee?: number;
   fee_unit?: FeeUnit;
   from_utxos?: UtxoPointer[];
+  include_utxos?: UtxoPointer[];
   inputs: TransactionInput[];
   miner?: string;
   outputs: TransactionOutput[];
