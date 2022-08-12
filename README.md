@@ -45,7 +45,7 @@ Here's the [getting started](https://getbux.io) with BUX
 import bsv from 'bsv';
 import { BuxClient } from 'js-buxclient';
 
-const server = "http://localhost:3003/v1"
+const server = "http://localhost:3003/v1";
 const transportType = 'http'; // or graphql
 const xPriv = bsv.HDPrivateKey.fromRandom();
 
@@ -54,6 +54,12 @@ const buxClient = new BuxClient(server, {
   transportType,
   xPriv,
 });
+
+const recipients = [{
+  to: "test@handcash.io",
+  satoshis: 10000,
+}];
+const result = await buxClient.SendToRecipients(recipients, { agent: 'Bux test' })
 ```
 
 <br />
