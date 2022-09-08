@@ -361,9 +361,9 @@ export interface TransactionInput {
   updated_at?: Date;
   metadata?: Metadata;
   deleted_at?: Date;
-  id: string;
+  id?: string;
   transaction_id: string;
-  xpub_id: string;
+  xpub_id?: string;
   output_index: number;
   satoshis: number;
   script_pub_key: string;
@@ -371,7 +371,7 @@ export interface TransactionInput {
   draft_id?: string;
   reserved_at?: Date;
   spending_tx_id?: string;
-  destination: Destination;
+  destination?: Destination;
 }
 
 /**
@@ -416,7 +416,7 @@ export interface ScriptOutput {
   address?: string;
   satoshis?: number;
   script: string;
-  script_type: string;
+  script_type?: string;
 }
 
 /**
@@ -425,6 +425,7 @@ export interface ScriptOutput {
 export interface TransactionOutput {
   paymail_p4?: PaymailP4;
   satoshis?: number;
+  script?: string;
   scripts?: ScriptOutput[];
   to?: string;
   op_return?: OpReturn;
@@ -454,7 +455,7 @@ export interface TransactionConfig {
   fee_unit?: FeeUnit;
   from_utxos?: UtxoPointer[];
   include_utxos?: UtxoPointer[];
-  inputs: TransactionInput[];
+  inputs?: TransactionInput[];
   miner?: string;
   outputs: TransactionOutput[];
   send_all_to?: string;
@@ -620,6 +621,7 @@ export interface TransportService {
   GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
+  CancelDraftTransaction(referenceID: string): Promise<void>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
   UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
 }

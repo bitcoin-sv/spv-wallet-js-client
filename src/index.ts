@@ -683,18 +683,20 @@ class BuxClient implements TransportService {
 
     // sign the inputs
     const privateKeys: bsv.PrivateKey[] = [];
-    draftTransaction.configuration.inputs.forEach((input, index) => {
-      const chainKey = xPriv.deriveChild(input.destination.chain);
-      const numKey =  chainKey.deriveChild(input.destination.num);
-      privateKeys.push(numKey.privateKey);
+    draftTransaction.configuration.inputs?.forEach((input, index) => {
+      if (input.destination) {
+        const chainKey = xPriv.deriveChild(input.destination.chain);
+        const numKey = chainKey.deriveChild(input.destination.num);
+        privateKeys.push(numKey.privateKey);
 
-      // small sanity check for the inputs
-      if (
-        input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex')
-        ||
-        input.output_index != txDraft.inputs[index].outputIndex
-      ) {
-        throw new Error("input tx ids do not match in draft and transaction hex")
+        // small sanity check for the inputs
+        if (
+          input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex')
+          ||
+          input.output_index != txDraft.inputs[index].outputIndex
+        ) {
+          throw new Error("input tx ids do not match in draft and transaction hex")
+        }
       }
 
       // @todo add support for other types of transaction inputs
@@ -735,6 +737,16 @@ class BuxClient implements TransportService {
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
     return await this.client.transport.RecordTransaction(hex, referenceID, metadata);
+  }
+
+  /**
+   * Cancel a draft transaction and release the utxos
+   *
+   * @param {string} referenceID Reference ID (draft transaction ID)
+   * @return void
+   */
+  async CancelDraftTransaction(referenceID: string): Promise<void> {
+    await this.client.transport.CancelDraftTransaction(referenceID);
   }
 
   /**

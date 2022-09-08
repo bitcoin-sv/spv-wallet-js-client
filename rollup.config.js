@@ -4,7 +4,8 @@ import typescript from "@rollup/plugin-typescript";
 import json from "@rollup/plugin-json";
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import excludeDependenciesFromBundle from "rollup-plugin-exclude-dependencies-from-bundle";
-import dts from 'rollup-plugin-dts'
+import dts from 'rollup-plugin-dts';
+import builtins from 'rollup-plugin-node-builtins';
 import pkg from "./package.json";
 
 export default [
@@ -19,12 +20,15 @@ export default [
     },
     external: ['bsv'],
     plugins: [
+      builtins(),
       resolve({
-        skip: ['bsv']
+        skip: ['bsv'],
+        browser: true,
+        preferBuiltins: true,
       }),
       commonjs(),
       json(),
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
+      typescript({tsconfig: "./tsconfig.json", sourceMap: false}),
       nodePolyfills(),
     ],
   },
@@ -38,12 +42,12 @@ export default [
   {
     input: "src/index.ts",
     output: [
-      { file: pkg.main, format: "cjs", sourcemap: true },
-      { file: pkg.module, format: "es", sourcemap: true },
+      {file: pkg.main, format: "cjs", sourcemap: true},
+      {file: pkg.module, format: "es", sourcemap: true},
     ],
     plugins: [
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
-      excludeDependenciesFromBundle( { peerDependencies: true } ),
+      typescript({tsconfig: "./tsconfig.json", sourceMap: false}),
+      excludeDependenciesFromBundle({peerDependencies: true}),
     ],
   },
 
@@ -51,9 +55,9 @@ export default [
     // path to your declaration files root
     input: './dist/dts/src/index.d.ts',
     output: [
-      { file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es' },
-      { file: 'dist/typescript-npm-package.esm.d.ts', format: 'es' },
-      { file: 'dist/typescript-npm-package.umd.d.ts', format: 'es' }
+      {file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es'},
+      {file: 'dist/typescript-npm-package.esm.d.ts', format: 'es'},
+      {file: 'dist/typescript-npm-package.umd.d.ts', format: 'es'}
     ],
     plugins: [dts()],
   },

@@ -364,6 +364,7 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
+    // @ts-ignore
     draftTransaction.configuration.inputs[0].destination.num = 12333;
     expect(() => {
       buxClient.FinalizeTransaction(draftTransaction);
