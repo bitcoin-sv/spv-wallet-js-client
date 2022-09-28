@@ -904,11 +904,12 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLQuery(query, variables, 'transactions_count');
   }
 
-  async GetUtxo(id: string): Promise<Utxo> {
+  async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
     const query = gql`
       {
         utxo (
-          id:"${id}"
+          tx_id: "${tx_id}"
+          output_index: ${output_index}
         ) {
           id
           transaction_id

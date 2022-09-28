@@ -616,7 +616,7 @@ export interface TransportService {
   GetTransaction(txID: string): Promise<Transaction>;
   GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
   GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  GetUtxo(id: string): Promise<Utxo>;
+  GetUtxo(tx_id: string, output_index: number): Promise<Utxo>;
   GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>;
   GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;

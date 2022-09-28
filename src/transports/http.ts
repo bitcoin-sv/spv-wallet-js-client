@@ -515,11 +515,12 @@ class TransportHTTP implements TransportService {
 
   /**
    * Get a utxo by ID
-   * @param id string Utxo ID to retrieve
+   * @param tx_id string Transaction ID of UTXO to retrieve
+   * @param output_index int Output index of Utxo to retrieve
    * @returns Utxo
    */
-  async GetUtxo(id: string): Promise<Utxo> {
-    return await this.doHTTPRequest(`${this.serverUrl}/utxo?id=${id}`, {});
+  async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo?tx_id=${tx_id}&output_index=${output_index}`, {});
   }
 
   /**
