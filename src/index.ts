@@ -593,11 +593,12 @@ class BuxClient implements TransportService {
   /**
    * Get all details of the utxo by the given ID
    *
-   * @param {string} id Utxo ID
+   * @param {string} tx_id Transaction ID of the UTXO
+   * @param {number} output_index Index of output within the transaction of the UTXO
    * @return {Utxo}
    */
-  async GetUtxo(id: string): Promise<Utxo> {
-    return await this.client.transport.GetUtxo(id);
+  async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
+    return await this.client.transport.GetUtxo(tx_id, output_index);
   }
 
   /**
