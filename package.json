@@ -52,7 +52,7 @@
     "@babel/preset-typescript": "^7.16.7",
     "@microsoft/api-extractor": "^7.19.4",
     "@rollup/plugin-babel": "^6.0.0",
-    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-commonjs": "^23.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^14.0.0",
     "@rollup/plugin-typescript": "^8.3.1",
