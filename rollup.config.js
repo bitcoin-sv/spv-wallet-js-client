@@ -3,7 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import json from "@rollup/plugin-json";
 import nodePolyfills from 'rollup-plugin-polyfill-node';
-import excludeDependenciesFromBundle from "rollup-plugin-exclude-dependencies-from-bundle";
+import externals from "rollup-plugin-node-externals";
 import dts from 'rollup-plugin-dts';
 import builtins from 'rollup-plugin-node-builtins';
 import pkg from "./package.json";
@@ -18,7 +18,7 @@ export default [
       format: "umd",
       sourcemap: true,
     },
-    external: ['bsv'],
+    external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
     plugins: [
       builtins(),
       resolve({
@@ -30,6 +30,10 @@ export default [
       json(),
       typescript({tsconfig: "./tsconfig.json", sourceMap: false}),
       nodePolyfills(),
+      externals({
+        devDeps: true,
+        peerDeps: true,
+      }),
     ],
   },
 
@@ -45,9 +49,16 @@ export default [
       {file: pkg.main, format: "cjs", sourcemap: true},
       {file: pkg.module, format: "es", sourcemap: true},
     ],
+    external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
     plugins: [
       typescript({tsconfig: "./tsconfig.json", sourceMap: false}),
-      excludeDependenciesFromBundle({peerDependencies: true}),
+      resolve({
+        skip: ['bsv'],
+      }),
+      externals({
+        devDeps: true,
+        peerDeps: true,
+      }),
     ],
   },
 

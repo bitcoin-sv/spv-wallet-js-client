@@ -1,4 +1,6 @@
 import bsv from 'bsv';
+import "cross-fetch/polyfill";
+
 import TransportHTTP from "./transports/http";
 import TransportGraphQL from "./transports/graphql";
 import {
@@ -29,6 +31,7 @@ import {
 import {
   getGraphQLMiddleware,
 } from "./transports/graphql";
+
 
 /**
  * BuxClient class
