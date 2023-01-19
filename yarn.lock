@@ -1394,9 +1394,9 @@
     "@rushstack/node-core-library" "3.53.3"
 
 "@microsoft/api-extractor@^7.19.4":
-  version "7.33.7"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.33.7.tgz#3579f23469a9e02deb4e7aee705ddd2a221c7b8d"
-  integrity sha512-fQT2v/j/55DhvMFiopLtth66E7xTFNhnumMKgKY14SaG6qU/V1W0e4nOAgbA+SmLakQjAd1Evu06ofaVaxBPbA==
+  version "7.33.8"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.33.8.tgz#90d0ea230e2b7beaad6a4f75f03f573fd8f2c6c3"
+  integrity sha512-lNscBtYcNwJ4t9kKt6AdYA+FGDG6S8a2EhHdggxgn+rkcTzQ9P6ZsDBSjXa+r+E8qdZjOLP5J1rxohH7t+FTJg==
   dependencies:
     "@microsoft/api-extractor-model" "7.25.3"
     "@microsoft/tsdoc" "0.14.2"
@@ -1406,7 +1406,7 @@
     "@rushstack/ts-command-line" "4.13.1"
     colors "~1.2.1"
     lodash "~4.17.15"
-    resolve "~1.17.0"
+    resolve "~1.22.1"
     semver "~7.3.0"
     source-map "~0.6.1"
     typescript "~4.8.4"
@@ -4803,7 +4803,7 @@ resolve.exports@^1.1.0:
   resolved "https://registry.yarnpkg.com/resolve.exports/-/resolve.exports-1.1.0.tgz#5ce842b94b05146c0e03076985d1d0e7e48c90c9"
   integrity sha512-J1l+Zxxp4XK3LUDZ9m60LRJF/mAe4z6a4xyabPHk7pvK5t35dACV32iIjJDFeWZFfZlO29w6SZ67knR0tHzJtQ==
 
-resolve@^1.1.6, resolve@^1.14.2, resolve@^1.20.0, resolve@^1.22.1:
+resolve@^1.1.6, resolve@^1.14.2, resolve@^1.20.0, resolve@^1.22.1, resolve@~1.22.1:
   version "1.22.1"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.22.1.tgz#27cb2ebb53f91abb49470a928bba7558066ac177"
   integrity sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==
