@@ -20,7 +20,7 @@ import {
   PaymailAddresses,
   Recipients,
   Transaction,
-  TransactionConfig,
+  TransactionConfigInput,
   Transactions,
   TransportService,
   Utxos,
@@ -644,11 +644,11 @@ class BuxClient implements TransportService {
   /**
    * Create a draft transaction using the given transaction config
    *
-   * @param {TransactionConfig} transactionConfig Configuration of the new transaction
-   * @param {Metadata} metadata                   Key value object to use to add to the draft transaction
-   * @return {DraftTransaction}                   Complete draft transaction object from Bux, all configuration options filled in
+   * @param {TransactionConfigInput} transactionConfig Configuration of the new transaction
+   * @param {Metadata} metadata                        Key value object to use to add to the draft transaction
+   * @return {DraftTransaction}                        Complete draft transaction object from Bux, all configuration options filled in
    */
-  async DraftTransaction(transactionConfig: TransactionConfig, metadata: Metadata): Promise<DraftTransaction> {
+  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
     return await this.client.transport.DraftTransaction(transactionConfig, metadata);
   }
 
