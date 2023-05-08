@@ -4971,10 +4971,10 @@ rollup-plugin-node-builtins@^2.1.2:
     crypto-browserify "^3.11.0"
     process-es6 "^0.11.2"
 
-rollup-plugin-node-externals@^5.0.0:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-node-externals/-/rollup-plugin-node-externals-5.1.2.tgz#a0bb3a44f4a2ec9faaedce9e8a688414febe43e9"
-  integrity sha512-M32v8yPeVT0dYOYHfd6SNyl0X1xskB15jYFlwUPzIIVpLQ200KVlilbFsoNMUho4SnQuT7Di3s/aLm79bnP48w==
+rollup-plugin-node-externals@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-node-externals/-/rollup-plugin-node-externals-6.0.0.tgz#5e4efbe66a3691485c3456f83cbd8e532d65ab35"
+  integrity sha512-T3JivXptrPQfz3hWOCLK6cFsHFMKRCipPPHXhqmY2CUuiHcT5EKfuS1uVm8WwBF7L2XYtkantmLyunuLbrY71A==
 
 rollup-plugin-polyfill-node@^0.12.0:
   version "0.12.0"
