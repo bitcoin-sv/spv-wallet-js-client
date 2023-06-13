@@ -1429,16 +1429,16 @@
     "@rushstack/node-core-library" "3.59.3"
 
 "@microsoft/api-extractor@^7.19.4":
-  version "7.35.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.35.2.tgz#e59f0a0ff4dc2c3f80464833fdd568308ddf560a"
-  integrity sha512-f3aM4hJkv5W04eLh6wdJ9fzscAmb+GgnT6j+pMlGVyz+0p2yQDndymvgUseFO6a+HqFDSH4yZXmkqT8bP7lVWQ==
+  version "7.35.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.35.3.tgz#3a484d05a00e35155659181c0b226b3779c9ceec"
+  integrity sha512-Psh6rZB7BeJznIKJd1+xPhM0AQVXLyYHxIz5ezN7Whu3DIHfx/iRJZLFvMdshpB046ir/JDYBciuYdQbArloHQ==
   dependencies:
     "@microsoft/api-extractor-model" "7.27.2"
     "@microsoft/tsdoc" "0.14.2"
     "@microsoft/tsdoc-config" "~0.16.1"
     "@rushstack/node-core-library" "3.59.3"
     "@rushstack/rig-package" "0.3.20"
-    "@rushstack/ts-command-line" "4.14.0"
+    "@rushstack/ts-command-line" "4.15.0"
     colors "~1.2.1"
     lodash "~4.17.15"
     resolve "~1.22.1"
@@ -1578,10 +1578,10 @@
     resolve "~1.22.1"
     strip-json-comments "~3.1.1"
 
-"@rushstack/ts-command-line@4.14.0":
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/@rushstack/ts-command-line/-/ts-command-line-4.14.0.tgz#1719595bffc61e7a03e1df29a0fd29319f2e4843"
-  integrity sha512-DWozCsKg+ALgrsul+6vJhyB7ZogqSycRlnqULjGsJ9dLRv+Pc0Wj6J7pX0xarmgX2kH3tTf0rXgBcl8QjJULIQ==
+"@rushstack/ts-command-line@4.15.0":
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/@rushstack/ts-command-line/-/ts-command-line-4.15.0.tgz#6520324a0ae5862a57767c4403d669c724b8d31a"
+  integrity sha512-Xl1Xc8d89ioJ6AbOQsSIPyYvrQPqmGG+YrqUZKYEDenZtKq57xuFbBJya9TXgAWSB+uVRmDYYd9ogu6WTwRjCQ==
   dependencies:
     "@types/argparse" "1.0.38"
     argparse "~1.0.9"
