@@ -35,11 +35,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "build:types": "tsc -p ./tsconfig.json --outDir build --declaration true && api-extractor run",
     "clean": "rimraf ./build ./dist ./docs",
     "deploy": "yarn pub --access public",
-    "dev": "rollup -c -w",
+    "dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
     "docs": "rimraf ./docs && jsdoc src -r -c jsdoc.json -d docs",
     "prebuild:types": "rimraf ./build",
     "predocs": "rimraf ./docs",
@@ -69,7 +69,7 @@
     "jsdoc-babel": "^0.5.0",
     "prettier": "^3.0.0",
     "rimraf": "^5.0.0",
-    "rollup": "^3.12.1",
+    "rollup": "^3.28.0",
     "rollup-plugin-dts": "^5.1.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-externals": "^6.0.0",

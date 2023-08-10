@@ -13,6 +13,7 @@
     "declaration": true,
     "declarationDir": "dts/",
     "emitDeclarationOnly": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "resolveJsonModule": true
   }
 }
