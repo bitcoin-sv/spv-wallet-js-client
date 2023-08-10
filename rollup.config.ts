@@ -6,9 +6,10 @@ import nodePolyfills from 'rollup-plugin-polyfill-node';
 import externals from "rollup-plugin-node-externals";
 import dts from 'rollup-plugin-dts';
 import builtins from 'rollup-plugin-node-builtins';
-import pkg from "./package.json";
+import pkg from  "./package.json" assert { type: "json" };
+import type { RollupOptions } from 'rollup';
 
-export default [
+const config: RollupOptions[] = [
   // browser-friendly UMD build
   {
     input: "src/index.ts",
@@ -20,15 +21,17 @@ export default [
     },
     external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
     plugins: [
+      // @ts-ignore
       builtins(),
       resolve({
+      // @ts-ignore
         skip: ['bsv'],
         browser: true,
         preferBuiltins: true,
       }),
       commonjs(),
       json(),
-      typescript({tsconfig: "./tsconfig.json", sourceMap: false}),
+      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
       nodePolyfills(),
       externals({
         devDeps: true,
@@ -46,13 +49,14 @@ export default [
   {
     input: "src/index.ts",
     output: [
-      {file: pkg.main, format: "cjs", sourcemap: true},
-      {file: pkg.module, format: "es", sourcemap: true},
+      { file: pkg.main, format: "cjs", sourcemap: true },
+      { file: pkg.module, format: "es", sourcemap: true },
     ],
     external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
     plugins: [
-      typescript({tsconfig: "./tsconfig.json", sourceMap: false}),
+      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
       resolve({
+      // @ts-ignore
         skip: ['bsv'],
       }),
       externals({
@@ -66,10 +70,11 @@ export default [
     // path to your declaration files root
     input: './dist/dts/src/index.d.ts',
     output: [
-      {file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es'},
-      {file: 'dist/typescript-npm-package.esm.d.ts', format: 'es'},
-      {file: 'dist/typescript-npm-package.umd.d.ts', format: 'es'}
+      { file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es' },
+      { file: 'dist/typescript-npm-package.esm.d.ts', format: 'es' },
+      { file: 'dist/typescript-npm-package.umd.d.ts', format: 'es' }
     ],
     plugins: [dts()],
   },
-];
+]
+export default config;
