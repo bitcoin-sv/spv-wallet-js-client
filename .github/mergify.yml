@@ -158,6 +158,7 @@ pull_request_rules:
           - author!=icellan
           - author!=mrz1836
           - author!=pawellewandowski98
+          - author!=dorzepowski
     actions:
       comment:
         message: "Welcome to our open-source project @{{author}}! 💘"
