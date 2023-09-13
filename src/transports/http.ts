@@ -177,7 +177,7 @@ class TransportHTTP implements TransportService {
 
   async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, {
-      method: 'POST',
+      method: 'DELETE',
       body: JSON.stringify({
         address,
       })
