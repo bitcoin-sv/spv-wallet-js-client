@@ -987,6 +987,22 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLQuery(query, variables, 'utxos_count');
   }
 
+  async UnreserveUtxos(referenceID: string): Promise<void> {
+    const query = gql`
+        query ($conditions: Map, $metadata: Metadata) {
+          utxos_unreserve (
+            draft_id: $referenceID
+          )
+        }
+      `;
+
+    const variables = {
+      referenceID,
+    };
+
+    return this.doGraphQLQuery(query, variables, 'utxos_unreserve');
+  }
+
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
     const query = gql`
         mutation ($outputs: [TransactionOutputInput]!, $metadata: Metadata) {
