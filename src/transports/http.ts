@@ -561,6 +561,20 @@ class TransportHTTP implements TransportService {
   }
 
   /**
+   * Remove the reservation on the utxos for the given draft ID
+   * @param referenceID string The reference ID of the draft transaction used to create the transaction
+   * @returns void
+   */
+  async UnreserveUtxos(referenceID: string): Promise<void> {
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo/unreserve`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        reference_id: referenceID,
+      }),
+    });
+  }
+
+  /**
    * Initiate a new draft transaction to the given recipients
    * @param recipients Recipients The recipients of the transaction
    * @param metadata Metadata The metadata to record on the draft transaction

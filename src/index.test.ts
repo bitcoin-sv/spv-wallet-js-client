@@ -38,22 +38,24 @@ interface TestClient {
   xPubString: string;
   serverURL: string;
 }
+
 interface TestClients extends Array<TestClient>{}
 
-const testClients: TestClients = [
-  {
-    type: "http",
-    xPrivString,
-    xPubString,
-    serverURL,
-  },
-  {
-    type: "graphql",
-    xPrivString,
-    xPubString,
-    serverURL: serverURL + '/graphql',
-  }
-];
+const httpTestClient: TestClient = {
+  type: "http",
+  xPrivString,
+  xPubString,
+  serverURL,
+};
+
+const graphqlTestClient: TestClient = {
+  type: "graphql",
+  xPrivString,
+  xPubString,
+  serverURL: serverURL + '/graphql',
+}
+
+const testClients: TestClients = [ httpTestClient, graphqlTestClient ];
 
 describe('BuxClient class', () => {
   test('instantiate', () => {
@@ -350,6 +352,42 @@ describe('GetUtxo', () => {
   });
 });
 
+describe("UnreserveUtxos", () => {
+  const mockReferenceId = "xyz";
+  test('http result', async () => {
+    fetchMock.mockResponse('{}');
+    await runTests([httpTestClient], async (buxClient: TransportService) => {
+      await buxClient.UnreserveUtxos(mockReferenceId);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${serverURL}/utxo/unreserve`,
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({ reference_id: mockReferenceId }),
+        })
+      );
+    });
+  });
+
+  test('graphql result', async () => {
+    const expectedGraphQLMethodName = 'utxos_unreserve';
+    fetchMock.mockResponse(() =>
+      Promise.resolve(
+        `{"data":{"${expectedGraphQLMethodName}":"","loading":false,"networkStatus":7}}`
+      )
+    );
+    await runTests([graphqlTestClient], async (buxClient: TransportService) => {
+      await buxClient.UnreserveUtxos(mockReferenceId);
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${serverURL}/graphql`,
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining(expectedGraphQLMethodName)
+        })
+      );
+    });
+  });
+});
 
 describe('Finalize transaction', () => {
   test('draftTxJSON', async () => {

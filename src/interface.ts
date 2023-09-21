@@ -619,6 +619,7 @@ export interface TransportService {
   GetUtxo(tx_id: string, output_index: number): Promise<Utxo>;
   GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>;
   GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>;
+  UnreserveUtxos(referenceID: string): Promise<void>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
   CancelDraftTransaction(referenceID: string): Promise<void>;

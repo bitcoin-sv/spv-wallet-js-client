@@ -628,6 +628,16 @@ class BuxClient implements TransportService {
   }
 
   /**
+   * Remove the reservation on the utxos for the given draft ID
+   *
+   * @param {string} referenceID The reference ID of the draft transaction used to create the transaction
+   * @return {void}
+   */
+    async UnreserveUtxos(referenceID: string): Promise<void> {
+      return await this.client.transport.UnreserveUtxos(referenceID);
+    }
+
+  /**
    * Create a draft transaction to the recipients given
    *
    * This is a helper function to easily create a new draft transaction to a list of recipients
