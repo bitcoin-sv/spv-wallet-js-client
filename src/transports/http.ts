@@ -496,6 +496,18 @@ class TransportHTTP implements TransportService {
   }
 
   /**
+   * Delete paymail
+   * @param {string} address - The full paymail address
+   * @returns {void}
+   */
+  async DeletePaymail(address: string): Promise<void> {
+    await this.doHTTPRequest(`${this.serverUrl}/paymail`, {
+      method: "DELETE",
+      body: JSON.stringify({ address }),
+    });
+  }
+  
+  /**
    * Get a transaction by ID
    * @param txID string Transaction ID to retrieve
    * @returns Transaction

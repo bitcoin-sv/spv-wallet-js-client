@@ -408,6 +408,24 @@ describe('NewPaymail', () => {
   })
 });
 
+describe('DeletePaymail', () => {
+  test('http result', async () => {
+    fetchMock.mockResponse('{}');
+    await runTests([httpTestClient], async (buxClient: TransportService) => {
+      const address = 'mock_address';
+      await buxClient.DeletePaymail(address);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${serverURL}/paymail`,
+        expect.objectContaining({
+          method: 'DELETE',
+          body: JSON.stringify({ address }),
+        })
+      );
+    });
+  })
+});
+
 describe('Finalize transaction', () => {
   test('draftTxJSON', async () => {
     const buxClient = new BuxClient(serverURL, {
