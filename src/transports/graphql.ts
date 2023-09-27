@@ -824,6 +824,19 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLMutation(query, variables, 'destination_metadata');
   }
 
+  // Register a new paymail
+  async NewPaymail(
+    key: string,
+    address: string,
+    publicName?: string,
+    avatar?: string,
+    metadata?: Metadata
+  ): Promise<void> {
+    // TODO: Implement this
+    // Looks like the implementation is missing in Bux Server GraphQL
+    return Promise.resolve();
+  }
+
   async GetTransaction(txID: string): Promise<Transaction> {
     const query = gql`
       {

@@ -561,6 +561,25 @@ class BuxClient implements TransportService {
   }
 
   /**
+   * Register a new paymail
+   * @param {string} key - The rawXPubKey
+   * @param {string} address - The full paymail address
+   * @param {string} [publicName] - The public name (optional)
+   * @param {string} [avatar] - The avatar (optional)
+   * @param {Metadata} [metadata] - The metadata to record on the destination (optional)
+   * @returns {void}
+   */
+  async NewPaymail(
+    key: string,
+    address: string,
+    publicName?: string,
+    avatar?: string,
+    metadata?: Metadata
+  ): Promise<void> {
+    return this.client.transport.NewPaymail(key, address, publicName, avatar, metadata);
+  }
+
+  /**
    * Get all details of the transaction by the given ID
    *
    * @param {string} txID Transaction ID
