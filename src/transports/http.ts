@@ -468,6 +468,34 @@ class TransportHTTP implements TransportService {
   }
 
   /**
+   * Register a new paymail
+   * @param {string} key - The rawXPubKey
+   * @param {string} address - The full paymail address
+   * @param {string} [publicName] - The public name (optional)
+   * @param {string} [avatar] - The avatar (optional)
+   * @param {Metadata} [metadata] - The metadata to record on the destination (optional)
+   * @returns {void}
+   */
+  async NewPaymail(
+    key: string,
+    address: string,
+    publicName?: string,
+    avatar?: string,
+    metadata?: Metadata
+  ): Promise<void> {
+    await this.doHTTPRequest(`${this.serverUrl}/paymail`, {
+      method: "POST",
+      body: JSON.stringify({
+        key,
+        address,
+        public_name: publicName,
+        avatar,
+        metadata,
+      }),
+    });
+  }
+
+  /**
    * Get a transaction by ID
    * @param txID string Transaction ID to retrieve
    * @returns Transaction

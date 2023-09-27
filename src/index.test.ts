@@ -389,6 +389,25 @@ describe("UnreserveUtxos", () => {
   });
 });
 
+describe('NewPaymail', () => {
+  test('http result', async () => {
+    fetchMock.mockResponse('{}');
+    await runTests([httpTestClient], async (buxClient: TransportService) => {
+      const key = 'mock_key';
+      const address = 'mock_address';
+      await buxClient.NewPaymail(key, address);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${serverURL}/paymail`,
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ key, address }),
+        })
+      );
+    });
+  })
+});
+
 describe('Finalize transaction', () => {
   test('draftTxJSON', async () => {
     const buxClient = new BuxClient(serverURL, {
