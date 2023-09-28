@@ -837,6 +837,17 @@ class TransportGraphQL implements TransportService {
     return Promise.resolve();
   }
 
+  /**
+   * Delete paymail
+   * @param {string} address - The full paymail address
+   * @returns {void}
+   */
+    async DeletePaymail(address: string): Promise<void> {
+      // TODO: Implement this
+      // Looks like the implementation is missing in Bux Server GraphQL
+      return Promise.resolve();
+    }
+
   async GetTransaction(txID: string): Promise<Transaction> {
     const query = gql`
       {

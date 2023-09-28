@@ -580,6 +580,15 @@ class BuxClient implements TransportService {
   }
 
   /**
+   * Delete paymail
+   * @param {string} address - The full paymail address
+   * @returns {void}
+   */
+  async DeletePaymail(address: string): Promise<void> {
+    return this.client.transport.DeletePaymail(address);
+  }
+
+  /**
    * Get all details of the transaction by the given ID
    *
    * @param {string} txID Transaction ID

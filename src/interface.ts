@@ -614,6 +614,7 @@ export interface TransportService {
   UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination>;
   NewPaymail(key: string, address: string, publicName?: string, avatar?: string, metadata?: Metadata): Promise<void>;
+  DeletePaymail(address: string): Promise<void>;
   GetTransaction(txID: string): Promise<Transaction>;
   GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
   GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
