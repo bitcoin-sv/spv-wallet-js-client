@@ -1145,22 +1145,6 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLAdminMutation(query, variables, 'xpub');
   }
 
-  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
-    const query = gql`
-      mutation ($xpub: String!, $token: String!, $metadata: Metadata) {
-        xpub_with_token(
-          xpub: $xpub
-          token: $token
-          metadata: $metadata
-        ) {
-          id
-        }
-      }`;
-    const variables = { xpub: rawXPub, token, metadata }
-
-    return this.doGraphQLMutation(query, variables, 'xpub_with_token');
-  }
-
   private adminCount(conditions: Conditions, metadata: Metadata, method: string) {
     const query = gql`
       query ($conditions: Map, $metadata: Metadata) {

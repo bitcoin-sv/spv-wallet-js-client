@@ -823,20 +823,6 @@ class BuxClient implements TransportService {
   async NewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.client.transport.RegisterXpub(rawXPub, metadata);
   }
-
-  /**
-   * Register a new xPub with the given token
-   *
-   * Experimental: this function allows a non-admin user to register an xpub if the token is valid in Bux
-   *
-   * @param {string} rawXPub    XPub string
-   * @param {string} token      Token to use to allow the creation of the xpub
-   * @param {Metadata} metadata Key value object to use to add to the xpub
-   * @return {XPub}             The newly registered xpub
-   */
-  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
-    return await this.client.transport.RegisterXpubWithToken(rawXPub, token, metadata);
-  }
 }
 
 export {
