@@ -623,7 +623,6 @@ export interface TransportService {
   UnreserveUtxos(referenceID: string): Promise<void>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
-  CancelDraftTransaction(referenceID: string): Promise<void>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
   UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
 }

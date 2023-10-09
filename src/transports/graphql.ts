@@ -1057,18 +1057,6 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLMutation(query, variables, 'new_transaction');
   }
 
-  async CancelDraftTransaction(referenceID: string): Promise<void> {
-    const query = gql`
-      mutation($referenceID: String) {
-        transaction_cancel(
-          draft_id: $referenceID
-        )
-      }`;
-    const variables = { referenceID }
-
-    return this.doGraphQLMutation(query, variables, 'transaction_cancel');
-  }
-
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
     const query = gql`
       mutation($hex: String!, $referenceID: String, $metadata: Metadata) {

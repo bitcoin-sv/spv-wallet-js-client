@@ -782,16 +782,6 @@ class BuxClient implements TransportService {
   }
 
   /**
-   * Cancel a draft transaction and release the utxos
-   *
-   * @param {string} referenceID Reference ID (draft transaction ID)
-   * @return void
-   */
-  async CancelDraftTransaction(referenceID: string): Promise<void> {
-    await this.client.transport.CancelDraftTransaction(referenceID);
-  }
-
-  /**
    * Updated the metadata object of the transaction given by txID with new keys (does not overwrite the old object)
    *
    * To remove a key from the metadata object, add a key to set with a value of `null`

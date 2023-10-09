@@ -651,21 +651,6 @@ class TransportHTTP implements TransportService {
   }
 
   /**
-   * Cancel a draft transaction and release the utxos
-   *
-   * @param referenceID string The reference ID of the draft transaction used to create the transaction
-   * @returns void
-   */
-  async CancelDraftTransaction(referenceID: string): Promise<void> {
-    return await this.doHTTPRequest(`${this.serverUrl}/transaction/cancel`, {
-      method: 'POST',
-      body: JSON.stringify({
-        reference_id: referenceID,
-      })
-    });
-  }
-
-  /**
    * Record a new transaction into the database
    * @param hex string Hex string of the transaction
    * @param referenceID string The reference ID of the draft transaction used to create the transaction
