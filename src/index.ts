@@ -782,16 +782,6 @@ class BuxClient implements TransportService {
   }
 
   /**
-   * Cancel a draft transaction and release the utxos
-   *
-   * @param {string} referenceID Reference ID (draft transaction ID)
-   * @return void
-   */
-  async CancelDraftTransaction(referenceID: string): Promise<void> {
-    await this.client.transport.CancelDraftTransaction(referenceID);
-  }
-
-  /**
    * Updated the metadata object of the transaction given by txID with new keys (does not overwrite the old object)
    *
    * To remove a key from the metadata object, add a key to set with a value of `null`
@@ -822,20 +812,6 @@ class BuxClient implements TransportService {
    */
   async NewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.client.transport.RegisterXpub(rawXPub, metadata);
-  }
-
-  /**
-   * Register a new xPub with the given token
-   *
-   * Experimental: this function allows a non-admin user to register an xpub if the token is valid in Bux
-   *
-   * @param {string} rawXPub    XPub string
-   * @param {string} token      Token to use to allow the creation of the xpub
-   * @param {Metadata} metadata Key value object to use to add to the xpub
-   * @return {XPub}             The newly registered xpub
-   */
-  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
-    return await this.client.transport.RegisterXpubWithToken(rawXPub, token, metadata);
   }
 }
 

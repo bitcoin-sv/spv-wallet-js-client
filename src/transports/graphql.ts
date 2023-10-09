@@ -1057,18 +1057,6 @@ class TransportGraphQL implements TransportService {
     return this.doGraphQLMutation(query, variables, 'new_transaction');
   }
 
-  async CancelDraftTransaction(referenceID: string): Promise<void> {
-    const query = gql`
-      mutation($referenceID: String) {
-        transaction_cancel(
-          draft_id: $referenceID
-        )
-      }`;
-    const variables = { referenceID }
-
-    return this.doGraphQLMutation(query, variables, 'transaction_cancel');
-  }
-
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
     const query = gql`
       mutation($hex: String!, $referenceID: String, $metadata: Metadata) {
@@ -1143,22 +1131,6 @@ class TransportGraphQL implements TransportService {
     const variables = { xpub: rawXPub, metadata }
 
     return this.doGraphQLAdminMutation(query, variables, 'xpub');
-  }
-
-  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
-    const query = gql`
-      mutation ($xpub: String!, $token: String!, $metadata: Metadata) {
-        xpub_with_token(
-          xpub: $xpub
-          token: $token
-          metadata: $metadata
-        ) {
-          id
-        }
-      }`;
-    const variables = { xpub: rawXPub, token, metadata }
-
-    return this.doGraphQLMutation(query, variables, 'xpub_with_token');
   }
 
   private adminCount(conditions: Conditions, metadata: Metadata, method: string) {

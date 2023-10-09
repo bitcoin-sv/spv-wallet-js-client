@@ -651,21 +651,6 @@ class TransportHTTP implements TransportService {
   }
 
   /**
-   * Cancel a draft transaction and release the utxos
-   *
-   * @param referenceID string The reference ID of the draft transaction used to create the transaction
-   * @returns void
-   */
-  async CancelDraftTransaction(referenceID: string): Promise<void> {
-    return await this.doHTTPRequest(`${this.serverUrl}/transaction/cancel`, {
-      method: 'POST',
-      body: JSON.stringify({
-        reference_id: referenceID,
-      })
-    });
-  }
-
-  /**
    * Record a new transaction into the database
    * @param hex string Hex string of the transaction
    * @param referenceID string The reference ID of the draft transaction used to create the transaction
@@ -708,24 +693,6 @@ class TransportHTTP implements TransportService {
       method: 'POST',
       body: JSON.stringify({
         key: rawXPub,
-        metadata,
-      })
-    });
-  }
-
-  /**
-   * Register a new xPub in the database (requires admin key)
-   * @param rawXPub string The raw string version of the XPub (xpub.....)
-   * @param token string The server token that can be used to register the xpub
-   * @param metadata Metadata The metadata to record on the xPub
-   * @returns {XPub}
-   */
-  async RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub> {
-    return await this.doHTTPRequest(`${this.serverUrl}/xpub/with-token`, {
-      method: 'POST',
-      body: JSON.stringify({
-        key: rawXPub,
-        token,
         metadata,
       })
     });

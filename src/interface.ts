@@ -596,7 +596,6 @@ export interface TransportService {
   AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs>;
   AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
   AdminRecordTransaction(hex: string): Promise<Transaction>;
-  RegisterXpubWithToken(rawXPub: string, token: string, metadata: Metadata): Promise<XPub>;
   GetXPub(): Promise<XPub>;
   UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;
   GetAccessKey(id: string): Promise<AccessKey>;
@@ -624,7 +623,6 @@ export interface TransportService {
   UnreserveUtxos(referenceID: string): Promise<void>;
   DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
-  CancelDraftTransaction(referenceID: string): Promise<void>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
   UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
 }
