@@ -31,3 +31,18 @@ export const deriveHDPublicChildKeyFromHex = function (hdKey: bsv.HDPublicKey, h
 
   return childKey;
 }
+
+export const generateSetOfKeys = function(): {hdPrivateKey:  bsv.HDPrivateKey, hdPublicKey:  bsv.HDPublicKey} {
+  const privateKey = bsv.HDPrivateKey.fromRandom()
+
+  return {
+    hdPrivateKey: privateKey,
+    hdPublicKey: privateKey.hdPublicKey,
+  }
+}
+
+export const getPublicKeyFromHDPrivateKey = function(privateKey: string): bsv.HDPublicKey {
+  const hdPrivateKey = bsv.HDPrivateKey.fromString(privateKey);
+
+  return hdPrivateKey.hdPublicKey;
+}

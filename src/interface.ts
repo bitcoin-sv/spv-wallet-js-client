@@ -1,4 +1,5 @@
 import bsv from 'bsv';
+import {getPublicKeyFromHDPrivateKey} from "./utils/keys";
 
 export interface Client {
   server_url: string;
@@ -625,6 +626,11 @@ export interface TransportService {
   DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
   RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
   UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
+}
+
+export interface UtilsService {
+  GetRandomSetOfKeys(): {hdPrivateKey:  bsv.HDPrivateKey, hdPublicKey:  bsv.HDPublicKey};
+  GetPublicKeyFromHDPrivateKey(hdPrivateKey: string): bsv.HDPublicKey;
 }
 
 /**

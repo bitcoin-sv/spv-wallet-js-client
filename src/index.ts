@@ -26,12 +26,13 @@ import {
   Utxos,
   XPub,
   XPubs,
-  Utxo,
+  Utxo, UtilsService,
 } from "./interface";
 import {
   getGraphQLMiddleware,
 } from "./transports/graphql";
 import logger from "./logger"
+import {generateSetOfKeys, getPublicKeyFromHDPrivateKey} from "./utils/keys";
 
 /**
  * BuxClient class
@@ -825,8 +826,19 @@ class BuxClient implements TransportService {
   }
 }
 
+class Utils implements UtilsService{
+  GetRandomSetOfKeys(): {hdPrivateKey:  bsv.HDPrivateKey, hdPublicKey:  bsv.HDPublicKey} {
+    return generateSetOfKeys();
+  }
+
+  GetPublicKeyFromHDPrivateKey(hdPrivateKey: string): bsv.HDPublicKey {
+    return getPublicKeyFromHDPrivateKey(hdPrivateKey);
+  }
+}
+
 export {
   BuxClient,
+  Utils,
   getGraphQLMiddleware,
 };
 export * from "./authentication";
