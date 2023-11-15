@@ -1,5 +1,4 @@
 import bsv from 'bsv';
-import {getPublicKeyFromHDPrivateKey} from "./utils/keys";
 
 export interface Client {
   server_url: string;
@@ -628,9 +627,35 @@ export interface TransportService {
   UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
 }
 
-export interface UtilsService {
-  GetRandomSetOfKeys(): {hdPrivateKey:  bsv.HDPrivateKey, hdPublicKey:  bsv.HDPublicKey};
-  GetPublicKeyFromHDPrivateKey(hdPrivateKey: string): bsv.HDPublicKey;
+/**
+ * Key basic information
+ */
+export interface Key {
+  toString(): string
+  xPub: PubKey
+}
+
+/**
+ * Extends Key interface with mnemonic information
+ */
+export interface KeyWithMnemonic extends Key{
+  mnemonic: string
+}
+
+/**
+ * Public key information
+ */
+export interface PubKey {
+  toString(): string
+}
+
+/**
+ * Keys service interface which allow to generate random set of keys of from given data
+ */
+export interface KeysService {
+  Generate(): KeyWithMnemonic;
+  FromMnemonic(mnemonic: string): KeyWithMnemonic;
+  FromString(xpriv: string): Key;
 }
 
 /**

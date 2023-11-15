@@ -26,13 +26,20 @@ import {
   Utxos,
   XPub,
   XPubs,
-  Utxo, UtilsService,
+  Utxo,
+  Key,
+  KeysService,
+  KeyWithMnemonic,
 } from "./interface";
 import {
   getGraphQLMiddleware,
 } from "./transports/graphql";
 import logger from "./logger"
-import {generateSetOfKeys, getPublicKeyFromHDPrivateKey} from "./utils/keys";
+import {
+  generateNewKeys,
+  generateKeysFromMnemonic,
+  generateKeysFromString,
+} from "./utils/keys";
 
 /**
  * BuxClient class
@@ -826,20 +833,24 @@ class BuxClient implements TransportService {
   }
 }
 
-class Utils implements UtilsService{
-  GetRandomSetOfKeys(): {hdPrivateKey:  bsv.HDPrivateKey, hdPublicKey:  bsv.HDPublicKey} {
-    return generateSetOfKeys();
-  }
+const generateKeys = function(): KeyWithMnemonic {
+  return generateNewKeys();
+}
 
-  GetPublicKeyFromHDPrivateKey(hdPrivateKey: string): bsv.HDPublicKey {
-    return getPublicKeyFromHDPrivateKey(hdPrivateKey);
-  }
+const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic{
+  return generateKeysFromMnemonic(mnemonic);
+}
+
+const getKeysFromString = function(xpriv: string): Key{
+  return generateKeysFromString(xpriv);
 }
 
 export {
   BuxClient,
-  Utils,
   getGraphQLMiddleware,
+  generateKeys,
+  getKeysFromMnemonic,
+  getKeysFromString,
 };
 export * from "./authentication";
 export * from "./interface";

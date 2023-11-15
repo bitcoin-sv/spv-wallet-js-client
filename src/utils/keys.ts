@@ -1,5 +1,11 @@
 import bsv from "bsv";
+import Mnemonic from "bsv/mnemonic";
 import {getChildNumsFromHex} from "./index";
+
+import {
+  Key,
+  KeyWithMnemonic,
+} from "../interface";
 
 // deriveChildKeyFromHex derive the child extended key from the hex string
 export const deriveChildKeyFromHex = function (hdKey: bsv.HDPrivateKey | bsv.HDPublicKey, hexHash: string): bsv.HDPrivateKey | bsv.HDPublicKey {
@@ -32,17 +38,37 @@ export const deriveHDPublicChildKeyFromHex = function (hdKey: bsv.HDPublicKey, h
   return childKey;
 }
 
-export const generateSetOfKeys = function(): {hdPrivateKey:  bsv.HDPrivateKey, hdPublicKey:  bsv.HDPublicKey} {
-  const privateKey = bsv.HDPrivateKey.fromRandom()
+export const generateNewKeys = function() : KeyWithMnemonic {
+  bsv.HDPrivateKey.fromRandom()
+  const mnemonic = Mnemonic.fromRandom()
+  return generateKeysFromMnemonic(mnemonic.toString())
+}
+
+export const generateKeysFromMnemonic = function(mnemonicStr: string) : KeyWithMnemonic {
+  const mnemonic = Mnemonic.fromString(mnemonicStr)
+  const seed = mnemonic.toSeed()
+  const hdPrivateKey = bsv.HDPrivateKey.fromSeed(seed, bsv.Networks.mainnet)
 
   return {
-    hdPrivateKey: privateKey,
-    hdPublicKey: privateKey.hdPublicKey,
+    toString: () => hdPrivateKey.toString(),
+    mnemonic: mnemonic.toString(),
+    xPub: {
+        toString() {
+          return hdPrivateKey.hdPublicKey.toString()
+      }
+    }
   }
 }
 
-export const getPublicKeyFromHDPrivateKey = function(privateKey: string): bsv.HDPublicKey {
-  const hdPrivateKey = bsv.HDPrivateKey.fromString(privateKey);
+export const generateKeysFromString = function(privateKey: string) : Key {
+  let hdPrivateKey = bsv.HDPrivateKey.fromString(privateKey)
 
-  return hdPrivateKey.hdPublicKey;
+  return {
+    toString: () => hdPrivateKey.toString(),
+    xPub: {
+      toString() {
+        return hdPrivateKey.hdPublicKey.toString()
+      }
+    }
+  }
 }
