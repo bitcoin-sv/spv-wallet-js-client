@@ -73,7 +73,7 @@
     "rollup-plugin-dts": "^6.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-externals": "^6.0.0",
-    "rollup-plugin-polyfill-node": "^0.12.0",
+    "rollup-plugin-polyfill-node": "^0.13.0",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
     "typedoc": "^0.25.0",
