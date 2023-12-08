@@ -2124,9 +2124,9 @@ base64-js@^1.3.1:
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 better-docs@^2.7.2:
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/better-docs/-/better-docs-2.7.2.tgz#fe0b54fca8a904fe050586aa819263195e5eb948"
-  integrity sha512-aIOsGhhcTIDAJfBTABIPDs3q98dfNF85yUwmKShXb3ZG6e7s+ojBePiDqvFwy/MpnjYwuSbuzkbEv4iPWcSuTQ==
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/better-docs/-/better-docs-2.7.3.tgz#bdeec1b24514bc22562af2a277c2cf527abbe726"
+  integrity sha512-OEk9e7RQUQbo1DmVo0mdsALZ+mT0SwIen7/DGnN4xKNktXKgz1j7+KQ2pObNHHVSFGu8YMQW/Ig1v6eiTkdnbw==
   dependencies:
     brace "^0.11.1"
     react-ace "^9.5.0"
