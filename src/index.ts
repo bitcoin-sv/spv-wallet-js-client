@@ -31,7 +31,7 @@ import {
 import {
   getGraphQLMiddleware,
 } from "./transports/graphql";
-
+import logger from "./logger"
 
 /**
  * BuxClient class
@@ -55,7 +55,9 @@ class BuxClient implements TransportService {
     }
 
     if (!this.client.transport) {
-      throw new Error("transport cannot be null")
+      const Err = new Error("transport cannot be null")
+      logger.error(Err)
+      throw Err
     }
   }
 
@@ -716,7 +718,9 @@ class BuxClient implements TransportService {
    */
   FinalizeTransaction(draftTransaction: DraftTransaction): string {
     if (!this.options?.xPriv) {
-      throw new Error("cannot sign transaction without an xPriv")
+      const Err = new Error("cannot sign transaction without an xPriv")
+      logger.error(Err)
+      throw Err
     }
 
     const Input = bsv.Transaction.Input;
@@ -737,7 +741,9 @@ class BuxClient implements TransportService {
           ||
           input.output_index != txDraft.inputs[index].outputIndex
         ) {
-          throw new Error("input tx ids do not match in draft and transaction hex")
+          const Err = new Error("input tx ids do not match in draft and transaction hex");
+          logger.error(Err)
+          throw Err
         }
       }
 
@@ -757,10 +763,14 @@ class BuxClient implements TransportService {
     txDraft.sign(privateKeys)
 
     if (!txDraft.verify()) {
-      throw new Error("transaction verification failed");
+      const Err = new Error("transaction verification failed");
+      logger.error(Err)
+      throw Err
     }
     if (!txDraft.isFullySigned()) {
-      throw new Error("transaction could not be fully signed");
+      const Err = new Error("transaction could not be fully signed");
+      logger.error(Err)
+      throw Err
     }
 
     return txDraft.serialize();
