@@ -24,6 +24,7 @@ import {
   Utxo,
 } from "../interface";
 import { AuthHeader, setSignature } from "../authentication";
+import logger from "../logger";
 
 class TransportHTTP implements TransportService {
   serverUrl: string;
@@ -506,7 +507,7 @@ class TransportHTTP implements TransportService {
       body: JSON.stringify({ address }),
     });
   }
-  
+
   /**
    * Get a transaction by ID
    * @param txID string Transaction ID to retrieve
@@ -700,7 +701,9 @@ class TransportHTTP implements TransportService {
 
   async doHTTPAdminRequest(url: string, options: any) {
     if (!this.adminKey) {
-      throw new Error("Admin key has not been set. Cannot do admin queries");
+      const Err = new Error("Admin key has not been set. Cannot do admin queries");
+      logger.error(Err)
+      throw Err
     }
     return this._doHTTPRequest(url, options, this.adminKey)
   }
@@ -729,7 +732,9 @@ class TransportHTTP implements TransportService {
     const response = await global.fetch(url, httpOptions);
 
     if (response.status >= 400) {
-      throw new Error(response.statusText);
+      const Err = new Error(response.statusText)
+      logger.error(Err)
+      throw Err
     }
 
     return response.json();

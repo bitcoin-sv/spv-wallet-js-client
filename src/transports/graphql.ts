@@ -31,6 +31,7 @@ import {
   XPubs,
   Utxo,
 } from "../interface";
+import logger from "../logger";
 
 export const getGraphQLMiddleware = function(options: ClientOptions) {
   return new ApolloLink((operation, forward) => {
@@ -1037,7 +1038,7 @@ class TransportGraphQL implements TransportService {
               change_destinations_strategy: "random"
             }
             metadata:$metadata
-          ) ${graphqlDraftTransactionFields} 
+          ) ${graphqlDraftTransactionFields}
         }`;
     const variables = { outputs: recipients, metadata }
 
@@ -1156,7 +1157,9 @@ class TransportGraphQL implements TransportService {
 
   private async doGraphQLAdminQuery(query: any, variables: any, resultId: string) {
     if (!this.adminClient) {
-      throw new Error("Admin key has not been set. Cannot do admin queries");
+      const Err = new Error("Admin key has not been set. Cannot do admin queries");
+      logger.error(Err)
+      throw Err
     }
 
     return this.doGraphQLClientQuery(this.adminClient, query, variables, resultId);
@@ -1164,7 +1167,9 @@ class TransportGraphQL implements TransportService {
 
   private async doGraphQLAdminMutation(query: any, variables: any, resultId: string) {
     if (!this.adminClient) {
-      throw new Error("Admin key has not been set. Cannot do admin queries");
+      const Err = new Error("Admin key has not been set. Cannot do admin mutation");
+      logger.error(Err)
+      throw Err
     }
 
     return this.doGraphQLClientMutate(this.adminClient, query, variables, resultId);
@@ -1175,10 +1180,12 @@ class TransportGraphQL implements TransportService {
       query,
       variables,
     }).catch(e => {
+      logger.error(e)
       throw new Error(e);
     });
 
     if (error) {
+      logger.error(error)
       throw new Error(error.message);
     }
 
@@ -1190,6 +1197,7 @@ class TransportGraphQL implements TransportService {
       mutation: query,
       variables,
     }).catch(e => {
+      logger.error(e)
       throw new Error(e);
     });
 

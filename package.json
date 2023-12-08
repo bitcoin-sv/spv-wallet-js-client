@@ -82,7 +82,8 @@
   "dependencies": {
     "@apollo/client": "^3.5.8",
     "cross-fetch": "^4.0.0",
-    "graphql": "^16.3.0"
+    "graphql": "^16.3.0",
+    "pino": "^8.16.2"
   },
   "peerDependencies": {
     "bsv": "^1.5.6"
