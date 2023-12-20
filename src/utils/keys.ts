@@ -50,7 +50,7 @@ export const generateKeysFromMnemonic = function(mnemonicStr: string) : KeyWithM
   const hdPrivateKey = bsv.HDPrivateKey.fromSeed(seed, bsv.Networks.mainnet)
 
   return {
-    toString: () => hdPrivateKey.toString(),
+    xPriv: () => hdPrivateKey.toString(),
     mnemonic: mnemonic.toString(),
     xPub: {
         toString() {
@@ -64,7 +64,7 @@ export const generateKeysFromString = function(privateKey: string) : Key {
   let hdPrivateKey = bsv.HDPrivateKey.fromString(privateKey)
 
   return {
-    toString: () => hdPrivateKey.toString(),
+    xPriv: () => hdPrivateKey.toString(),
     xPub: {
       toString() {
         return hdPrivateKey.hdPublicKey.toString()

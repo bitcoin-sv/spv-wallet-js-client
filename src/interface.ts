@@ -631,7 +631,7 @@ export interface TransportService {
  * Key basic information
  */
 export interface Key {
-  toString(): string
+  xPriv(): string
   xPub: PubKey
 }
 
