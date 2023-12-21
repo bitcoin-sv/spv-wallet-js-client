@@ -628,6 +628,37 @@ export interface TransportService {
 }
 
 /**
+ * Key basic information
+ */
+export interface Key {
+  xPriv(): string
+  xPub: PubKey
+}
+
+/**
+ * Extends Key interface with mnemonic information
+ */
+export interface KeyWithMnemonic extends Key{
+  mnemonic: string
+}
+
+/**
+ * Public key information
+ */
+export interface PubKey {
+  toString(): string
+}
+
+/**
+ * Keys service interface which allow to generate random set of keys of from given data
+ */
+export interface KeysService {
+  Generate(): KeyWithMnemonic;
+  FromMnemonic(mnemonic: string): KeyWithMnemonic;
+  FromString(xpriv: string): Key;
+}
+
+/**
  * Client options for instantiating a new Bux client
  */
 export interface ClientOptions {
