@@ -28,7 +28,7 @@
 
 Install all npm packages
 ```bash
-$ make install
+$ yarn install
 ```
 
 See more scripts in the [package.json](package.json) file or the [makefile](Makefile).
