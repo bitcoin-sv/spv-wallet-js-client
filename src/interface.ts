@@ -10,7 +10,7 @@ export interface Client {
  *
  * The server will need to have the transport type enabled
  */
-export type TransportType = "http" | "graphql";
+export type TransportType = "http";
 
 /**
  * Database query key value conditions to filter data on
@@ -236,11 +236,6 @@ export interface BlockHeader {
  * @see {@link BlockHeader}
  */
 export interface BlockHeaders extends Array<BlockHeader> {}
-
-/**
- * IDs
- */
-export interface IDs extends Array<string> {}
 
 /**
  * Transaction
@@ -649,14 +644,6 @@ export interface PubKey {
   toString(): string
 }
 
-/**
- * Keys service interface which allow to generate random set of keys of from given data
- */
-export interface KeysService {
-  Generate(): KeyWithMnemonic;
-  FromMnemonic(mnemonic: string): KeyWithMnemonic;
-  FromString(xpriv: string): Key;
-}
 
 /**
  * Client options for instantiating a new Bux client

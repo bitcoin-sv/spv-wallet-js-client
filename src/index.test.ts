@@ -3,7 +3,6 @@ import fetchMock from "jest-fetch-mock"
 
 import { BuxClient } from "./index";
 import {
-  Client,
   ClientOptions,
   Conditions,
   DraftTransaction,
@@ -39,8 +38,6 @@ interface TestClient {
   serverURL: string;
 }
 
-interface TestClients extends Array<TestClient>{}
-
 const httpTestClient: TestClient = {
   type: "http",
   xPrivString,
@@ -48,14 +45,7 @@ const httpTestClient: TestClient = {
   serverURL,
 };
 
-const graphqlTestClient: TestClient = {
-  type: "graphql",
-  xPrivString,
-  xPubString,
-  serverURL: serverURL + '/graphql',
-}
-
-const testClients: TestClients = [ httpTestClient, graphqlTestClient ];
+const testClient: TestClient = httpTestClient
 
 describe('BuxClient class', () => {
   test('instantiate', () => {
@@ -95,7 +85,7 @@ describe('GetXpub', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(xpubJSON, HttpUrl, "xpub"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const xPub = await buxClient.GetXPub();
       expect(typeof xPub).toBe('object');
       expect(xPub).toStrictEqual(JSON.parse(xpubJSON));
@@ -112,7 +102,7 @@ describe('UpdateXPubMetadata', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(xpubJSON, HttpUrl, "xpub_metadata"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const xPub = await buxClient.UpdateXPubMetadata(metadata);
       expect(typeof xPub).toBe('object');
       expect(xPub).toStrictEqual(JSON.parse(xpubJSON));
@@ -126,7 +116,7 @@ describe('GetAccessKey', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(accessKeyJSON, HttpUrl, "access_key"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const accessKey = await buxClient.GetAccessKey(accessKeyID);
       expect(typeof accessKey).toBe('object');
       expect(accessKey).toStrictEqual(JSON.parse(accessKeyJSON));
@@ -141,7 +131,7 @@ describe('GetAccessKeys', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(accessKeysJSON, HttpUrl, "access_keys"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const accessKeys = await buxClient.GetAccessKeys({}, {}, {});
       expect(typeof accessKeys).toBe('object');
       expect(accessKeys).toStrictEqual([JSON.parse(accessKeyJSON)]);
@@ -155,7 +145,7 @@ describe('CreateAccessKey', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(accessKeyJSON, HttpUrl, "access_key"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const accessKey = await buxClient.CreateAccessKey({});
       expect(typeof accessKey).toBe('object');
       expect(accessKey).toStrictEqual(JSON.parse(accessKeyJSON));
@@ -169,7 +159,7 @@ describe('RevokeAccessKey', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(accessKeyJSON, HttpUrl, "access_key_revoke"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const accessKey = await buxClient.RevokeAccessKey(accessKeyID);
       expect(typeof accessKey).toBe('object');
       expect(accessKey).toStrictEqual(JSON.parse(accessKeyJSON));
@@ -183,7 +173,7 @@ describe('GetDestinationByID', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destination = await buxClient.GetDestinationByID(destinationID);
       expect(typeof destination).toBe('object');
       expect(destination).toStrictEqual(JSON.parse(destinationJSON));
@@ -197,7 +187,7 @@ describe('GetDestinationByLockingScript', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destination = await buxClient.GetDestinationByLockingScript(destinationLockingScript);
       expect(typeof destination).toBe('object');
       expect(destination).toStrictEqual(JSON.parse(destinationJSON));
@@ -211,7 +201,7 @@ describe('GetDestinationByAddress', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destination = await buxClient.GetDestinationByAddress(destinationAddress);
       expect(typeof destination).toBe('object');
       expect(destination).toStrictEqual(JSON.parse(destinationJSON));
@@ -226,7 +216,7 @@ describe('GetDestinations', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationsJSON, HttpUrl, "destinations"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destinations = await buxClient.GetDestinations({}, {}, {});
       expect(typeof destinations).toBe('object');
       expect(destinations).toStrictEqual(JSON.parse(destinationsJSON));
@@ -240,7 +230,7 @@ describe('NewDestination', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destination = await buxClient.NewDestination({});
       expect(typeof destination).toBe('object');
       expect(destination).toStrictEqual(JSON.parse(destinationJSON));
@@ -257,7 +247,7 @@ describe('UpdateDestinationMetadataByID', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination_metadata"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destination = await buxClient.UpdateDestinationMetadataByID(destinationID, metadata);
       expect(typeof destination).toBe('object');
       expect(destination).toStrictEqual(JSON.parse(destinationJSON));
@@ -274,7 +264,7 @@ describe('UpdateDestinationMetadataByLockingScript', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination_metadata"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destination = await buxClient.UpdateDestinationMetadataByLockingScript(destinationLockingScript, metadata);
       expect(typeof destination).toBe('object');
       expect(destination).toStrictEqual(JSON.parse(destinationJSON));
@@ -291,7 +281,7 @@ describe('UpdateDestinationMetadataByAddress', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(destinationJSON, HttpUrl, "destination_metadata"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const destination = await buxClient.UpdateDestinationMetadataByAddress(destinationAddress, metadata);
       expect(typeof destination).toBe('object');
       expect(destination).toStrictEqual(JSON.parse(destinationJSON));
@@ -305,7 +295,7 @@ describe('GetTransaction', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(transactionJSON, HttpUrl, "transaction"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const transaction = await buxClient.GetTransaction(transactionID);
       expect(typeof transaction).toBe('object');
       expect(transaction).toStrictEqual(JSON.parse(transactionJSON));
@@ -319,7 +309,7 @@ describe('GetTransactions', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(transactionsJSON, HttpUrl, "transactions"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const conditions: Conditions = {
         fee: {
           $lt: 100,
@@ -344,7 +334,7 @@ describe('GetUtxo', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(utxoJSON, HttpUrl, "utxo"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const utxo = await buxClient.GetUtxo(transactionID, utxoOutputIndex);
       expect(typeof utxo).toBe('object');
       expect(utxo).toStrictEqual(JSON.parse(utxoJSON));
@@ -356,7 +346,7 @@ describe("UnreserveUtxos", () => {
   const mockReferenceId = "xyz";
   test('http result', async () => {
     fetchMock.mockResponse('{}');
-    await runTests([httpTestClient], async (buxClient: TransportService) => {
+    await runTests(httpTestClient, async (buxClient: TransportService) => {
       await buxClient.UnreserveUtxos(mockReferenceId);
 
       expect(fetchMock).toHaveBeenCalledWith(
@@ -369,30 +359,13 @@ describe("UnreserveUtxos", () => {
     });
   });
 
-  test('graphql result', async () => {
-    const expectedGraphQLMethodName = 'utxos_unreserve';
-    fetchMock.mockResponse(() =>
-      Promise.resolve(
-        `{"data":{"${expectedGraphQLMethodName}":"","loading":false,"networkStatus":7}}`
-      )
-    );
-    await runTests([graphqlTestClient], async (buxClient: TransportService) => {
-      await buxClient.UnreserveUtxos(mockReferenceId);
-      expect(fetchMock).toHaveBeenCalledWith(
-        `${serverURL}/graphql`,
-        expect.objectContaining({
-          method: 'POST',
-          body: expect.stringContaining(expectedGraphQLMethodName)
-        })
-      );
-    });
-  });
+
 });
 
 describe('NewPaymail', () => {
   test('http result', async () => {
     fetchMock.mockResponse('{}');
-    await runTests([httpTestClient], async (buxClient: TransportService) => {
+    await runTests(httpTestClient, async (buxClient: TransportService) => {
       const key = 'mock_key';
       const address = 'mock_address';
       await buxClient.NewPaymail(key, address);
@@ -411,7 +384,7 @@ describe('NewPaymail', () => {
 describe('DeletePaymail', () => {
   test('http result', async () => {
     fetchMock.mockResponse('{}');
-    await runTests([httpTestClient], async (buxClient: TransportService) => {
+    await runTests(httpTestClient, async (buxClient: TransportService) => {
       const address = 'mock_address';
       await buxClient.DeletePaymail(address);
 
@@ -434,7 +407,7 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON);
-    const transaction = await buxClient.FinalizeTransaction(draftTransaction);
+    const transaction = buxClient.FinalizeTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
@@ -445,7 +418,7 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
-    const transaction = await buxClient.FinalizeTransaction(draftTransaction);
+    const transaction = buxClient.FinalizeTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
@@ -473,7 +446,7 @@ describe('UpdateTransactionMetadata', () => {
     // @ts-ignore
     fetchMock.mockIf(/^.*$/, mockResponse(transactionJSON, HttpUrl, "transaction_metadata"));
 
-    await runTests(testClients, async (buxClient: TransportService) => {
+    await runTests(testClient, async (buxClient: TransportService) => {
       const transaction = await buxClient.UpdateTransactionMetadata(transactionID, metadata);
       expect(typeof transaction).toBe('object');
       expect(transaction).toStrictEqual(JSON.parse(transactionJSON));
@@ -482,9 +455,7 @@ describe('UpdateTransactionMetadata', () => {
 });
 
 
-const runTests = async function(testClients: TestClients, test: Function) {
-  for (let i = 0; i < testClients.length; i++) {
-    const testClient = testClients[i];
+const runTests = async function(testClient: TestClient, test: Function) {
     const options: ClientOptions = {
       transportType: testClient.type,
       xPrivString: testClient.xPrivString,
@@ -493,15 +464,12 @@ const runTests = async function(testClients: TestClients, test: Function) {
     const buxClient = new BuxClient(testClient.serverURL, options);
 
     await test(buxClient);
-  }
 };
 
-const mockResponse = function(response: string, expectedHttpUrl: string, expectedGraphQLMethodName: string) {
+const mockResponse = function(response: string, expectedHttpUrl: string) {
   return (req: any) => {
     const url = req.url.valueOf();
-    if (req.url.endsWith('/graphql')) {
-      return new Promise(r => r(`{"data":{"${expectedGraphQLMethodName}":${response},"loading":false,"networkStatus":7}}`));
-    } else if (url === `${serverURL}${expectedHttpUrl}`) {
+    if (url === `${serverURL}${expectedHttpUrl}`) {
       return new Promise(r => r(response));
     } else {
       return {
@@ -510,17 +478,3 @@ const mockResponse = function(response: string, expectedHttpUrl: string, expecte
     }
   };
 }
-
-const mockResponseError = function(expectedHttpUrl: string) {
-  return (req: any) => {
-    if (req.url.endsWith('/graphql')) {
-      return new Promise((r, rj) => rj('http error'));
-    } else if (req.url.valueOf() === `${serverURL}${expectedHttpUrl}`) {
-      return new Promise((r, rj) => rj('http error'));
-    } else {
-      return {
-        status: 500,
-      };
-    }
-  };
-};

@@ -2,7 +2,6 @@ import bsv from 'bsv';
 import "cross-fetch/polyfill";
 
 import TransportHTTP from "./transports/http";
-import TransportGraphQL from "./transports/graphql";
 import {
   AccessKey,
   AccessKeys,
@@ -28,12 +27,8 @@ import {
   XPubs,
   Utxo,
   Key,
-  KeysService,
   KeyWithMnemonic,
 } from "./interface";
-import {
-  getGraphQLMiddleware,
-} from "./transports/graphql";
 import logger from "./logger"
 import {
   generateNewKeys,
@@ -103,12 +98,7 @@ class BuxClient implements TransportService {
       options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(options.xPubString || '')).toString('hex');
     }
 
-    let transport: TransportService;
-    if (options.transportType === "graphql") {
-      transport = new TransportGraphQL(serverUrl, options)
-    } else {
-      transport = new TransportHTTP(serverUrl, options)
-    }
+    let transport: TransportService = new TransportHTTP(serverUrl, options)
 
     this.options = options;
 
@@ -847,7 +837,6 @@ const getKeysFromString = function(xpriv: string): Key{
 
 export {
   BuxClient,
-  getGraphQLMiddleware,
   generateKeys,
   getKeysFromMnemonic,
   getKeysFromString,

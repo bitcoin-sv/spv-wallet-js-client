@@ -33,9 +33,6 @@ export const AuthHeaderNonce = "bux-auth-nonce";
 // AuthHeaderTime the time of the request, only valid for 30 seconds
 export const AuthHeaderTime = "bux-auth-time";
 
-// AuthSignatureTTL is the max TTL for a signature to be valid
-export const AuthSignatureTTL = 20;
-
 export const setSignature = function(headers: { [key: string]: string }, signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string): { [key: string]: string } {
 
   // Create the signature
