@@ -2,7 +2,7 @@ import bsv from 'bsv';
 
 export interface Client {
   server_url: string;
-  transport: TransportService;
+  httpTransport: TransportService;
 }
 
 /**
@@ -10,7 +10,7 @@ export interface Client {
  *
  * The server will need to have the transport type enabled
  */
-export type TransportType = "http";
+// export type TransportType = "http";
 
 /**
  * Database query key value conditions to filter data on
@@ -654,8 +654,7 @@ export interface ClientOptions {
   adminKey?: string;
   debug?: boolean;
   signRequest?: boolean;
-  transport?: TransportService;
-  transportType?: TransportType;
+  // transport?: TransportService;
   xPriv?: bsv.HDPrivateKey;
   xPrivString?: string;
   xPub?: bsv.HDPublicKey;

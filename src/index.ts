@@ -26,15 +26,8 @@ import {
   XPub,
   XPubs,
   Utxo,
-  Key,
-  KeyWithMnemonic,
 } from "./interface";
 import logger from "./logger"
-import {
-  generateNewKeys,
-  generateKeysFromMnemonic,
-  generateKeysFromString,
-} from "./utils/keys";
 
 /**
  * BuxClient class
@@ -54,11 +47,11 @@ class BuxClient implements TransportService {
   constructor(serverUrl: string, options: ClientOptions) {
     this.client = {
       server_url: serverUrl,
-      transport: this.parseOptions(serverUrl, options),
+      httpTransport: this.parseOptions(serverUrl, options),
     }
 
-    if (!this.client.transport) {
-      const Err = new Error("transport cannot be null")
+    if (!this.client.httpTransport) {
+      const Err = new Error("http transport cannot be null")
       logger.error(Err)
       throw Err
     }
@@ -66,7 +59,7 @@ class BuxClient implements TransportService {
 
   private parseOptions(serverUrl: string, options: ClientOptions) {
     // http is the default transport
-    if (!options.transportType) options.transportType = "http";
+    // if (!options.transportType) options.transportType = "http";
 
     if (options.xPriv) {
       options.xPrivString = options.xPriv.toString();
@@ -74,8 +67,8 @@ class BuxClient implements TransportService {
       options.xPubString = options.xPub.toString();
     } else if (options.xPrivString) {
       options.xPriv = bsv.HDPrivateKey.fromString(options.xPrivString);
-      options.xPub = options.xPriv.hdPublicKey;
-      options.xPubString = options.xPub.toString();
+      options.xPub = options.xPriv?.hdPublicKey;
+      options.xPubString = options.xPub?.toString();
     } else if (options.xPub) {
       options.xPriv = undefined;
       options.xPrivString = undefined;
@@ -98,11 +91,11 @@ class BuxClient implements TransportService {
       options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(options.xPubString || '')).toString('hex');
     }
 
-    let transport: TransportService = new TransportHTTP(serverUrl, options)
+    let httpTransport: TransportService = new TransportHTTP(serverUrl, options)
 
     this.options = options;
 
-    return transport;
+    return httpTransport;
   }
 
   /**
@@ -112,7 +105,7 @@ class BuxClient implements TransportService {
    * @return void
    */
   SetAdminKey(adminKey: string): void {
-    this.client.transport.SetAdminKey(adminKey)
+    this.client.httpTransport.SetAdminKey(adminKey)
   }
 
   /**
@@ -122,7 +115,7 @@ class BuxClient implements TransportService {
    * @return void
    */
   SetDebug(debug: boolean): void {
-    this.client.transport.SetDebug(debug)
+    this.client.httpTransport.SetDebug(debug)
   }
 
   /**
@@ -135,7 +128,7 @@ class BuxClient implements TransportService {
    * @return void
    */
   SetSignRequest(signRequest: boolean): void {
-    this.client.transport.SetSignRequest(signRequest)
+    this.client.httpTransport.SetSignRequest(signRequest)
   }
 
   /**
@@ -144,7 +137,7 @@ class BuxClient implements TransportService {
    * @return {boolean}
    */
   IsDebug(): boolean {
-    return this.client.transport.IsDebug();
+    return this.client.httpTransport.IsDebug();
   }
 
   /**
@@ -153,7 +146,7 @@ class BuxClient implements TransportService {
    * @return {boolean}
    */
   IsSignRequest(): boolean {
-    return this.client.transport.IsSignRequest();
+    return this.client.httpTransport.IsSignRequest();
   }
 
   /**
@@ -162,7 +155,7 @@ class BuxClient implements TransportService {
    * @return {boolean}
    */
   async AdminGetStatus(): Promise<boolean> {
-    return await this.client.transport.AdminGetStatus();
+    return await this.client.httpTransport.AdminGetStatus();
   }
 
   /**
@@ -171,7 +164,7 @@ class BuxClient implements TransportService {
    * @return {AdminStats}
    */
   async AdminGetStats(): Promise<AdminStats> {
-    return await this.client.transport.AdminGetStats();
+    return await this.client.httpTransport.AdminGetStats();
   }
 
   /**
@@ -183,7 +176,7 @@ class BuxClient implements TransportService {
    * @return {AccessKeys}
    */
   async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
-    return await this.client.transport.AdminGetAccessKeys(conditions, metadata, queryParams);
+    return await this.client.httpTransport.AdminGetAccessKeys(conditions, metadata, queryParams);
   }
 
   /**
@@ -194,7 +187,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.AdminGetAccessKeysCount(conditions, metadata);
+    return await this.client.httpTransport.AdminGetAccessKeysCount(conditions, metadata);
   }
 
   /**
@@ -206,7 +199,7 @@ class BuxClient implements TransportService {
    * @return {BlockHeaders}
    */
   async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders> {
-    return await this.client.transport.AdminGetBlockHeaders(conditions, metadata, queryParams);
+    return await this.client.httpTransport.AdminGetBlockHeaders(conditions, metadata, queryParams);
   }
 
   /**
@@ -217,7 +210,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.AdminGetBlockHeadersCount(conditions, metadata);
+    return await this.client.httpTransport.AdminGetBlockHeadersCount(conditions, metadata);
   }
 
   /**
@@ -229,7 +222,7 @@ class BuxClient implements TransportService {
    * @return {Destinations}
    */
   async AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
-    return await this.client.transport.AdminGetDestinations(conditions, metadata, queryParams);
+    return await this.client.httpTransport.AdminGetDestinations(conditions, metadata, queryParams);
   }
 
   /**
@@ -240,7 +233,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.AdminGetDestinationsCount(conditions, metadata);
+    return await this.client.httpTransport.AdminGetDestinationsCount(conditions, metadata);
   }
 
   /**
@@ -250,7 +243,7 @@ class BuxClient implements TransportService {
    * @return {PaymailAddress}
    */
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
-    return await this.client.transport.AdminGetPaymail(address);
+    return await this.client.httpTransport.AdminGetPaymail(address);
   }
 
   /**
@@ -262,7 +255,7 @@ class BuxClient implements TransportService {
    * @return {PaymailAddresses}
    */
   async AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses> {
-    return await this.client.transport.AdminGetPaymails(conditions, metadata, queryParams);
+    return await this.client.httpTransport.AdminGetPaymails(conditions, metadata, queryParams);
   }
 
   /**
@@ -273,7 +266,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.AdminGetPaymailsCount(conditions, metadata);
+    return await this.client.httpTransport.AdminGetPaymailsCount(conditions, metadata);
   }
 
   /**
@@ -286,7 +279,7 @@ class BuxClient implements TransportService {
    * @return {PaymailAddress}
    */
   async AdminCreatePaymail(xpub_id: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
-    return await this.client.transport.AdminCreatePaymail(xpub_id, address, public_name, avatar);
+    return await this.client.httpTransport.AdminCreatePaymail(xpub_id, address, public_name, avatar);
   }
 
   /**
@@ -296,7 +289,7 @@ class BuxClient implements TransportService {
    * @return {PaymailAddress}
    */
   async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
-    return await this.client.transport.AdminDeletePaymail(address);
+    return await this.client.httpTransport.AdminDeletePaymail(address);
   }
 
   /**
@@ -308,7 +301,7 @@ class BuxClient implements TransportService {
    * @return {Transactions}
    */
   async AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
-    return await this.client.transport.AdminGetTransactions(conditions, metadata, queryParams);
+    return await this.client.httpTransport.AdminGetTransactions(conditions, metadata, queryParams);
   }
 
   /**
@@ -319,7 +312,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.AdminGetTransactionsCount(conditions, metadata);
+    return await this.client.httpTransport.AdminGetTransactionsCount(conditions, metadata);
   }
 
   /**
@@ -331,7 +324,7 @@ class BuxClient implements TransportService {
    * @return {Utxos}
    */
   async AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
-    return await this.client.transport.AdminGetUtxos(conditions, metadata, queryParams);
+    return await this.client.httpTransport.AdminGetUtxos(conditions, metadata, queryParams);
   }
 
   /**
@@ -342,7 +335,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.AdminGetUtxosCount(conditions, metadata);
+    return await this.client.httpTransport.AdminGetUtxosCount(conditions, metadata);
   }
 
   /**
@@ -354,7 +347,7 @@ class BuxClient implements TransportService {
    * @return {XPubs}
    */
   async AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs> {
-    return await this.client.transport.AdminGetXPubs(conditions, metadata, queryParams);
+    return await this.client.httpTransport.AdminGetXPubs(conditions, metadata, queryParams);
   }
 
   /**
@@ -365,7 +358,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.AdminGetXPubsCount(conditions, metadata);
+    return await this.client.httpTransport.AdminGetXPubsCount(conditions, metadata);
   }
 
   /**
@@ -375,7 +368,7 @@ class BuxClient implements TransportService {
    * @return {Transaction}
    */
   async AdminRecordTransaction(txHex: string): Promise<Transaction> {
-    return await this.client.transport.AdminRecordTransaction(txHex);
+    return await this.client.httpTransport.AdminRecordTransaction(txHex);
   }
 
   /**
@@ -384,7 +377,7 @@ class BuxClient implements TransportService {
    * @return {XPub}
    */
   async GetXPub(): Promise<XPub> {
-    return await this.client.transport.GetXPub();
+    return await this.client.httpTransport.GetXPub();
   }
 
   /**
@@ -394,7 +387,7 @@ class BuxClient implements TransportService {
    * @return {XPub}
    */
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
-    return await this.client.transport.UpdateXPubMetadata(metadata);
+    return await this.client.httpTransport.UpdateXPubMetadata(metadata);
   }
 
   /**
@@ -404,7 +397,7 @@ class BuxClient implements TransportService {
    * @return {AccessKey}
    */
   async GetAccessKey(id: string): Promise<AccessKey> {
-    return await this.client.transport.GetAccessKey(id);
+    return await this.client.httpTransport.GetAccessKey(id);
   }
 
   /**
@@ -416,7 +409,7 @@ class BuxClient implements TransportService {
    * @return {AccessKeys}
    */
   async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
-    return await this.client.transport.GetAccessKeys(conditions, metadata, queryParams);
+    return await this.client.httpTransport.GetAccessKeys(conditions, metadata, queryParams);
   }
 
   /**
@@ -427,7 +420,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.GetAccessKeysCount(conditions, metadata);
+    return await this.client.httpTransport.GetAccessKeysCount(conditions, metadata);
   }
 
   /**
@@ -439,7 +432,7 @@ class BuxClient implements TransportService {
    * @return {AccessKey}
    */
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return await this.client.transport.CreateAccessKey(metadata);
+    return await this.client.httpTransport.CreateAccessKey(metadata);
   }
 
   /**
@@ -451,7 +444,7 @@ class BuxClient implements TransportService {
    * @return {AccessKey}
    */
   async RevokeAccessKey(id: string): Promise<AccessKey> {
-    return await this.client.transport.RevokeAccessKey(id);
+    return await this.client.httpTransport.RevokeAccessKey(id);
   }
 
   /**
@@ -461,7 +454,7 @@ class BuxClient implements TransportService {
    * @return {Destination}
    */
   async GetDestinationByID(id: string): Promise<Destination> {
-    return await this.client.transport.GetDestinationByID(id);
+    return await this.client.httpTransport.GetDestinationByID(id);
   }
 
   /**
@@ -471,7 +464,7 @@ class BuxClient implements TransportService {
    * @return {Destination}
    */
   async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return await this.client.transport.GetDestinationByLockingScript(locking_script);
+    return await this.client.httpTransport.GetDestinationByLockingScript(locking_script);
   }
 
   /**
@@ -481,7 +474,7 @@ class BuxClient implements TransportService {
    * @return {Destination}
    */
   async GetDestinationByAddress(address: string): Promise<Destination> {
-    return await this.client.transport.GetDestinationByAddress(address);
+    return await this.client.httpTransport.GetDestinationByAddress(address);
   }
 
   /**
@@ -493,7 +486,7 @@ class BuxClient implements TransportService {
    * @return {Destinations}
    */
   async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
-    return await this.client.transport.GetDestinations(conditions, metadata, queryParams);
+    return await this.client.httpTransport.GetDestinations(conditions, metadata, queryParams);
   }
 
   /**
@@ -504,7 +497,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.GetDestinationsCount(conditions, metadata);
+    return await this.client.httpTransport.GetDestinationsCount(conditions, metadata);
   }
 
   /**
@@ -518,7 +511,7 @@ class BuxClient implements TransportService {
    * @return {Destination}
    */
   async NewDestination(metadata: Metadata): Promise<Destination> {
-    return await this.client.transport.NewDestination(metadata);
+    return await this.client.httpTransport.NewDestination(metadata);
   }
 
   /**
@@ -531,7 +524,7 @@ class BuxClient implements TransportService {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
-    return await this.client.transport.UpdateDestinationMetadataByID(id, metadata);
+    return await this.client.httpTransport.UpdateDestinationMetadataByID(id, metadata);
   }
 
   /**
@@ -544,7 +537,7 @@ class BuxClient implements TransportService {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByLockingScript(locking_script: string, metadata: Metadata): Promise<Destination> {
-    return await this.client.transport.UpdateDestinationMetadataByLockingScript(locking_script, metadata);
+    return await this.client.httpTransport.UpdateDestinationMetadataByLockingScript(locking_script, metadata);
   }
 
   /**
@@ -557,7 +550,7 @@ class BuxClient implements TransportService {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
-    return await this.client.transport.UpdateDestinationMetadataByAddress(address, metadata);
+    return await this.client.httpTransport.UpdateDestinationMetadataByAddress(address, metadata);
   }
 
   /**
@@ -576,7 +569,7 @@ class BuxClient implements TransportService {
     avatar?: string,
     metadata?: Metadata
   ): Promise<void> {
-    return this.client.transport.NewPaymail(key, address, publicName, avatar, metadata);
+    return this.client.httpTransport.NewPaymail(key, address, publicName, avatar, metadata);
   }
 
   /**
@@ -585,7 +578,7 @@ class BuxClient implements TransportService {
    * @returns {void}
    */
   async DeletePaymail(address: string): Promise<void> {
-    return this.client.transport.DeletePaymail(address);
+    return this.client.httpTransport.DeletePaymail(address);
   }
 
   /**
@@ -595,7 +588,7 @@ class BuxClient implements TransportService {
    * @return {Transaction}
    */
   async GetTransaction(txID: string): Promise<Transaction> {
-    return await this.client.transport.GetTransaction(txID);
+    return await this.client.httpTransport.GetTransaction(txID);
   }
 
   /**
@@ -607,7 +600,7 @@ class BuxClient implements TransportService {
    * @return {Transactions}
    */
   async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
-    return await this.client.transport.GetTransactions(conditions, metadata, queryParams);
+    return await this.client.httpTransport.GetTransactions(conditions, metadata, queryParams);
   }
 
   /**
@@ -618,7 +611,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.GetTransactionsCount(conditions, metadata);
+    return await this.client.httpTransport.GetTransactionsCount(conditions, metadata);
   }
 
   /**
@@ -629,7 +622,7 @@ class BuxClient implements TransportService {
    * @return {Utxo}
    */
   async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
-    return await this.client.transport.GetUtxo(tx_id, output_index);
+    return await this.client.httpTransport.GetUtxo(tx_id, output_index);
   }
 
   /**
@@ -641,7 +634,7 @@ class BuxClient implements TransportService {
    * @return {Utxos}
    */
   async GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
-    return await this.client.transport.GetUtxos(conditions, metadata, queryParams);
+    return await this.client.httpTransport.GetUtxos(conditions, metadata, queryParams);
   }
 
   /**
@@ -652,7 +645,7 @@ class BuxClient implements TransportService {
    * @return {number}
    */
   async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.transport.GetUtxosCount(conditions, metadata);
+    return await this.client.httpTransport.GetUtxosCount(conditions, metadata);
   }
 
   /**
@@ -662,7 +655,7 @@ class BuxClient implements TransportService {
    * @return {void}
    */
     async UnreserveUtxos(referenceID: string): Promise<void> {
-      return await this.client.transport.UnreserveUtxos(referenceID);
+      return await this.client.httpTransport.UnreserveUtxos(referenceID);
     }
 
   /**
@@ -676,7 +669,7 @@ class BuxClient implements TransportService {
    * @return {DraftTransaction}     Complete draft transaction object from Bux, all configuration options filled in
    */
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.client.transport.DraftToRecipients(recipients, metadata);
+    return await this.client.httpTransport.DraftToRecipients(recipients, metadata);
   }
 
   /**
@@ -687,7 +680,7 @@ class BuxClient implements TransportService {
    * @return {DraftTransaction}                        Complete draft transaction object from Bux, all configuration options filled in
    */
   async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.client.transport.DraftTransaction(transactionConfig, metadata);
+    return await this.client.httpTransport.DraftTransaction(transactionConfig, metadata);
   }
 
   /**
@@ -786,7 +779,7 @@ class BuxClient implements TransportService {
    * @return {Transaction}       The Bux transaction object
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
-    return await this.client.transport.RecordTransaction(hex, referenceID, metadata);
+    return await this.client.httpTransport.RecordTransaction(hex, referenceID, metadata);
   }
 
   /**
@@ -799,7 +792,7 @@ class BuxClient implements TransportService {
    * @return {Transaction}      The complete transaction object, with the new changes
    */
   async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
-    return await this.client.transport.UpdateTransactionMetadata(txID, metadata);
+    return await this.client.httpTransport.UpdateTransactionMetadata(txID, metadata);
   }
 
   /**
@@ -810,36 +803,13 @@ class BuxClient implements TransportService {
    * @return {XPub}             The newly registered xpub
    */
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.client.transport.RegisterXpub(rawXPub, metadata);
+    return await this.client.httpTransport.RegisterXpub(rawXPub, metadata);
   }
 
-  /**
-   * Admin only: Register a new xPub into the Bux server
-   *
-   * Alias for {@link RegisterXpub}
-   */
-  async NewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.client.transport.RegisterXpub(rawXPub, metadata);
-  }
-}
-
-const generateKeys = function(): KeyWithMnemonic {
-  return generateNewKeys();
-}
-
-const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic{
-  return generateKeysFromMnemonic(mnemonic);
-}
-
-const getKeysFromString = function(xpriv: string): Key{
-  return generateKeysFromString(xpriv);
 }
 
 export {
   BuxClient,
-  generateKeys,
-  getKeysFromMnemonic,
-  getKeysFromString,
 };
 export * from "./authentication";
 export * from "./interface";

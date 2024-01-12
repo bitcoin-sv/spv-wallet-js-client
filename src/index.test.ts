@@ -8,11 +8,10 @@ import {
   DraftTransaction,
   Metadata,
   TransportService,
-  TransportType
 } from "./interface";
 
-const adminKeyXpub = "xprv9s21ZrQH143K4Z8JnrQ7XsYxzKbFNsAEPyHMaMU2fbMtoY1YmsJLFo3XBkg2m7e9UJLS6xvd2HjZ5WN9fQbMSGU7uXEE2pksvbQYCXswLB5"
-const xPubID = "9fe44728bf16a2dde3748f72cc65ea661f3bf18653b320d31eafcab37cf7fb36"
+// const adminKeyXpub = "xprv9s21ZrQH143K4Z8JnrQ7XsYxzKbFNsAEPyHMaMU2fbMtoY1YmsJLFo3XBkg2m7e9UJLS6xvd2HjZ5WN9fQbMSGU7uXEE2pksvbQYCXswLB5"
+// const xPubID = "9fe44728bf16a2dde3748f72cc65ea661f3bf18653b320d31eafcab37cf7fb36"
 const xPrivString = "xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A"
 const xPubString = "xpub661MyMwAqRbcGdcFJDQk7q45Puro3cS3tQkoHCWa3G81bzc8Bz2AP9fC7MT4SfsbPfCie1fR1o8VPf735w3ZeEmvDF6AMQifS3FfeUfrDS7"
 const serverURL = "https://bux.org/v1"
@@ -32,14 +31,12 @@ const accessKeyID = "39ecce5cb22e2abfacc89fbe2644b0db67934c788ce0312efede459f079
 const accessKeyJSON = `{"id": "39ecce5cb22e2abfacc89fbe2644b0db67934c788ce0312efede459f0797037d","xpub_id": "9fe44728bf16a2dde3748f72cc65ea661f3bf18653b320d31eafcab37cf7fb36","key": "","metadata": {"test": "test value"},"created_at": "2022-02-17T18:57:55.218Z","updated_at": null,"deleted_at": null,"revoked_at": null}`;
 
 interface TestClient {
-  type: TransportType;
   xPrivString: string;
   xPubString: string;
   serverURL: string;
 }
 
 const httpTestClient: TestClient = {
-  type: "http",
   xPrivString,
   xPubString,
   serverURL,
@@ -58,7 +55,6 @@ describe('BuxClient class', () => {
     const options: ClientOptions = {
       adminKey: "test-admin-key",
       debug: true,
-      transportType: "graphql",
       xPrivString,
       xPubString,
     }
@@ -70,7 +66,6 @@ describe('BuxClient class', () => {
     const options: ClientOptions = {
       adminKey: "test-admin-key",
       debug: true,
-      transportType: "graphql",
       xPrivString,
       xPubString,
     }
@@ -457,7 +452,6 @@ describe('UpdateTransactionMetadata', () => {
 
 const runTests = async function(testClient: TestClient, test: Function) {
     const options: ClientOptions = {
-      transportType: testClient.type,
       xPrivString: testClient.xPrivString,
       signRequest: true,
     };

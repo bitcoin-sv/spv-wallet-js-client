@@ -555,7 +555,7 @@ class TransportHTTP implements TransportService {
   }
 
   /**
-   * Get a utxo by ID
+   * Get an utxo by ID
    * @param tx_id string Transaction ID of UTXO to retrieve
    * @param output_index int Output index of Utxo to retrieve
    * @returns Utxo
