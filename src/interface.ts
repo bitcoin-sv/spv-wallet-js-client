@@ -6,13 +6,6 @@ export interface Client {
 }
 
 /**
- * Transport type to use to communicate with teh backend server
- *
- * The server will need to have the transport type enabled
- */
-// export type TransportType = "http";
-
-/**
  * Database query key value conditions to filter data on
  *
  * @example
@@ -654,7 +647,6 @@ export interface ClientOptions {
   adminKey?: string;
   debug?: boolean;
   signRequest?: boolean;
-  // transport?: TransportService;
   xPriv?: bsv.HDPrivateKey;
   xPrivString?: string;
   xPub?: bsv.HDPublicKey;

@@ -10,8 +10,6 @@ import {
   TransportService,
 } from "./interface";
 
-// const adminKeyXpub = "xprv9s21ZrQH143K4Z8JnrQ7XsYxzKbFNsAEPyHMaMU2fbMtoY1YmsJLFo3XBkg2m7e9UJLS6xvd2HjZ5WN9fQbMSGU7uXEE2pksvbQYCXswLB5"
-// const xPubID = "9fe44728bf16a2dde3748f72cc65ea661f3bf18653b320d31eafcab37cf7fb36"
 const xPrivString = "xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A"
 const xPubString = "xpub661MyMwAqRbcGdcFJDQk7q45Puro3cS3tQkoHCWa3G81bzc8Bz2AP9fC7MT4SfsbPfCie1fR1o8VPf735w3ZeEmvDF6AMQifS3FfeUfrDS7"
 const serverURL = "https://bux.org/v1"

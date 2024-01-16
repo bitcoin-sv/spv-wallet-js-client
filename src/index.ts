@@ -58,8 +58,6 @@ class BuxClient implements TransportService {
   }
 
   private parseOptions(serverUrl: string, options: ClientOptions) {
-    // http is the default transport
-    // if (!options.transportType) options.transportType = "http";
 
     if (options.xPriv) {
       options.xPrivString = options.xPriv.toString();
