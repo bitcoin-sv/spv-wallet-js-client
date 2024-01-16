@@ -25,6 +25,7 @@ import {
 } from "../interface";
 import { AuthHeader, setSignature } from "../authentication";
 import logger from "../logger";
+import axios from "axios";
 
 class TransportHTTP implements TransportService {
   serverUrl: string;
@@ -729,15 +730,18 @@ class TransportHTTP implements TransportService {
       headers,
     };
 
-    const response = await global.fetch(url, httpOptions);
-
+    // const response = await global.fetch(url, httpOptions);
+    const response = await axios(url, httpOptions);
+    // console.log("data", response)
     if (response.status >= 400) {
+      // console.log("status", response)
+      response.statusText = response.data.data
       const Err = new Error(response.statusText)
       logger.error(Err)
-      throw Err
+      throw Err.message
     }
-
-    return response.json();
+    // console.log("resp", response)
+    return response.data;
   }
 }
 
