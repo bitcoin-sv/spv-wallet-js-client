@@ -10,7 +10,7 @@ import {
 // deriveChildKeyFromHex derive the child extended key from the hex string
 export const deriveChildKeyFromHex = function (hdKey: bsv.HDPrivateKey | bsv.HDPublicKey, hexHash: string): bsv.HDPrivateKey | bsv.HDPublicKey {
   if (hdKey instanceof bsv.HDPrivateKey) {
-    return deriveHDPrivateChildKeyFromHex(hdKey, hexHash);
+    return deriveHDPrivateChildKeyFromHex(hdKey as bsv.HDPrivateKey, hexHash);
   } else {
     return deriveHDPublicChildKeyFromHex(hdKey, hexHash);
   }
