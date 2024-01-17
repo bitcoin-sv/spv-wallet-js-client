@@ -730,18 +730,18 @@ class TransportHTTP implements TransportService {
       headers,
     };
 
-    // const response = await global.fetch(url, httpOptions);
-    const response = await axios(url, httpOptions);
-    // console.log("data", response)
-    if (response.status >= 400) {
-      // console.log("status", response)
-      response.statusText = response.data.data
-      const Err = new Error(response.statusText)
-      logger.error(Err)
-      throw Err.message
+    try {
+       const response = await axios(url, httpOptions);
+       return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        console.error(`Status: ${error.response.status}, Message: ${error.response.data}`)
+      } else if (error.request) {
+        console.error(error.request);
+      } else {
+        throw error.message
+      }
     }
-    // console.log("resp", response)
-    return response.data;
   }
 }
 
