@@ -735,7 +735,8 @@ class TransportHTTP implements TransportService {
        return response.data;
     } catch (error: any) {
       if (error.response) {
-        console.error(`Status: ${error.response.status}, Message: ${error.response.data}`)
+        const {status, data} = error.response
+        console.error(`Status: ${status}, Message: ${typeof data === 'string' ? data : data.message }`)
       } else if (error.request) {
         console.error(error.request);
       } else {
