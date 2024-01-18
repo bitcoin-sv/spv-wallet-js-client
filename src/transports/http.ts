@@ -3,7 +3,6 @@ import {
   AccessKey,
   AccessKeys,
   AdminStats,
-  BlockHeaders,
   ClientOptions,
   Conditions,
   Destination,
@@ -84,27 +83,6 @@ class TransportHTTP implements TransportService {
 
   async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/count`, {
-      method: 'POST',
-      body: JSON.stringify({
-        conditions,
-        metadata,
-      })
-    });
-  }
-
-  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<BlockHeaders> {
-    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/search`, {
-      method: 'POST',
-      body: JSON.stringify({
-        conditions,
-        metadata,
-        params,
-      })
-    });
-  }
-
-  async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/count`, {
       method: 'POST',
       body: JSON.stringify({
         conditions,

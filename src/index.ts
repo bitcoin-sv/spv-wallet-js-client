@@ -6,7 +6,6 @@ import {
   AccessKey,
   AccessKeys,
   AdminStats,
-  BlockHeaders,
   Client,
   ClientOptions,
   Conditions,
@@ -186,29 +185,6 @@ class BuxClient implements TransportService {
    */
   async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.client.httpTransport.AdminGetAccessKeysCount(conditions, metadata);
-  }
-
-  /**
-   * Admin only: Get a list of all block headers in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {BlockHeaders}
-   */
-  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders> {
-    return await this.client.httpTransport.AdminGetBlockHeaders(conditions, metadata, queryParams);
-  }
-
-  /**
-   * Admin only: Get a count of all block headers in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetBlockHeadersCount(conditions, metadata);
   }
 
   /**

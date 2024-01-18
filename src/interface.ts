@@ -207,30 +207,6 @@ export interface Destination {
 export interface Destinations extends Array<Destination> {}
 
 /**
- * Block header
- */
-export interface BlockHeader {
-  id: string;
-  height: number;
-  time: number;
-  nonce: number;
-  version: number;
-  hash_previous_block: string;
-  hash_merkle_root: string;
-  bits: string;
-  synced: string | null;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
-}
-
-/**
- * Array og block headers
- * @see {@link BlockHeader}
- */
-export interface BlockHeaders extends Array<BlockHeader> {}
-
-/**
  * Transaction
  */
 export interface Transaction {
@@ -568,8 +544,6 @@ export interface TransportService {
   AdminGetStats(): Promise<AdminStats>
   AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>
   AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders>
-  AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
   AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminGetPaymail(address: string): Promise<PaymailAddress>
