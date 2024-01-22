@@ -742,7 +742,7 @@ class TransportHTTP implements TransportService {
       } else if (error.request) {
         console.error(error.request);
       } else {
-        throw error.message
+        throw error
       }
     }
   }
