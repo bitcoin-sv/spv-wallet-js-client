@@ -10,21 +10,22 @@ import {
   Destinations,
   DraftTransaction,
   Metadata,
-  QueryParams,
   PaymailAddress,
   PaymailAddresses,
+  QueryParams,
   Recipients,
   Transaction,
   TransactionConfigInput,
   Transactions,
   TransportService,
+  Utxo,
   Utxos,
   XPub,
   XPubs,
-  Utxo,
 } from "../interface";
-import { AuthHeader, setSignature } from "../authentication";
+import {AuthHeader, setSignature} from "../authentication";
 import logger from "../logger";
+import axios from "axios"
 
 class TransportHTTP implements TransportService {
   serverUrl: string;
@@ -74,177 +75,177 @@ class TransportHTTP implements TransportService {
   async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         params,
-      })
+      }
     });
   }
 
   async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      })
+      }
     });
   }
 
   async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<BlockHeaders> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         params,
-      })
+      }
     });
   }
 
   async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      })
+      }
     });
   }
 
   async AdminGetDestinations(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Destinations> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         params,
-      })
+      }
     });
   }
 
   async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      })
+      }
     });
   }
 
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/get`, {
       method: 'POST',
-      body: JSON.stringify({
-        address,
-      })
+      data: {
+        address
+    }
     });
   }
 
   async AdminGetPaymails(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<PaymailAddresses> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         params,
-      })
+      }
     });
   }
 
   async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      })
+      }
     });
   }
 
   async AdminCreatePaymail(xpub: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/create`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         xpub,
         address,
         public_name,
         avatar,
-      })
+      }
     });
   }
 
   async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, {
       method: 'DELETE',
-      body: JSON.stringify({
-        address,
-      })
+      data: {
+        address
+      }
     });
   }
 
   async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         params,
-      })
+      }
     });
   }
 
   async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      })
+      }
     });
   }
 
   async AdminGetUtxos(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Utxos> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         params,
-      })
+      }
     });
   }
 
   async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      })
+      }
     });
   }
 
   async AdminGetXPubs(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<XPubs> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         params,
-      })
+      }
     });
   }
 
   async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      })
+      }
     });
   }
 
@@ -256,9 +257,9 @@ class TransportHTTP implements TransportService {
   async AdminRecordTransaction(hex: string): Promise<Transaction> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/record`, {
       method: 'POST',
-      body: JSON.stringify({
-        hex,
-      })
+      data: {
+        hex
+      }
     });
   }
 
@@ -279,9 +280,9 @@ class TransportHTTP implements TransportService {
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
     return await this.doHTTPRequest(`${this.serverUrl}/xpub`, {
       method: 'PATCH',
-      body: JSON.stringify({
-        metadata,
-      }),
+      data: {
+        metadata
+      }
     });
   }
 
@@ -303,14 +304,14 @@ class TransportHTTP implements TransportService {
   async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
     return await this.doHTTPRequest(`${this.serverUrl}/access-key/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         page: queryParams?.page || 0,
         page_size: queryParams?.page_size || 0,
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
-      }),
+      }
     });
   }
 
@@ -323,10 +324,10 @@ class TransportHTTP implements TransportService {
   async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPRequest(`${this.serverUrl}/access-key/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      }),
+      }
     });
   }
 
@@ -347,9 +348,9 @@ class TransportHTTP implements TransportService {
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
     return await this.doHTTPRequest(`${this.serverUrl}/access-key`, {
       method: 'POST',
-      body: JSON.stringify({
-        metadata,
-      }),
+      data: {
+        metadata
+      }
     });
   }
 
@@ -387,14 +388,14 @@ class TransportHTTP implements TransportService {
   async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         page: queryParams?.page || 0,
         page_size: queryParams?.page_size || 0,
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
-      })
+      }
     });
   }
 
@@ -407,10 +408,10 @@ class TransportHTTP implements TransportService {
   async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      }),
+      }
     });
   }
 
@@ -422,9 +423,9 @@ class TransportHTTP implements TransportService {
   async NewDestination(metadata: Metadata): Promise<Destination> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
       method: 'POST',
-      body: JSON.stringify({
-        metadata,
-      })
+      data: {
+        metadata
+      }
     });
   }
 
@@ -435,10 +436,10 @@ class TransportHTTP implements TransportService {
   async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
       method: 'PATCH',
-      body: JSON.stringify({
+      data: {
         id,
         metadata,
-      }),
+      }
     });
   }
 
@@ -449,10 +450,10 @@ class TransportHTTP implements TransportService {
   async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
       method: 'PATCH',
-      body: JSON.stringify({
+      data: {
         address,
         metadata,
-      }),
+      }
     });
   }
 
@@ -463,10 +464,10 @@ class TransportHTTP implements TransportService {
   async UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination> {
     return await this.doHTTPRequest(`${this.serverUrl}/destination`, {
       method: 'PATCH',
-      body: JSON.stringify({
-        lockingScript,
-        metadata,
-      }),
+      data: {
+        locking_script: lockingScript,
+        metadata
+      },
     });
   }
 
@@ -488,13 +489,13 @@ class TransportHTTP implements TransportService {
   ): Promise<void> {
     await this.doHTTPRequest(`${this.serverUrl}/paymail`, {
       method: "POST",
-      body: JSON.stringify({
+      data: {
         key,
         address,
         public_name: publicName,
         avatar,
         metadata,
-      }),
+      }
     });
   }
 
@@ -506,7 +507,9 @@ class TransportHTTP implements TransportService {
   async DeletePaymail(address: string): Promise<void> {
     await this.doHTTPRequest(`${this.serverUrl}/paymail`, {
       method: "DELETE",
-      body: JSON.stringify({ address }),
+      data: {
+        address
+      }
     });
   }
 
@@ -529,14 +532,14 @@ class TransportHTTP implements TransportService {
   async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         page: queryParams?.page || 0,
         page_size: queryParams?.page_size || 0,
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
-      })
+      }
     });
   }
 
@@ -549,10 +552,10 @@ class TransportHTTP implements TransportService {
   async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      }),
+      }
     });
   }
 
@@ -576,14 +579,14 @@ class TransportHTTP implements TransportService {
   async GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
     return await this.doHTTPRequest(`${this.serverUrl}/utxo/search`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
         page: queryParams?.page || 0,
         page_size: queryParams?.page_size || 0,
         order_by_field: queryParams?.order_by_field || "",
         sort_direction: queryParams?.sort_direction || "",
-      })
+      }
     });
   }
 
@@ -596,10 +599,10 @@ class TransportHTTP implements TransportService {
   async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.doHTTPRequest(`${this.serverUrl}/utxo/count`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         conditions,
         metadata,
-      }),
+      }
     });
   }
 
@@ -611,9 +614,9 @@ class TransportHTTP implements TransportService {
   async UnreserveUtxos(referenceID: string): Promise<void> {
     return await this.doHTTPRequest(`${this.serverUrl}/utxo/unreserve`, {
       method: 'PATCH',
-      body: JSON.stringify({
+      data: {
         reference_id: referenceID,
-      }),
+      }
     });
   }
 
@@ -630,10 +633,10 @@ class TransportHTTP implements TransportService {
 
     return await this.doHTTPRequest(`${this.serverUrl}/transaction`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         config: transactionConfig,
         metadata,
-      })
+      }
     });
   }
 
@@ -646,10 +649,10 @@ class TransportHTTP implements TransportService {
   async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         config: transactionConfig,
         metadata,
-      })
+      }
     });
   }
 
@@ -663,11 +666,11 @@ class TransportHTTP implements TransportService {
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction/record`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         hex,
         reference_id: referenceID,
         metadata,
-      })
+      }
     });
   }
 
@@ -678,10 +681,10 @@ class TransportHTTP implements TransportService {
   async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
     return await this.doHTTPRequest(`${this.serverUrl}/transaction`, {
       method: 'PATCH',
-      body: JSON.stringify({
+      data: {
         id: txID,
-        metadata,
-      }),
+        metadata
+      }
     });
   }
 
@@ -694,10 +697,10 @@ class TransportHTTP implements TransportService {
   async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/xpub`, {
       method: 'POST',
-      body: JSON.stringify({
+      data: {
         key: rawXPub,
-        metadata,
-      })
+        metadata
+      }
     });
   }
 
@@ -731,15 +734,19 @@ class TransportHTTP implements TransportService {
       headers,
     };
 
-    const response = await global.fetch(url, httpOptions);
-
-    if (response.status >= 400) {
-      const Err = new Error(response.statusText)
-      logger.error(Err)
-      throw Err
+    try {
+      const response = await axios(url, httpOptions)
+      return response.data
+    } catch (error: any) {
+      if (error.response) {
+        const {status, data} = error.response
+        console.error(`Status: ${status}, Message: ${typeof data === 'string' ? data : data.message }`)
+      } else if (error.request) {
+        console.error(error.request);
+      } else {
+        throw error
+      }
     }
-
-    return response.json();
   }
 }
 
