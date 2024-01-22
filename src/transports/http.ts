@@ -272,6 +272,8 @@ class TransportHTTP implements TransportService {
 
   /**
    * Update Xpub metadata
+   *
+   * Admin key should be set to be able to use this method
    * @returns XPub
    */
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {

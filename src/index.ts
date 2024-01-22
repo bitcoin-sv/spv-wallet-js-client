@@ -381,6 +381,8 @@ class BuxClient implements TransportService {
   /**
    * Update the metadata of the xpub of the current user
    *
+   * Admin key should be set to use this method
+   *
    * @param {Metadata} metadata Key value object to use to update the metadata. To delete keys add a key with null value
    * @return {XPub}
    */
