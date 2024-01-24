@@ -91,6 +91,10 @@ class BuxClient implements TransportService {
 
     let httpTransport: TransportService = new TransportHTTP(serverUrl, options)
 
+    if (options.adminKey) {
+      httpTransport.SetAdminKey(options.adminKey)
+    }
+
     this.options = options;
 
     return httpTransport;
