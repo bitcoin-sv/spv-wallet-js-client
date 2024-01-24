@@ -1380,24 +1380,24 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@microsoft/api-extractor-model@7.28.4":
-  version "7.28.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.28.4.tgz#a0206eb4860c04121a6b737a40627b291d9f5d99"
-  integrity sha512-vucgyPmgHrJ/D4/xQywAmjTmSfxAx2/aDmD6TkIoLu51FdsAfuWRbijWA48AePy60OO+l+mmy9p2P/CEeBZqig==
+"@microsoft/api-extractor-model@7.28.6":
+  version "7.28.6"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.28.6.tgz#675ea51ffb3334c1e12132ceed089f25df316a0b"
+  integrity sha512-Jmz0PkQNvxMDpdL2Kea7GDLt5RL/nbKqI5lMkeftIfCAx9OtLqMnWHzKYBPFh/AR5GhmyLT3bJ/2Ml/ykCF8qQ==
   dependencies:
     "@microsoft/tsdoc" "0.14.2"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.63.0"
+    "@rushstack/node-core-library" "3.64.1"
 
 "@microsoft/api-extractor@^7.19.4":
-  version "7.39.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.39.1.tgz#af14418c9ae26afa13fa79e4a3c6bded51f7d8e0"
-  integrity sha512-V0HtCufWa8hZZvSmlEzQZfINcJkHAU/bmpyJQj6w+zpI87EkR8DuBOW6RWrO9c7mUYFZoDaNgUTyKo83ytv+QQ==
+  version "7.39.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.39.3.tgz#b33ad6cde8cda97fad1dcabc9b22b6659ab6905f"
+  integrity sha512-Gh1NBS4Hh0fIfu8lfneaiBUq8IOm/0/yCy0t7+qq6XQEEfgVQNweCx7De0ISfhyqjL7J42qSIix4v77EWubCYg==
   dependencies:
-    "@microsoft/api-extractor-model" "7.28.4"
+    "@microsoft/api-extractor-model" "7.28.6"
     "@microsoft/tsdoc" "0.14.2"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.63.0"
+    "@rushstack/node-core-library" "3.64.1"
     "@rushstack/rig-package" "0.5.1"
     "@rushstack/ts-command-line" "4.17.1"
     colors "~1.2.1"
@@ -1578,10 +1578,10 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.9.6.tgz#2c1fb69e02a3f1506f52698cfdc3a8b6386df9a6"
   integrity sha512-jqzNLhNDvIZOrt69Ce4UjGRpXJBzhUBzawMwnaDAwyHriki3XollsewxWzOzz+4yOFDkuJHtTsZFwMxhYJWmLQ==
 
-"@rushstack/node-core-library@3.63.0":
-  version "3.63.0"
-  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.63.0.tgz#5a1347a22ff1377a155b9838606d8c1c69d58067"
-  integrity sha512-Q7B3dVpBQF1v+mUfxNcNZh5uHVR8ntcnkN5GYjbBLrxUYHBGKbnCM+OdcN+hzCpFlLBH6Ob0dEHhZ0spQwf24A==
+"@rushstack/node-core-library@3.64.1":
+  version "3.64.1"
+  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.64.1.tgz#d4a6658e5fa0517cac74961b7a862d1fb3d7100f"
+  integrity sha512-eC2OdAvH+1siC+H2gqS8QP+QWv9EUU0mfY0+84lWojl8wamYa5WIdVETIaHSc5gDlRTz4lk+sJUOoWCARpj5dw==
   dependencies:
     colors "~1.2.1"
     fs-extra "~7.0.1"
