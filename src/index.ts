@@ -13,6 +13,8 @@ import {
   Destination,
   Destinations,
   DraftTransaction,
+  KeyWithMnemonic,
+  Key,
   Metadata,
   QueryParams,
   PaymailAddress,
@@ -27,6 +29,11 @@ import {
   XPubs,
   Utxo,
 } from "./interface";
+import {
+  generateNewKeys,
+  generateKeysFromMnemonic,
+  generateKeysFromString,
+} from "./utils/keys";
 import logger from "./logger"
 
 /**
@@ -812,8 +819,23 @@ class BuxClient implements TransportService {
 
 }
 
+const generateKeys = function(): KeyWithMnemonic {
+  return generateNewKeys();
+}
+
+const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic{
+  return generateKeysFromMnemonic(mnemonic);
+}
+
+const getKeysFromString = function(xpriv: string): Key{
+  return generateKeysFromString(xpriv);
+}
+
 export {
   BuxClient,
+  generateKeys,
+  getKeysFromMnemonic,
+  getKeysFromString,
 };
 export * from "./authentication";
 export * from "./interface";
