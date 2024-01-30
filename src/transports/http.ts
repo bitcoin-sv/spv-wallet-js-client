@@ -504,6 +504,9 @@ class TransportHTTP implements TransportService {
 
   /**
    * Delete paymail
+   *
+   * Admin key should be set before use this method
+   *
    * @param {string} address - The full paymail address
    * @returns {void}
    */
