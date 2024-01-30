@@ -473,6 +473,9 @@ class TransportHTTP implements TransportService {
 
   /**
    * Register a new paymail
+   *
+   * Admin key should be set before use this method
+   *
    * @param {string} key - The rawXPubKey
    * @param {string} address - The full paymail address
    * @param {string} [publicName] - The public name (optional)
