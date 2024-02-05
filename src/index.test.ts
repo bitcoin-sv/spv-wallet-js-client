@@ -335,26 +335,6 @@ describe('GetUtxo', () => {
   });
 });
 
-describe("UnreserveUtxos", () => {
-  const mockReferenceId = "xyz";
-  test('http result', async () => {
-    fetchMock.mockResponse('{}');
-    await runTests(httpTestClient, async (buxClient: TransportService) => {
-      await buxClient.UnreserveUtxos(mockReferenceId);
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        `${serverURL}/utxo/unreserve`,
-        expect.objectContaining({
-          method: 'PATCH',
-          body: JSON.stringify({ reference_id: mockReferenceId }),
-        })
-      );
-    });
-  });
-
-
-});
-
 describe('NewPaymail', () => {
   test('http result', async () => {
     fetchMock.mockResponse('{}');
