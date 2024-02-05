@@ -765,7 +765,7 @@ class BuxClient implements TransportService {
       throw Err
     }
 
-    return txDraft.serialize();
+    return txDraft.toString();
   }
 
   /**
