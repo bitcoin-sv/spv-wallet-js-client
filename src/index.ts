@@ -725,7 +725,7 @@ class BuxClient implements TransportService {
       throw new Error("transaction could not be fully signed");
     }
 
-    return txDraft.serialize();
+    return txDraft.toString();
   }
 
   /**
