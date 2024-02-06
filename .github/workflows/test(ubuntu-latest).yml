@@ -29,10 +29,6 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: build # will run `yarn build` command
-      - name: Build types
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: build:types # will run `yarn build:types` command
       - name: Run tests
         uses: borales/actions-yarn@v4
         with:
