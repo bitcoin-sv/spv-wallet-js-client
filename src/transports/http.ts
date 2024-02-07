@@ -23,7 +23,7 @@ import {
   XPub,
   XPubs,
 } from "../interface";
-import {AuthHeader, setSignature} from "../authentication";
+import { AuthHeader, setSignature } from "../authentication";
 import logger from "../logger";
 import axios from "axios"
 
@@ -140,7 +140,7 @@ class TransportHTTP implements TransportService {
       method: 'POST',
       data: {
         address
-    }
+      }
     });
   }
 
@@ -696,22 +696,33 @@ class TransportHTTP implements TransportService {
     });
   }
 
-  async doHTTPAdminRequest(url: string, options: any) {
+  async doHTTPAdminRequest(url: string, options: any): Promise<any> {
     if (!this.adminKey) {
       const Err = new Error("Admin key has not been set. Cannot do admin queries");
       logger.error(Err)
       throw Err
     }
-    return this._doHTTPRequest(url, options, this.adminKey)
+
+    try {
+      return await this.makeRequest(url, options, this.adminKey)
+    } catch (error: any) {
+      this.handleRequestError(error)
+    }
   }
 
-  async doHTTPRequest(url: string, options: any) {
+  async doHTTPRequest(url: string, options: any): Promise<any> {
     const signingKey = this.options.xPriv || this.options.accessKey;
-    return this._doHTTPRequest(url, options, signingKey)
+
+    try {
+      return await this.makeRequest(url, options, signingKey)
+    } catch (error: any) {
+      this.handleRequestError(error)
+    }
   }
 
-  async _doHTTPRequest(url: string, options: any, signingKey: any) {
-    let headers = {...options.headers,
+  async makeRequest(url: string, options: any, signingKey: any): Promise<any> {
+    let headers = {
+      ...options.headers,
       'content-type': 'application/json'
     }
 
@@ -722,23 +733,35 @@ class TransportHTTP implements TransportService {
       headers[AuthHeader] = this.options.xPubString;
     }
 
-    const httpOptions = {...options,
+    const reqConfig = {
+      ...options,
       headers,
     };
 
-    try {
-      const response = await axios(url, httpOptions)
-      return response.data
-    } catch (error: any) {
-      if (error.response) {
-        const {status, data} = error.response
-        console.error(`Status: ${status}, Message: ${typeof data === 'string' ? data : data.message }`)
-      } else if (error.request) {
-        console.error(error.request);
-      } else {
-        throw error
+    const response = await axios(url, reqConfig)
+    return response.data
+  }
+
+  handleRequestError(error: any): any {
+    let errMsg: string
+
+    if (error.response) {
+      const { status, data } = error.response
+      let msg: string = ""
+
+      if (typeof data === 'string') {
+        msg = data
+      } else if (data) {
+        msg = data.message
       }
+      errMsg = `Status: ${status}, Message: ${msg}`;
     }
+    else {
+      errMsg = `Status: ${error.status}, Message: ${error.message}`;
+    }
+
+    console.error(errMsg)
+    throw errMsg
   }
 }
 
