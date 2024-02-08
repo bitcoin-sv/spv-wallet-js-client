@@ -594,7 +594,7 @@ class TransportHTTP implements TransportService {
       'content-type': 'application/json'
     }
 
-    const payloadJson= JSON.stringify(payload)
+    const payloadJson = JSON.stringify(payload)
 
     if (this.options.signRequest && signingKey) {
       // @ts-ignore
@@ -604,14 +604,14 @@ class TransportHTTP implements TransportService {
     }
 
     // 
-    const reqConfig :AxiosRequestConfig= {
+    const req: AxiosRequestConfig = {
       method,
       headers,
-      data:payloadJson
+      data: payloadJson
     };
 
-    const response = await axios(url, reqConfig)
-    return response.data
+    const res = await axios(url, req)
+    return res.data
   }
 
   handleRequestError(error: any): any {
