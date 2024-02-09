@@ -26,7 +26,11 @@ import {
 import { AuthHeader, setSignature } from "../authentication";
 import logger from "../logger";
 import axios from "axios"
-import { AxiosRequestConfig } from "axios"
+import { AxiosRequestConfig, AxiosError } from "axios"
+
+interface ErrorData {
+  message: string
+}
 
 class TransportHTTP implements TransportService {
   serverUrl: string;
@@ -461,7 +465,7 @@ class TransportHTTP implements TransportService {
    * @returns Utxo
    */
   async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
-    return await this.doHTTPRequest(`${this.serverUrl}/utxo?tx_id=${tx_id}&output_index=${output_index}`, 'GET');
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo?tx_id=${tx_id}&output_index=${output_index}`);
   }
 
   /**
@@ -589,32 +593,34 @@ class TransportHTTP implements TransportService {
     }
   }
 
-  async makeRequest(url: string, method: string, payload: any, signingKey: any): Promise<any> {
-    let headers: any = {
+  async makeRequest(url: string,
+    method: string,
+    payload: any,
+    signingKey?: bsv.HDPrivateKey | bsv.PrivateKey)
+    : Promise<any> {
+
+    let headers: Record<string, string> = {
       'content-type': 'application/json'
     }
 
-    const payloadJson = JSON.stringify(payload)
-
     if (this.options.signRequest && signingKey) {
       // @ts-ignore
-      headers = setSignature(headers, signingKey, payloadJson || "");
-    } else {
-      headers[AuthHeader] = this.options.xPubString;
+      headers = setSignature(headers, signingKey, JSON.stringify(payload) || "");
+    } else if (this.options.xPubString) {
+      headers[AuthHeader] = this.options.xPubString
     }
 
-    // 
     const req: AxiosRequestConfig = {
       method,
       headers,
-      data: payloadJson
+      data: payload
     };
 
     const res = await axios(url, req)
     return res.data
   }
 
-  handleRequestError(error: any): any {
+  handleRequestError(error: AxiosError<ErrorData | string>) {
     let errMsg: string
 
     if (error.response) {
