@@ -1,13 +1,8 @@
-import { describe, expect, test } from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 import axios from "axios"
 import nock from 'nock'
-import { BuxClient } from "./index";
-import {
-  ClientOptions,
-  DraftTransaction,
-  TransactionConfigInput,
-  Recipients
-} from "./interface";
+import {BuxClient} from "./index";
+import {ClientOptions, DraftTransaction, Recipients, TransactionConfigInput} from "./interface";
 
 const xPrivString = "xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A"
 const xPubString = "xpub661MyMwAqRbcGdcFJDQk7q45Puro3cS3tQkoHCWa3G81bzc8Bz2AP9fC7MT4SfsbPfCie1fR1o8VPf735w3ZeEmvDF6AMQifS3FfeUfrDS7"
@@ -56,61 +51,52 @@ describe('BuxClient routing', () => {
   };
   const bux = new BuxClient(testClient.serverURL, options);
 
-  const tcs = [
-    { fname: 'GetXpub', routing: 'xpub', httpverb: 'get', fn: () => { return bux.GetXPub() }, },
-    { fname: 'UpdateXPubMetadata', routing: 'xpub', httpverb: 'patch', fn: () => { return bux.UpdateXPubMetadata({}) }, },
+  it.each`
+    buxMethod                                            | httpMethod  | path                             | act
+    ${'GetXpub'}                                         | ${'get'}    | ${'xpub'}                        | ${() => bux.GetXPub()}
+    ${'UpdateXPubMetadata'}                              | ${'patch'}  | ${'xpub'}                        | ${() => bux.UpdateXPubMetadata({})}
+    ${'GetAccessKey'}                                    | ${'get'}    | ${'access-key?id='}              | ${() => bux.GetAccessKey("")}
+    ${'GetAccessKeys'}                                   | ${'post'}   | ${'access-key/search'}           | ${() => bux.GetAccessKeys({}, {}, {})}
+    ${'GetAccessKeysCount'}                              | ${'post'}   | ${'access-key/count'}            | ${() => bux.GetAccessKeysCount({}, {})}
+    ${'CreateAccessKey'}                                 | ${'post'}   | ${'access-key'}                  | ${() => bux.CreateAccessKey({})}
+    ${'RevokeAccessKey'}                                 | ${'delete'} | ${'access-key?id='}              | ${() => bux.RevokeAccessKey("")}
+    ${'GetDestinationByID'}                              | ${'get'}    | ${'destination?id='}             | ${() => bux.GetDestinationByID("")}
+    ${'GetDestinationByLockingScript'}                   | ${'get'}    | ${'destination?locking_script='} | ${() => bux.GetDestinationByLockingScript("")}
+    ${'GetDestinationByAddress'}                         | ${'get'}    | ${'destination?address='}        | ${() => bux.GetDestinationByAddress("")}
+    ${'GetDestinations'}                                 | ${'post'}   | ${'destination/search'}          | ${() => bux.GetDestinations({}, {}, {})}
+    ${'GetDestinationsCount'}                            | ${'post'}   | ${'destination/count'}           | ${() => bux.GetDestinationsCount({}, {})}
+    ${'NewDestination'}                                  | ${'post'}   | ${'destination'}                 | ${() => bux.NewDestination({})}
+    ${'UpdateDestinationMetadataByID'}                   | ${'patch'}  | ${'destination'}                 | ${() => bux.UpdateDestinationMetadataByID("", {})}
+    ${'UpdateDestinationMetadataByLockingScript'}        | ${'patch'}  | ${'destination'}                 | ${() => bux.UpdateDestinationMetadataByLockingScript("", {})}
+    ${'UpdateDestinationMetadataByAddress'}              | ${'patch'}  | ${'destination'}                 | ${() => bux.UpdateDestinationMetadataByAddress("", {})}
+    ${'GetTransaction'}                                  | ${'get'}    | ${'transaction?id='}             | ${() => bux.GetTransaction("")}
+    ${'GetTransactions'}                                 | ${'post'}   | ${'transaction/search'}          | ${() => bux.GetTransactions({}, {}, {})}
+    ${'GetTransactionsCount'}                            | ${'post'}   | ${'transaction/count'}           | ${() => bux.GetTransactionsCount({}, {})}
+    ${'DraftTransaction'}                                | ${'post'}   | ${'transaction'}                 | ${() => bux.DraftTransaction({} as TransactionConfigInput, {})}
+    ${'DraftToRecipients'}                               | ${'post'}   | ${'transaction'}                 | ${() => bux.DraftToRecipients([] as Recipients, {})}
+    ${'RecordTransaction'}                               | ${'post'}   | ${'transaction/record'}          | ${() => bux.RecordTransaction("", "", {})}
+    ${'UpdateTransactionMetadata'}                       | ${'patch'}  | ${'transaction'}                 | ${() => bux.UpdateTransactionMetadata("", {})}
+    ${'GetUtxo'}                                         | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => bux.GetUtxo("", 0)}
+    ${'GetUtxos'}                                        | ${'post'}   | ${'utxo/search'}                 | ${() => bux.GetUtxos({}, {}, {})}
+    ${'GetUtxosCount'}                                   | ${'post'}   | ${'utxo/count'}                  | ${() => bux.GetUtxosCount({}, {})}
+    ${'NewPaymail'}                                      | ${'post'}   | ${'paymail'}                     | ${() => bux.NewPaymail("", "")}
+    ${'DeletePaymail'}                                   | ${'delete'} | ${'paymail'}                     | ${() => bux.DeletePaymail("")}
+    `("$buxMethod", async ({path, httpMethod, act}) => {
 
-    { fname: 'GetAccessKey', routing: 'access-key?id=', httpverb: 'get', fn: () => { return bux.GetAccessKey("") }, },
-    { fname: 'GetAccessKeys', routing: 'access-key/search', httpverb: 'post', fn: () => { return bux.GetAccessKeys({}, {}, {}) }, },
-    { fname: 'GetAccessKeysCount', routing: 'access-key/count', httpverb: 'post', fn: () => { return bux.GetAccessKeysCount({}, {}) }, },
-    { fname: 'CreateAccessKey', routing: 'access-key', httpverb: 'post', fn: () => { return bux.CreateAccessKey({}) } },
-    { fname: 'RevokeAccessKey', routing: 'access-key?id=', httpverb: 'delete', fn: () => { return bux.RevokeAccessKey("") } },
+    // given
+    const mq = setupHttpMock(httpMethod, path)
 
-    { fname: 'GetDestinationByID', routing: 'destination?id=', httpverb: 'get', fn: () => { return bux.GetDestinationByID("") } },
-    { fname: 'GetDestinationByLockingScript', routing: 'destination?locking_script=', httpverb: 'get', fn: () => { return bux.GetDestinationByLockingScript("") } },
-    { fname: 'GetDestinationByAddress', routing: 'destination?address=', httpverb: 'get', fn: () => { return bux.GetDestinationByAddress("") } },
-    { fname: 'GetDestinations', routing: 'destination/search', httpverb: 'post', fn: () => { return bux.GetDestinations({}, {}, {}) } },
-    { fname: 'GetDestinationsCount', routing: 'destination/count', httpverb: 'post', fn: () => { return bux.GetDestinationsCount({}, {}) } },
+    // when
+    await act()
 
-    { fname: 'NewDestination', routing: 'destination', httpverb: 'post', fn: () => { return bux.NewDestination({}) } },
-    { fname: 'UpdateDestinationMetadataByID', routing: 'destination', httpverb: 'patch', fn: () => { return bux.UpdateDestinationMetadataByID("", {}) } },
-    { fname: 'UpdateDestinationMetadataByLockingScript', routing: 'destination', httpverb: 'patch', fn: () => { return bux.UpdateDestinationMetadataByLockingScript("", {}) } },
-    { fname: 'UpdateDestinationMetadataByAddress', routing: 'destination', httpverb: 'patch', fn: () => { return bux.UpdateDestinationMetadataByAddress("", {}) } },
+    // then
+    // verify the API call was actually made
+    expect(mq.isDone()).toBeTruthy()
 
-    { fname: 'GetTransaction', routing: 'transaction?id=', httpverb: 'get', fn: () => { return bux.GetTransaction("") } },
-    { fname: 'GetTransactions', routing: 'transaction/search', httpverb: 'post', fn: () => { return bux.GetTransactions({}, {}, {}) } },
-    { fname: 'GetTransactionsCount', routing: 'transaction/count', httpverb: 'post', fn: () => { return bux.GetTransactionsCount({}, {}) } },
-
-    { fname: 'DraftTransaction', routing: 'transaction', httpverb: 'post', fn: () => { return bux.DraftTransaction({} as TransactionConfigInput, {}) } },
-    { fname: 'DraftToRecipients', routing: 'transaction', httpverb: 'post', fn: () => { return bux.DraftToRecipients([] as Recipients, {}) } },
-    { fname: 'RecordTransaction', routing: 'transaction/record', httpverb: 'post', fn: () => { return bux.RecordTransaction("", "", {}) } },
-    { fname: 'UpdateTransactionMetadata', routing: 'transaction', httpverb: 'patch', fn: () => { return bux.UpdateTransactionMetadata("", {}) } },
-
-    { fname: 'GetUtxo', routing: 'utxo?tx_id=&output_index=0', httpverb: 'get', fn: () => { return bux.GetUtxo("", 0) } },
-    { fname: 'GetUtxos', routing: 'utxo/search', httpverb: 'post', fn: () => { return bux.GetUtxos({}, {}, {}) } },
-    { fname: 'GetUtxosCount', routing: 'utxo/count', httpverb: 'post', fn: () => { return bux.GetUtxosCount({}, {}) } },
-
-    { fname: 'NewPaymail', routing: 'paymail', httpverb: 'post', fn: () => { return bux.NewPaymail("", "") } },
-    { fname: 'DeletePaymail', routing: 'paymail', httpverb: 'delete', fn: () => { return bux.DeletePaymail("") } },
-  ]
-
-  tcs.forEach((tc) => {
-    test(tc.fname, async () => {
-      // given
-      const mq = setupHttpMock(tc.httpverb, tc.routing)
-
-      // when
-      await tc.fn()
-
-      // then
-      // verify the API call was actually made
-      expect(mq.isDone()).toBeTruthy()
-
-      // clean up      
-      nock.cleanAll()
-    });
-  })
-});
+    // clean up
+    nock.cleanAll()
+  });
+})
 
 describe('BuxClient admin routing', () => {
   const options: ClientOptions = {
@@ -120,55 +106,43 @@ describe('BuxClient admin routing', () => {
   };
   const adminBux = new BuxClient(testClient.serverURL, options);
 
-  const tcs = [
-    { fname: 'RegisterXpub', routing: 'xpub', httpverb: 'post', fn: () => { return adminBux.RegisterXpub("", {}) }, },
+  it.each`
+    buxMethod                      | httpMethod  | path                            | act
+    ${'RegisterXpub'}              | ${'post'}   | ${'xpub'}                       | ${() => adminBux.RegisterXpub('', {})}
+    ${'AdminGetStatus'}            | ${'get'}    | ${'admin/status'}               | ${() => adminBux.AdminGetStatus()}
+    ${'AdminGetStats'}             | ${'get'}    | ${'admin/stats'}                | ${() => adminBux.AdminGetStats()}
+    ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}   | ${() => adminBux.AdminGetAccessKeys({}, {}, {})}
+    ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}    | ${() => adminBux.AdminGetAccessKeysCount({}, {})}
+    ${'AdminGetBlockHeaders'}      | ${'post'}   | ${'admin/block-headers/search'} | ${() => adminBux.AdminGetBlockHeaders({}, {}, {})}
+    ${'AdminGetBlockHeadersCount'} | ${'post'}   | ${'admin/block-headers/count'}  | ${() => adminBux.AdminGetBlockHeadersCount({}, {})}
+    ${'AdminGetDestinations'}      | ${'post'}   | ${'admin/destinations/search'}  | ${() => adminBux.AdminGetDestinations({}, {}, {})}
+    ${'AdminGetDestinationsCount'} | ${'post'}   | ${'admin/destinations/count'}   | ${() => adminBux.AdminGetDestinationsCount({}, {})}
+    ${'AdminGetPaymail'}           | ${'post'}   | ${'admin/paymail/get'}          | ${() => adminBux.AdminGetPaymail("")}
+    ${'AdminGetPaymails'}          | ${'post'}   | ${'admin/paymails/search'}      | ${() => adminBux.AdminGetPaymails({}, {}, {})}
+    ${'AdminGetPaymailsCount'}     | ${'post'}   | ${'admin/paymails/count'}       | ${() => adminBux.AdminGetPaymailsCount({}, {})}
+    ${'AdminCreatePaymail'}        | ${'post'}   | ${'admin/paymail/create'}       | ${() => adminBux.AdminCreatePaymail("", "", "", "")}
+    ${'AdminDeletePaymail'}        | ${'delete'} | ${'admin/paymail/delete'}       | ${() => adminBux.AdminDeletePaymail("")}
+    ${'AdminGetTransactions'}      | ${'post'}   | ${'admin/transactions/search'}  | ${() => adminBux.AdminGetTransactions({}, {}, {})}
+    ${'AdminGetTransactionsCount'} | ${'post'}   | ${'admin/transactions/count'}   | ${() => adminBux.AdminGetTransactionsCount({}, {})}
+    ${'AdminGetUtxos'}             | ${'post'}   | ${'admin/utxos/search'}         | ${() => adminBux.AdminGetUtxos({}, {}, {})}
+    ${'AdminGetUtxosCount'}        | ${'post'}   | ${'admin/utxos/count'}          | ${() => adminBux.AdminGetUtxosCount({}, {})}
+    ${'AdminGetXPubs'}             | ${'post'}   | ${'admin/xpubs/search'}         | ${() => adminBux.AdminGetXPubs({}, {}, {})}
+    ${'AdminGetXPubsCount'}        | ${'post'}   | ${'admin/xpubs/count'}          | ${() => adminBux.AdminGetXPubsCount({}, {})}
+    ${'AdminRecordTransaction'}    | ${'post'}   | ${'admin/transactions/record'}  | ${() => adminBux.AdminRecordTransaction("")}
+  `('$buxMethod', async ({path, httpMethod, act}) => {
+    // given
+    const mq = setupHttpMock(httpMethod, path)
 
-    { fname: 'AdminGetStatus', routing: 'admin/status', httpverb: 'get', fn: () => { return adminBux.AdminGetStatus() } },
-    { fname: 'AdminGetStats', routing: 'admin/stats', httpverb: 'get', fn: () => { return adminBux.AdminGetStats() } },
+    // when
+    await act()
 
-    { fname: 'AdminGetAccessKeys', routing: 'admin/access-keys/search', httpverb: 'post', fn: () => { return adminBux.AdminGetAccessKeys({}, {}, {}) } },
-    { fname: 'AdminGetAccessKeysCount', routing: 'admin/access-keys/count', httpverb: 'post', fn: () => { return adminBux.AdminGetAccessKeysCount({}, {}) } },
+    // then
+    // verify the API call was actually made
+    expect(mq.isDone()).toBeTruthy()
 
-    { fname: 'AdminGetBlockHeaders', routing: 'admin/block-headers/search', httpverb: 'post', fn: () => { return adminBux.AdminGetBlockHeaders({}, {}, {}) } },
-    { fname: 'AdminGetBlockHeadersCount', routing: 'admin/block-headers/count', httpverb: 'post', fn: () => { return adminBux.AdminGetBlockHeadersCount({}, {}) } },
-
-    { fname: 'AdminGetDestinations', routing: 'admin/destinations/search', httpverb: 'post', fn: () => { return adminBux.AdminGetDestinations({}, {}, {}) } },
-    { fname: 'AdminGetDestinationsCount', routing: 'admin/destinations/count', httpverb: 'post', fn: () => { return adminBux.AdminGetDestinationsCount({}, {}) } },
-
-    { fname: 'AdminGetPaymail', routing: 'admin/paymail/get', httpverb: 'post', fn: () => { return adminBux.AdminGetPaymail("") } },
-    { fname: 'AdminGetPaymails', routing: 'admin/paymails/search', httpverb: 'post', fn: () => { return adminBux.AdminGetPaymails({}, {}, {}) } },
-    { fname: 'AdminGetPaymailsCount', routing: 'admin/paymails/count', httpverb: 'post', fn: () => { return adminBux.AdminGetPaymailsCount({}, {}) } },
-    { fname: 'AdminCreatePaymail', routing: 'admin/paymail/create', httpverb: 'post', fn: () => { return adminBux.AdminCreatePaymail("", "", "", "") } },
-    { fname: 'AdminDeletePaymail', routing: 'admin/paymail/delete', httpverb: 'delete', fn: () => { return adminBux.AdminDeletePaymail("") } },
-
-    { fname: 'AdminGetTransactions', routing: 'admin/transactions/search', httpverb: 'post', fn: () => { return adminBux.AdminGetTransactions({}, {}, {}) } },
-    { fname: 'AdminGetTransactionsCount', routing: 'admin/transactions/count', httpverb: 'post', fn: () => { return adminBux.AdminGetTransactionsCount({}, {}) } },
-
-    { fname: 'AdminGetUtxos', routing: 'admin/utxos/search', httpverb: 'post', fn: () => { return adminBux.AdminGetUtxos({}, {}, {}) } },
-    { fname: 'AdminGetUtxosCount', routing: 'admin/utxos/count', httpverb: 'post', fn: () => { return adminBux.AdminGetUtxosCount({}, {}) } },
-
-    { fname: 'AdminGetXPubs', routing: 'admin/xpubs/search', httpverb: 'post', fn: () => { return adminBux.AdminGetXPubs({}, {}, {}) } },
-    { fname: 'AdminGetXPubsCount', routing: 'admin/xpubs/count', httpverb: 'post', fn: () => { return adminBux.AdminGetXPubsCount({}, {}) } },
-
-    { fname: 'AdminRecordTransaction', routing: 'admin/transactions/record', httpverb: 'post', fn: () => { return adminBux.AdminRecordTransaction("") } },
-  ]
-
-  tcs.forEach((tc) => {
-    test(tc.fname, async () => {
-      // given
-      const mq = setupHttpMock(tc.httpverb, tc.routing)
-
-      // when
-      await tc.fn()
-
-      // then
-      // verify the API call was actually made
-      expect(mq.isDone()).toBeTruthy()
-
-      // clean up
-      nock.cleanAll()
-    });
-  })
+    // clean up
+    nock.cleanAll()
+  });
 });
 
 describe('Finalize transaction', () => {
