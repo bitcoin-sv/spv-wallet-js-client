@@ -808,15 +808,15 @@ class BuxClient implements TransportService {
 
 }
 
-const generateKeys = function(): KeyWithMnemonic {
+const generateKeys= function(): KeyWithMnemonic {
   return generateNewKeys();
 }
 
-const getKeysFromMnemonic = function(mnemonic: string): KeyWithMnemonic {
+const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic {
   return generateKeysFromMnemonic(mnemonic);
 }
 
-const getKeysFromString = function(xpriv: string): Key {
+const getKeysFromString= function(xpriv: string): Key {
   return generateKeysFromString(xpriv);
 }
 
