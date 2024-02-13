@@ -43,7 +43,6 @@ import logger from "./logger"
  * @example
  * const SpvWalletClient = new SpvWalletClient(<serverUrl>, {
  *   signRequest: true,
- *   transportType: 'http',
  *   xPriv: <xpriv...>
  * })
  */
