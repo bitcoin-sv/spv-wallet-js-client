@@ -43,7 +43,6 @@ import logger from "./logger"
  * @example
  * const buxClient = new BuxClient(<serverUrl>, {
  *   signRequest: true,
- *   transportType: 'http',
  *   xPriv: <xpriv...>
  * })
  */
