@@ -1,30 +1,21 @@
 <div align="center">
 
-# [SPV Wallet: JS Client](https://www.npmjs.com/package/@buxorg/js-buxclient)
+# [SPV Wallet: JS Client](https://www.npmjs.com/package/@bitcoin-sv/spv-wallet-js-client)
 
-[![last commit](https://img.shields.io/github/last-commit/BuxOrg/js-buxclient.svg?style=flat&v=2)](https://github.com/BuxOrg/js-buxclient/commits/master)
-[![version](https://img.shields.io/github/release-pre/BuxOrg/js-buxclient.svg?style=flat&v=2)](https://github.com/BuxOrg/js-buxclient/releases)
-[![Npm](https://img.shields.io/npm/v/@buxorg/js-buxclient?style=flat&v=2)](https://www.npmjs.com/package/@buxorg/js-buxclient)
+[![last commit](https://img.shields.io/github/last-commit/bitcoin-sv/spv-wallet-js-client.svg?style=flat&v=2)](https://github.com/bitcoin-sv/spv-wallet-js-client/commits/master)
+[![version](https://img.shields.io/github/release-pre/bitcoin-sv/spv-wallet-js-client.svg?style=flat&v=2)](https://github.com/bitcoin-sv/spv-wallet-js-client/releases)
+[![Npm](https://img.shields.io/npm/v/@bitcoin-sv/spv-wallet-js-client?style=flat&v=2)](https://www.npmjs.com/package/@bitcoin-sv/spv-wallet-js-client)
 [![license](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat&v=2)](/LICENSE)
-[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/BuxOrg/js-buxclient&style=flat&v=2)](https://mergify.io)
+[![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/bitcoin-sv/spv-wallet-js-client&style=flat&v=2)](https://mergify.io)
 <br/>
 </div>
 
-> Get started using [SPV Wallet](https://getbux.io) in five minutes
-
 ## Table of Contents
-- [About](#about)
 - [Installation](#installation)
-- [Documentation](#documentation)
 - [Usage](#usage)
 - [Code Standards](#code-standards)
 - [Contributing](#contributing)
 - [License](#license)
-
-<br />
-
-## About
-[Read more about SPV Wallet](https://getbux.io)
 
 <br />
 
@@ -38,12 +29,7 @@ $ yarn install
 See more scripts in the [package.json](package.json) file or the [makefile](Makefile).
 
 > There is a peer dependency on the [bsv library](https://github.com/moneybutton/bsv/tree/bsv-legacy).
-> This version of the JS BUX client supports version `1.x` of the [bsv library](https://github.com/moneybutton/bsv/tree/bsv-legacy).
-
-<br />
-
-## Documentation
-View more [SPV Wallet documentation](https://getbux.io).
+> This version of the SPV Wallet JS Client supports version `1.x` of the [bsv library](https://github.com/moneybutton/bsv/tree/bsv-legacy).
 
 <br />
 
@@ -62,13 +48,13 @@ View more [SPV Wallet documentation](https://getbux.io).
 
 <br />
 
-### Connection as a SPV Wallet admin
+### Connection as an SPV Wallet admin
 
 You can add the admin key to the SPV Wallet client after initialisation to support admin requests (IE: registering an xPub).
 
 ```javascript
 const adminKey = 'xprv.....';
-buxClient.SetAdminKey(adminKey);
+spvWalletClient.SetAdminKey(adminKey);
 ```
 
 <br />
@@ -138,7 +124,6 @@ update-contributors           Regenerates the contributors html/list
 <br />
 
 ## Usage
-Here's the [getting started](https://getbux.io) with SPV Wallet
 
 ```javascript
 import bsv from 'bsv';
