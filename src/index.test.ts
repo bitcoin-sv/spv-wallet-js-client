@@ -53,34 +53,34 @@ describe('SPVWalletClient routing', () => {
 
   it.each`
     spvWalletMethod                                            | httpMethod  | path                             | act
-    ${'GetXpub'}                                         | ${'get'}    | ${'xpub'}                        | ${() => spvWalletClient.GetXPub()}
-    ${'UpdateXPubMetadata'}                              | ${'patch'}  | ${'xpub'}                        | ${() => spvWalletClient.UpdateXPubMetadata({})}
-    ${'GetAccessKey'}                                    | ${'get'}    | ${'access-key?id='}              | ${() => spvWalletClient.GetAccessKey("")}
-    ${'GetAccessKeys'}                                   | ${'post'}   | ${'access-key/search'}           | ${() => spvWalletClient.GetAccessKeys({}, {}, {})}
-    ${'GetAccessKeysCount'}                              | ${'post'}   | ${'access-key/count'}            | ${() => spvWalletClient.GetAccessKeysCount({}, {})}
-    ${'CreateAccessKey'}                                 | ${'post'}   | ${'access-key'}                  | ${() => spvWalletClient.CreateAccessKey({})}
-    ${'RevokeAccessKey'}                                 | ${'delete'} | ${'access-key?id='}              | ${() => spvWalletClient.RevokeAccessKey("")}
-    ${'GetDestinationByID'}                              | ${'get'}    | ${'destination?id='}             | ${() => spvWalletClient.GetDestinationByID("")}
-    ${'GetDestinationByLockingScript'}                   | ${'get'}    | ${'destination?locking_script='} | ${() => spvWalletClient.GetDestinationByLockingScript("")}
-    ${'GetDestinationByAddress'}                         | ${'get'}    | ${'destination?address='}        | ${() => spvWalletClient.GetDestinationByAddress("")}
-    ${'GetDestinations'}                                 | ${'post'}   | ${'destination/search'}          | ${() => spvWalletClient.GetDestinations({}, {}, {})}
-    ${'GetDestinationsCount'}                            | ${'post'}   | ${'destination/count'}           | ${() => spvWalletClient.GetDestinationsCount({}, {})}
-    ${'NewDestination'}                                  | ${'post'}   | ${'destination'}                 | ${() => spvWalletClient.NewDestination({})}
-    ${'UpdateDestinationMetadataByID'}                   | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByID("", {})}
-    ${'UpdateDestinationMetadataByLockingScript'}        | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByLockingScript("", {})}
-    ${'UpdateDestinationMetadataByAddress'}              | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByAddress("", {})}
-    ${'GetTransaction'}                                  | ${'get'}    | ${'transaction?id='}             | ${() => spvWalletClient.GetTransaction("")}
-    ${'GetTransactions'}                                 | ${'post'}   | ${'transaction/search'}          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
-    ${'GetTransactionsCount'}                            | ${'post'}   | ${'transaction/count'}           | ${() => spvWalletClient.GetTransactionsCount({}, {})}
-    ${'DraftTransaction'}                                | ${'post'}   | ${'transaction'}                 | ${() => spvWalletClient.DraftTransaction({} as TransactionConfigInput, {})}
-    ${'DraftToRecipients'}                               | ${'post'}   | ${'transaction'}                 | ${() => spvWalletClient.DraftToRecipients([] as Recipients, {})}
-    ${'RecordTransaction'}                               | ${'post'}   | ${'transaction/record'}          | ${() => spvWalletClient.RecordTransaction("", "", {})}
-    ${'UpdateTransactionMetadata'}                       | ${'patch'}  | ${'transaction'}                 | ${() => spvWalletClient.UpdateTransactionMetadata("", {})}
-    ${'GetUtxo'}                                         | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => spvWalletClient.GetUtxo("", 0)}
-    ${'GetUtxos'}                                        | ${'post'}   | ${'utxo/search'}                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
-    ${'GetUtxosCount'}                                   | ${'post'}   | ${'utxo/count'}                  | ${() => spvWalletClient.GetUtxosCount({}, {})}
-    ${'NewPaymail'}                                      | ${'post'}   | ${'paymail'}                     | ${() => spvWalletClient.NewPaymail("", "")}
-    ${'DeletePaymail'}                                   | ${'delete'} | ${'paymail'}                     | ${() => spvWalletClient.DeletePaymail("")}
+    ${'GetXpub'}                                               | ${'get'}    | ${'xpub'}                        | ${() => spvWalletClient.GetXPub()}
+    ${'UpdateXPubMetadata'}                                    | ${'patch'}  | ${'xpub'}                        | ${() => spvWalletClient.UpdateXPubMetadata({})}
+    ${'GetAccessKey'}                                          | ${'get'}    | ${'access-key?id='}              | ${() => spvWalletClient.GetAccessKey("")}
+    ${'GetAccessKeys'}                                         | ${'post'}   | ${'access-key/search'}           | ${() => spvWalletClient.GetAccessKeys({}, {}, {})}
+    ${'GetAccessKeysCount'}                                    | ${'post'}   | ${'access-key/count'}            | ${() => spvWalletClient.GetAccessKeysCount({}, {})}
+    ${'CreateAccessKey'}                                       | ${'post'}   | ${'access-key'}                  | ${() => spvWalletClient.CreateAccessKey({})}
+    ${'RevokeAccessKey'}                                       | ${'delete'} | ${'access-key?id='}              | ${() => spvWalletClient.RevokeAccessKey("")}
+    ${'GetDestinationByID'}                                    | ${'get'}    | ${'destination?id='}             | ${() => spvWalletClient.GetDestinationByID("")}
+    ${'GetDestinationByLockingScript'}                         | ${'get'}    | ${'destination?locking_script='} | ${() => spvWalletClient.GetDestinationByLockingScript("")}
+    ${'GetDestinationByAddress'}                               | ${'get'}    | ${'destination?address='}        | ${() => spvWalletClient.GetDestinationByAddress("")}
+    ${'GetDestinations'}                                       | ${'post'}   | ${'destination/search'}          | ${() => spvWalletClient.GetDestinations({}, {}, {})}
+    ${'GetDestinationsCount'}                                  | ${'post'}   | ${'destination/count'}           | ${() => spvWalletClient.GetDestinationsCount({}, {})}
+    ${'NewDestination'}                                        | ${'post'}   | ${'destination'}                 | ${() => spvWalletClient.NewDestination({})}
+    ${'UpdateDestinationMetadataByID'}                         | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByID("", {})}
+    ${'UpdateDestinationMetadataByLockingScript'}              | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByLockingScript("", {})}
+    ${'UpdateDestinationMetadataByAddress'}                    | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByAddress("", {})}
+    ${'GetTransaction'}                                        | ${'get'}    | ${'transaction?id='}             | ${() => spvWalletClient.GetTransaction("")}
+    ${'GetTransactions'}                                       | ${'post'}   | ${'transaction/search'}          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
+    ${'GetTransactionsCount'}                                  | ${'post'}   | ${'transaction/count'}           | ${() => spvWalletClient.GetTransactionsCount({}, {})}
+    ${'DraftTransaction'}                                      | ${'post'}   | ${'transaction'}                 | ${() => spvWalletClient.DraftTransaction({} as TransactionConfigInput, {})}
+    ${'DraftToRecipients'}                                     | ${'post'}   | ${'transaction'}                 | ${() => spvWalletClient.DraftToRecipients([] as Recipients, {})}
+    ${'RecordTransaction'}                                     | ${'post'}   | ${'transaction/record'}          | ${() => spvWalletClient.RecordTransaction("", "", {})}
+    ${'UpdateTransactionMetadata'}                             | ${'patch'}  | ${'transaction'}                 | ${() => spvWalletClient.UpdateTransactionMetadata("", {})}
+    ${'GetUtxo'}                                               | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => spvWalletClient.GetUtxo("", 0)}
+    ${'GetUtxos'}                                              | ${'post'}   | ${'utxo/search'}                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
+    ${'GetUtxosCount'}                                         | ${'post'}   | ${'utxo/count'}                  | ${() => spvWalletClient.GetUtxosCount({}, {})}
+    ${'NewPaymail'}                                            | ${'post'}   | ${'paymail'}                     | ${() => spvWalletClient.NewPaymail("", "")}
+    ${'DeletePaymail'}                                         | ${'delete'} | ${'paymail'}                     | ${() => spvWalletClient.DeletePaymail("")}
     `("$spvWalletMethod", async ({path, httpMethod, act}) => {
 
     // given
@@ -108,27 +108,27 @@ describe('SPVWalletClient admin routing', () => {
 
   it.each`
     spvWalletMethod                      | httpMethod  | path                            | act
-    ${'RegisterXpub'}              | ${'post'}   | ${'xpub'}                       | ${() => adminSPVWalletClient.RegisterXpub('', {})}
-    ${'AdminGetStatus'}            | ${'get'}    | ${'admin/status'}               | ${() => adminSPVWalletClient.AdminGetStatus()}
-    ${'AdminGetStats'}             | ${'get'}    | ${'admin/stats'}                | ${() => adminSPVWalletClient.AdminGetStats()}
-    ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}   | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
-    ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}    | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
-    ${'AdminGetBlockHeaders'}      | ${'post'}   | ${'admin/block-headers/search'} | ${() => adminSPVWalletClient.AdminGetBlockHeaders({}, {}, {})}
-    ${'AdminGetBlockHeadersCount'} | ${'post'}   | ${'admin/block-headers/count'}  | ${() => adminSPVWalletClient.AdminGetBlockHeadersCount({}, {})}
-    ${'AdminGetDestinations'}      | ${'post'}   | ${'admin/destinations/search'}  | ${() => adminSPVWalletClient.AdminGetDestinations({}, {}, {})}
-    ${'AdminGetDestinationsCount'} | ${'post'}   | ${'admin/destinations/count'}   | ${() => adminSPVWalletClient.AdminGetDestinationsCount({}, {})}
-    ${'AdminGetPaymail'}           | ${'post'}   | ${'admin/paymail/get'}          | ${() => adminSPVWalletClient.AdminGetPaymail("")}
-    ${'AdminGetPaymails'}          | ${'post'}   | ${'admin/paymails/search'}      | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
-    ${'AdminGetPaymailsCount'}     | ${'post'}   | ${'admin/paymails/count'}       | ${() => adminSPVWalletClient.AdminGetPaymailsCount({}, {})}
-    ${'AdminCreatePaymail'}        | ${'post'}   | ${'admin/paymail/create'}       | ${() => adminSPVWalletClient.AdminCreatePaymail("", "", "", "")}
-    ${'AdminDeletePaymail'}        | ${'delete'} | ${'admin/paymail/delete'}       | ${() => adminSPVWalletClient.AdminDeletePaymail("")}
-    ${'AdminGetTransactions'}      | ${'post'}   | ${'admin/transactions/search'}  | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
-    ${'AdminGetTransactionsCount'} | ${'post'}   | ${'admin/transactions/count'}   | ${() => adminSPVWalletClient.AdminGetTransactionsCount({}, {})}
-    ${'AdminGetUtxos'}             | ${'post'}   | ${'admin/utxos/search'}         | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
-    ${'AdminGetUtxosCount'}        | ${'post'}   | ${'admin/utxos/count'}          | ${() => adminSPVWalletClient.AdminGetUtxosCount({}, {})}
-    ${'AdminGetXPubs'}             | ${'post'}   | ${'admin/xpubs/search'}         | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
-    ${'AdminGetXPubsCount'}        | ${'post'}   | ${'admin/xpubs/count'}          | ${() => adminSPVWalletClient.AdminGetXPubsCount({}, {})}
-    ${'AdminRecordTransaction'}    | ${'post'}   | ${'admin/transactions/record'}  | ${() => adminSPVWalletClient.AdminRecordTransaction("")}
+    ${'RegisterXpub'}                    | ${'post'}   | ${'xpub'}                       | ${() => adminSPVWalletClient.RegisterXpub('', {})}
+    ${'AdminGetStatus'}                  | ${'get'}    | ${'admin/status'}               | ${() => adminSPVWalletClient.AdminGetStatus()}
+    ${'AdminGetStats'}                   | ${'get'}    | ${'admin/stats'}                | ${() => adminSPVWalletClient.AdminGetStats()}
+    ${'AdminGetAccessKeys'}              | ${'post'}   | ${'admin/access-keys/search'}   | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
+    ${'AdminGetAccessKeysCount'}         | ${'post'}   | ${'admin/access-keys/count'}    | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
+    ${'AdminGetBlockHeaders'}            | ${'post'}   | ${'admin/block-headers/search'} | ${() => adminSPVWalletClient.AdminGetBlockHeaders({}, {}, {})}
+    ${'AdminGetBlockHeadersCount'}       | ${'post'}   | ${'admin/block-headers/count'}  | ${() => adminSPVWalletClient.AdminGetBlockHeadersCount({}, {})}
+    ${'AdminGetDestinations'}            | ${'post'}   | ${'admin/destinations/search'}  | ${() => adminSPVWalletClient.AdminGetDestinations({}, {}, {})}
+    ${'AdminGetDestinationsCount'}       | ${'post'}   | ${'admin/destinations/count'}   | ${() => adminSPVWalletClient.AdminGetDestinationsCount({}, {})}
+    ${'AdminGetPaymail'}                 | ${'post'}   | ${'admin/paymail/get'}          | ${() => adminSPVWalletClient.AdminGetPaymail("")}
+    ${'AdminGetPaymails'}                | ${'post'}   | ${'admin/paymails/search'}      | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
+    ${'AdminGetPaymailsCount'}           | ${'post'}   | ${'admin/paymails/count'}       | ${() => adminSPVWalletClient.AdminGetPaymailsCount({}, {})}
+    ${'AdminCreatePaymail'}              | ${'post'}   | ${'admin/paymail/create'}       | ${() => adminSPVWalletClient.AdminCreatePaymail("", "", "", "")}
+    ${'AdminDeletePaymail'}              | ${'delete'} | ${'admin/paymail/delete'}       | ${() => adminSPVWalletClient.AdminDeletePaymail("")}
+    ${'AdminGetTransactions'}            | ${'post'}   | ${'admin/transactions/search'}  | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
+    ${'AdminGetTransactionsCount'}       | ${'post'}   | ${'admin/transactions/count'}   | ${() => adminSPVWalletClient.AdminGetTransactionsCount({}, {})}
+    ${'AdminGetUtxos'}                   | ${'post'}   | ${'admin/utxos/search'}         | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
+    ${'AdminGetUtxosCount'}              | ${'post'}   | ${'admin/utxos/count'}          | ${() => adminSPVWalletClient.AdminGetUtxosCount({}, {})}
+    ${'AdminGetXPubs'}                   | ${'post'}   | ${'admin/xpubs/search'}         | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
+    ${'AdminGetXPubsCount'}              | ${'post'}   | ${'admin/xpubs/count'}          | ${() => adminSPVWalletClient.AdminGetXPubsCount({}, {})}
+    ${'AdminRecordTransaction'}          | ${'post'}   | ${'admin/transactions/record'}  | ${() => adminSPVWalletClient.AdminRecordTransaction("")}
   `('$spvWalletMethod', async ({path, httpMethod, act}) => {
     // given
     const mq = setupHttpMock(httpMethod, path)
