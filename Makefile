@@ -3,12 +3,12 @@ include .make/common.mk
 
 ## Not defined? Use default repo name which is the application
 ifeq ($(REPO_NAME),)
-	REPO_NAME="js-buxclient"
+	REPO_NAME="spv-wallet-js-client"
 endif
 
 ## Not defined? Use default repo owner
 ifeq ($(REPO_OWNER),)
-	REPO_OWNER="BuxOrg"
+	REPO_OWNER="bitcoin-sv"
 endif
 
 .PHONY: audit

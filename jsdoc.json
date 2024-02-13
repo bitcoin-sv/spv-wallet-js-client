@@ -1,5 +1,5 @@
 {
-  "title": "Bux Javascript client",
+  "title": "Spv Wallet Javascript client",
   "source": {
     "includePattern": ".+\\.ts(doc|x)?$",
     "excludePattern": ".+\\.(test|spec).ts"

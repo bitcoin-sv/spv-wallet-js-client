@@ -1,7 +1,7 @@
 import pino from "pino";
 
 const logger = pino({
-    name: 'js-buxclient',
+    name: 'spv-wallet-js-client',
     browser: {
         asObject: true
     },

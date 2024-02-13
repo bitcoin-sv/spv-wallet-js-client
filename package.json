@@ -1,19 +1,19 @@
 {
-  "name": "@buxorg/js-buxclient",
+  "name": "@bitcoin-sv/spv-wallet-js-client",
   "version": "1.5.0",
-  "description": "TypeScript library for connecting to a BUX server",
+  "description": "TypeScript library for connecting to a Spv Wallet server",
   "author": "Siggi <github@icellan.com>",
-  "homepage": "https://getbux.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BuxOrg/js-buxclient"
+    "url": "https://github.com/bitcoin-sv/spv-wallet-js-client"
   },
   "bugs": {
-    "url": "https://github.com/BuxOrg/js-buxclient/issues"
+    "url": "https://github.com/bitcoin-sv/spv-wallet-js-client/issues"
   },
   "license": "MIT",
   "keywords": [
-    "bux",
+    "spv-wallet",
+    "spv",
     "bitcoin",
     "bitcoinsv",
     "bsv"

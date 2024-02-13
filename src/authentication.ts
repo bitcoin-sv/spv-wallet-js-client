@@ -16,22 +16,22 @@ export interface AuthPayload {
 }
 
 // AuthHeader is the header to use for authentication (raw xPub)
-export const AuthHeader = "bux-auth-xpub";
+export const AuthHeader = "spv-wallet-auth-xpub";
 
 // AuthAccessKey is the header to use for access key authentication (access public key)
-export const AuthAccessKey = "bux-auth-key";
+export const AuthAccessKey = "spv-wallet-auth-key";
 
 // AuthSignature is the given signature (body + timestamp)
-export const AuthSignature = "bux-auth-signature";
+export const AuthSignature = "spv-wallet-auth-signature";
 
 // AuthHeaderHash hash of the body coming from the request
-export const AuthHeaderHash = "bux-auth-hash";
+export const AuthHeaderHash = "spv-wallet-auth-hash";
 
 // AuthHeaderNonce random nonce for the request
-export const AuthHeaderNonce = "bux-auth-nonce";
+export const AuthHeaderNonce = "spv-wallet-auth-nonce";
 
 // AuthHeaderTime the time of the request, only valid for 30 seconds
-export const AuthHeaderTime = "bux-auth-time";
+export const AuthHeaderTime = "spv-wallet-auth-time";
 
 export const setSignature = function(headers: { [key: string]: string }, signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string): { [key: string]: string } {
 
@@ -83,7 +83,7 @@ export const createSignature = function(signingKey: bsv.HDPrivateKey | bsv.Priva
   }
 
   const payload: AuthPayload = {};
-  // bux-auth-nonce is a random unique string to seed the signing message
+  // spv-wallet-auth-nonce is a random unique string to seed the signing message
   // this can be checked server side to make sure the request is not being replayed
   payload.AuthNonce = RandomHex(32)
 
@@ -112,7 +112,7 @@ const createSignatureCommon = function(payload: AuthPayload, bodyString: string,
   // Create the auth header hash
   payload.AuthHash = Hash(bodyString)
 
-  // bux-auth-time is the current time and makes sure a request can not be sent after 30 secs
+  // spv-wallet-auth-time is the current time and makes sure a request can not be sent after 30 secs
   payload.AuthTime = +new Date();
 
   let key = payload.xPub

@@ -43,7 +43,7 @@ announce:
   # See more at: https://goreleaser.com/customization/announce/#slack
   slack:
     enabled: false
-    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Changelog: https://github.com/BuxOrg/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Changelog: https://github.com/bitcoin-sv/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
     channel: '#releases'
     # username: ''
     # icon_emoji: ''
@@ -57,7 +57,7 @@ announce:
   # See more at: https://goreleaser.com/customization/announce/#discord
   discord:
     enabled: false
-    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Changelog: https://github.com/BuxOrg/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
+    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Changelog: https://github.com/bitcoin-sv/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
     author: 'TonicBot'
     #color: '80200120' #50C878
     #icon_url: 'https://tonicpow.com/images/apple-touch-icon.png'
@@ -70,6 +70,6 @@ announce:
     # Username for your Reddit account
     username: ""
     # Defaults to `{{ .GitURL }}/releases/tag/{{ .Tag }}`
-    # url_template: 'https://github.com/BuxOrg/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
+    # url_template: 'https://github.com/bitcoin-sv/{{ .ProjectName }}/releases/tag/{{ .Tag }}'
     # Defaults to `{{ .ProjectName }} {{ .Tag }} is out!`
     title_template: '{{ .ProjectName }} {{ .Tag }} is out!'

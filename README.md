@@ -1,6 +1,6 @@
 <div align="center">
 
-# [BUX: JS Client](https://www.npmjs.com/package/@buxorg/js-buxclient)
+# [SPV Wallet: JS Client](https://www.npmjs.com/package/@buxorg/js-buxclient)
 
 [![last commit](https://img.shields.io/github/last-commit/BuxOrg/js-buxclient.svg?style=flat&v=2)](https://github.com/BuxOrg/js-buxclient/commits/master)
 [![version](https://img.shields.io/github/release-pre/BuxOrg/js-buxclient.svg?style=flat&v=2)](https://github.com/BuxOrg/js-buxclient/releases)
@@ -10,7 +10,7 @@
 <br/>
 </div>
 
-> Get started using [BUX](https://getbux.io) in five minutes
+> Get started using [SPV Wallet](https://getbux.io) in five minutes
 
 ## Table of Contents
 - [About](#about)
@@ -24,7 +24,7 @@
 <br />
 
 ## About
-[Read more about BUX](https://getbux.io)
+[Read more about SPV Wallet](https://getbux.io)
 
 <br />
 
@@ -43,7 +43,7 @@ See more scripts in the [package.json](package.json) file or the [makefile](Make
 <br />
 
 ## Documentation
-View more [BUX documentation](https://getbux.io).
+View more [SPV Wallet documentation](https://getbux.io).
 
 <br />
 
@@ -62,9 +62,9 @@ View more [BUX documentation](https://getbux.io).
 
 <br />
 
-### Connection as a BUX admin
+### Connection as a SPV Wallet admin
 
-You can add the admin key to the BUX client after initialisation to support admin requests (IE: registering an xPub).
+You can add the admin key to the SPV Wallet client after initialisation to support admin requests (IE: registering an xPub).
 
 ```javascript
 const adminKey = 'xprv.....';
@@ -138,17 +138,17 @@ update-contributors           Regenerates the contributors html/list
 <br />
 
 ## Usage
-Here's the [getting started](https://getbux.io) with BUX
+Here's the [getting started](https://getbux.io) with SPV Wallet
 
 ```javascript
 import bsv from 'bsv';
-import { BuxClient } from 'js-buxclient';
+import { SpvWalletClient } from 'spv-wallet-js-client';
 
 const server = "http://localhost:3003/v1";
 const transportType = 'http'; // or graphql
 const xPriv = bsv.HDPrivateKey.fromRandom();
 
-const buxClient = new BuxClient(server, {
+const spvWalletClient = new SpvWalletClient(server, {
   signRequest: true,
   transportType,
   xPriv,
@@ -158,7 +158,7 @@ const recipients = [{
   to: "test@handcash.io",
   satoshis: 10000,
 }];
-const result = await buxClient.SendToRecipients(recipients, { agent: 'Bux test' })
+const result = await spvWalletClient.SendToRecipients(recipients, { agent: 'Spv Wallet test' })
 ```
 
 <br />

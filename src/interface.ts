@@ -26,7 +26,7 @@ export interface Conditions {
  *
  * @example
  * const metadata = {
- *   buxVersion: "v0.1.3",
+ *   spvWalletVersion: "v0.1.3",
  *   someKey: "some value"
  * }
  */
@@ -47,7 +47,7 @@ export interface Metadata {
     "metadata": [
       {
         "k": "user_agent",
-        "v": "BuxClient v1.0.0"
+        "v": "SpvWalletClient v1.0.0"
       },
     ],
     "current_balance": 99848517,
@@ -71,13 +71,13 @@ export interface XPub {
   /**
    * Next internal (change address) number to use for a new destination
    *
-   * NOTE: Do not use this to create new destinations, always let Bux create the destination
+   * NOTE: Do not use this to create new destinations, always let Spv Wallet create the destination
    */
   next_internal_num: number;
   /**
    * Next external number to use for a new destination
    *
-   * NOTE: Do not use this to create new destinations, always let Bux create the destination
+   * NOTE: Do not use this to create new destinations, always let Spv Wallet create the destination
    */
   next_external_num: number;
   /**
@@ -638,7 +638,7 @@ export interface PubKey {
 
 
 /**
- * Client options for instantiating a new Bux client
+ * Client options for instantiating a new Spv Wallet client
  */
 export interface ClientOptions {
   accessKeyString?: string;
