@@ -812,7 +812,7 @@ const generateKeys = function(): KeyWithMnemonic {
   return generateNewKeys();
 }
 
-const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic {
+const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic{
   return generateKeysFromMnemonic(mnemonic);
 }
 
