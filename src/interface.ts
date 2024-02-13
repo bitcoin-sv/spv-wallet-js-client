@@ -71,13 +71,13 @@ export interface XPub {
   /**
    * Next internal (change address) number to use for a new destination
    *
-   * NOTE: Do not use this to create new destinations, always let Spv Wallet create the destination
+   * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
   next_internal_num: number;
   /**
    * Next external number to use for a new destination
    *
-   * NOTE: Do not use this to create new destinations, always let Spv Wallet create the destination
+   * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
   next_external_num: number;
   /**
@@ -638,7 +638,7 @@ export interface PubKey {
 
 
 /**
- * Client options for instantiating a new Spv Wallet client
+ * Client options for instantiating a new SPV Wallet client
  */
 export interface ClientOptions {
   accessKeyString?: string;
