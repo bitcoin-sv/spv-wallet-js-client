@@ -1718,6 +1718,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
   integrity sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==
 
+"@types/estree@0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
+  integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
+
 "@types/graceful-fs@^4.1.3":
   version "4.1.6"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.6.tgz#e14b2576a1c25026b7f02ede1de3b84c3a1efeae"
@@ -1763,6 +1768,14 @@
   version "1.20.2"
   resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-1.20.2.tgz#97d26e00cd4a0423b4af620abecf3e6f442b7975"
   integrity sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==
+
+"@types/rollup-plugin-node-builtins@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@types/rollup-plugin-node-builtins/-/rollup-plugin-node-builtins-2.1.5.tgz#29f23ee809afed3b80cd6528b4bea8c3e305f01f"
+  integrity sha512-RxfnrNq8+kU+t3IdCt4Y3TeACVyystMV7Wkjo7KVyMAH3SvQ4VbJPIJM5qFe0v3XrScN1D6Y3qPEH1xSfVwJsQ==
+  dependencies:
+    "@types/node" "*"
+    rollup "^0.63.4"
 
 "@types/stack-utils@^2.0.0":
   version "2.0.1"
@@ -5221,6 +5234,14 @@ rollup-plugin-polyfill-node@^0.13.0:
   integrity sha512-FYEvpCaD5jGtyBuBFcQImEGmTxDTPbiHjJdrYIp+mFIwgXiXabxvKUK7ZT9P31ozu2Tqm9llYQMRWsfvTMTAOw==
   dependencies:
     "@rollup/plugin-inject" "^5.0.4"
+
+rollup@^0.63.4:
+  version "0.63.5"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.63.5.tgz#5543eecac9a1b83b7e1be598b5be84c9c0a089db"
+  integrity sha512-dFf8LpUNzIj3oE0vCvobX6rqOzHzLBoblyFp+3znPbjiSmSvOoK2kMKx+Fv9jYduG1rvcCfCveSgEaQHjWRF6g==
+  dependencies:
+    "@types/estree" "0.0.39"
+    "@types/node" "*"
 
 rollup@^4.5.1:
   version "4.10.0"

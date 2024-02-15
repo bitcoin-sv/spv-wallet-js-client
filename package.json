@@ -82,6 +82,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
+    "@types/rollup-plugin-node-builtins": "^2.1.5",
     "axios": "^1.6.5",
     "cross-fetch": "^4.0.0",
     "graphql": "^16.3.0",
