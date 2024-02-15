@@ -247,7 +247,7 @@ class SpvWalletClient implements TransportService {
   /**
    * Admin only: Get a paymail by address
    *
-   * @param address string Paymail address (i.e. example@spv-wallet.org)
+   * @param address string Paymail address (i.e. alias@example.com)
    * @return {PaymailAddress}
    */
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
@@ -281,7 +281,7 @@ class SpvWalletClient implements TransportService {
    * Admin only: Create a new paymail for an xPub ID
    *
    * @param {string} xpub_id The ID of the xPub to register the paymail to (note: NOT the xpub itself, but the ID (hash))
-   * @param {string} address Paymail address (i.e. example@spv-wallet.org)
+   * @param {string} address Paymail address (i.e. alias@example.com)
    * @param {string} public_name Public name for the user to return in Paymail address resolution requests
    * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
    * @return {PaymailAddress}
@@ -293,7 +293,7 @@ class SpvWalletClient implements TransportService {
   /**
    * Admin only: Delete a paymail
    *
-   * @param address string Paymail address (i.e. example@spv-wallet.org)
+   * @param address string Paymail address (i.e. alias@example.com)
    * @return {PaymailAddress}
    */
   async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
