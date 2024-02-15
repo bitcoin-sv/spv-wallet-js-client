@@ -4,8 +4,6 @@
 name: test(ubuntu-latest)
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -15,21 +13,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          registry-url: https://registry.npmjs.org/
-      - name: Run install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install # will run `yarn install` command
+          cache: 'yarn'
+      - name: Install dependencies with yarn
+        run: yarn install --frozen-lockfile
       - name: Build production bundle
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: build # will run `yarn build` command
+        run: yarn build
       - name: Run tests
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: test # will run `yarn test` command
+        run: yarn test

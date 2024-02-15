@@ -351,9 +351,9 @@ Additional information and guidelines on Conventional Commits can be found [here
 ##### Commit message with scope
 
 Good example:
-
+```
 feat(#123): add possibility to create a new user by admin
-
+```
 
 Bad example:
 

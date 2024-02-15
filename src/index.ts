@@ -812,6 +812,8 @@ const generateKeys = function(): KeyWithMnemonic {
   return generateNewKeys();
 }
 
+generateKeys().xPriv().toString()
+
 const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic{
   return generateKeysFromMnemonic(mnemonic);
 }

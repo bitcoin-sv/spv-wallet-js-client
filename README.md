@@ -54,7 +54,7 @@ You can add the admin key to the SPV Wallet client after initialisation to suppo
 
 ```javascript
 const adminKey = 'xprv.....';
-spvWalletClient.SetAdminKey(adminKey);
+client.SetAdminKey(adminKey);
 ```
 
 <br />
@@ -126,14 +126,13 @@ update-contributors           Regenerates the contributors html/list
 ## Usage
 
 ```javascript
-import bsv from 'bsv';
 import { SpvWalletClient } from 'spv-wallet-js-client';
 
 const server = "http://localhost:3003/v1";
 const transportType = 'http'; // or graphql
-const xPriv = bsv.HDPrivateKey.fromRandom();
+const xPriv = generateKeys().xPriv()
 
-const spvWalletClient = new SpvWalletClient(server, {
+const client = new SpvWalletClient(server, {
   signRequest: true,
   transportType,
   xPriv,
@@ -143,7 +142,7 @@ const recipients = [{
   to: "test@handcash.io",
   satoshis: 10000,
 }];
-const result = await spvWalletClient.SendToRecipients(recipients, { agent: 'Spv Wallet test' })
+const result = await client.SendToRecipients(recipients, { agent: 'Spv Wallet test' })
 ```
 
 <br />
