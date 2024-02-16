@@ -148,7 +148,7 @@ class TransportHTTP implements TransportService {
     });
   }
 
-  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
+  async AdminDeletePaymail(address: string) {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, 'DELETE', { address });
   }
 
@@ -560,7 +560,7 @@ class TransportHTTP implements TransportService {
    * @param metadata Metadata The metadata to record on the xPub
    * @returns {XPub}
    */
-  async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+  async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/xpub`, 'POST', {
       key: rawXPub,
       metadata

@@ -293,11 +293,11 @@ class SpvWalletClient implements TransportService {
   /**
    * Admin only: Delete a paymail
    *
-   * @param address string Paymail address (i.e. alias@example.com)
-   * @return {PaymailAddress}
+   * @param address string Paymail address (ie. example@bux.org)
+   * @return void
    */
-  async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
-    return await this.client.httpTransport.AdminDeletePaymail(address);
+  async AdminDeletePaymail(address: string) {
+    this.client.httpTransport.AdminDeletePaymail(address);
   }
 
   /**
@@ -367,6 +367,17 @@ class SpvWalletClient implements TransportService {
    */
   async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
     return await this.client.httpTransport.AdminGetXPubsCount(conditions, metadata);
+  }
+
+  /**
+   * Admin only: Register a new xPub into the Bux server
+   *
+   * @param {string} rawXPub    XPub string
+   * @param {Metadata} metadata Key value object to use to add to the xpub
+   * @return {XPub}             The newly registered xpub
+   */
+  async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+    return await this.client.httpTransport.AdminNewXpub(rawXPub, metadata);
   }
 
   /**
@@ -561,34 +572,6 @@ class SpvWalletClient implements TransportService {
    */
   async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
     return await this.client.httpTransport.UpdateDestinationMetadataByAddress(address, metadata);
-  }
-
-  /**
-   * Register a new paymail
-   * @param {string} key - The rawXPubKey
-   * @param {string} address - The full paymail address
-   * @param {string} [publicName] - The public name (optional)
-   * @param {string} [avatar] - The avatar (optional)
-   * @param {Metadata} [metadata] - The metadata to record on the destination (optional)
-   * @returns {void}
-   */
-  async NewPaymail(
-    key: string,
-    address: string,
-    publicName?: string,
-    avatar?: string,
-    metadata?: Metadata
-  ): Promise<void> {
-    return this.client.httpTransport.NewPaymail(key, address, publicName, avatar, metadata);
-  }
-
-  /**
-   * Delete paymail
-   * @param {string} address - The full paymail address
-   * @returns {void}
-   */
-  async DeletePaymail(address: string): Promise<void> {
-    return this.client.httpTransport.DeletePaymail(address);
   }
 
   /**
@@ -794,18 +777,6 @@ class SpvWalletClient implements TransportService {
   async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
     return await this.client.httpTransport.UpdateTransactionMetadata(txID, metadata);
   }
-
-  /**
-   * Admin only: Register a new xPub into the SPV Wallet server
-   *
-   * @param {string} rawXPub    XPub string
-   * @param {Metadata} metadata Key value object to use to add to the xpub
-   * @return {XPub}             The newly registered xpub
-   */
-  async RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.client.httpTransport.RegisterXpub(rawXPub, metadata);
-  }
-
 }
 
 const generateKeys = function(): KeyWithMnemonic {

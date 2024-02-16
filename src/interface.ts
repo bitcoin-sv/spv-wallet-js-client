@@ -563,7 +563,6 @@ export interface TransportService {
   IsDebug(): boolean;
   SetSignRequest(debug: boolean): void;
   IsSignRequest(): boolean;
-  RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
   AdminGetStatus(): Promise<boolean>
   AdminGetStats(): Promise<AdminStats>
   AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>
@@ -576,13 +575,14 @@ export interface TransportService {
   AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses>
   AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress>
-  AdminDeletePaymail(address: string): Promise<PaymailAddress>
+  AdminDeletePaymail(address: string): void
   AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>
   AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>
   AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs>;
-  AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
+  AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number>
+  AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
   AdminRecordTransaction(hex: string): Promise<Transaction>;
   GetXPub(): Promise<XPub>;
   UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;
@@ -600,8 +600,6 @@ export interface TransportService {
   UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination>;
   UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination>;
-  NewPaymail(key: string, address: string, publicName?: string, avatar?: string, metadata?: Metadata): Promise<void>;
-  DeletePaymail(address: string): Promise<void>;
   GetTransaction(txID: string): Promise<Transaction>;
   GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
   GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
