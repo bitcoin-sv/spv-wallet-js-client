@@ -126,7 +126,7 @@ update-contributors           Regenerates the contributors html/list
 ## Usage
 
 ```javascript
-import { SpvWalletClient } from 'spv-wallet-js-client';
+import { SpvWalletClient, generateKeys } from 'spv-wallet-js-client';
 
 const server = "http://localhost:3003/v1";
 const transportType = 'http'; // or graphql
