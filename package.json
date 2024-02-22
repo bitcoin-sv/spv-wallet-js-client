@@ -1,6 +1,6 @@
 {
   "name": "@bsv/spv-wallet-js-client",
-  "version": "1.5.1",
+  "version": "0.1.0",
   "description": "TypeScript library for connecting to a SPV Wallet server",
   "repository": {
     "type": "git",
