@@ -37,16 +37,16 @@ import {
 import logger from "./logger"
 
 /**
- * BuxClient class
+ * SpvWallet class
  *
  * @constructor
  * @example
- * const buxClient = new BuxClient(<serverUrl>, {
+ * const SpvWalletClient = new SpvWalletClient(<serverUrl>, {
  *   signRequest: true,
  *   xPriv: <xpriv...>
  * })
  */
-class BuxClient implements TransportService {
+class SpvWalletClient implements TransportService {
   client: Client;
   options: ClientOptions | undefined;
 
@@ -129,7 +129,7 @@ class BuxClient implements TransportService {
   /**
    * Set whether to sign all requests to the server
    *
-   * This option is on (true) by default and should only be turned off in development. The Bux server needs to accept
+   * This option is on (true) by default and should only be turned off in development. The SPV Wallet server needs to accept
    * unsigned requests for this to work.
    *
    * @param {boolean} signRequest
@@ -167,7 +167,7 @@ class BuxClient implements TransportService {
   }
 
   /**
-   * Admin only: Get stats about the Bux server
+   * Admin only: Get stats about the SPV Wallet server
    *
    * @return {AdminStats}
    */
@@ -247,7 +247,7 @@ class BuxClient implements TransportService {
   /**
    * Admin only: Get a paymail by address
    *
-   * @param address string Paymail address (ie. example@bux.org)
+   * @param address string Paymail address (i.e. alias@example.com)
    * @return {PaymailAddress}
    */
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
@@ -281,7 +281,7 @@ class BuxClient implements TransportService {
    * Admin only: Create a new paymail for an xPub ID
    *
    * @param {string} xpub_id The ID of the xPub to register the paymail to (note: NOT the xpub itself, but the ID (hash))
-   * @param {string} address Paymail address (ie. example@bux.org)
+   * @param {string} address Paymail address (i.e. alias@example.com)
    * @param {string} public_name Public name for the user to return in Paymail address resolution requests
    * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
    * @return {PaymailAddress}
@@ -293,7 +293,7 @@ class BuxClient implements TransportService {
   /**
    * Admin only: Delete a paymail
    *
-   * @param address string Paymail address (ie. example@bux.org)
+   * @param address string Paymail address (i.e. alias@example.com)
    * @return {PaymailAddress}
    */
   async AdminDeletePaymail(address: string): Promise<PaymailAddress> {
@@ -448,7 +448,7 @@ class BuxClient implements TransportService {
   /**
    * Revoke an access key and invalidate in the database
    *
-   * After this function is successfully called, the access key cannot be used anymore on a Bux server
+   * After this function is successfully called, the access key cannot be used anymore on an SPV Wallet server
    *
    * @param id string The database ID of the access key to revoke
    * @return {AccessKey}
@@ -514,7 +514,7 @@ class BuxClient implements TransportService {
    * Create a new destination to receive bsv with and return that destination
    *
    * This function allows you to create a destination that will be monitored on-chain and will import any transactions
-   * related to that destination into Bux. This is legacy functionality in Bitcoin and should only be used if a p2p
+   * related to that destination into SPV Wallet. This is legacy functionality in Bitcoin and should only be used if a p2p
    * option (paymail) is not possible. Use sparingly.
    *
    * @param {Metadata} metadata Key value object to attach to the new destination
@@ -666,7 +666,7 @@ class BuxClient implements TransportService {
    * @see {@link SendToRecipients}
    * @param {Recipients} recipients A list of recipients and a satoshi value to send to them
    * @param {Metadata} metadata     Key value object to use to add to the draft transaction
-   * @return {DraftTransaction}     Complete draft transaction object from Bux, all configuration options filled in
+   * @return {DraftTransaction}     Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
     return await this.client.httpTransport.DraftToRecipients(recipients, metadata);
@@ -677,7 +677,7 @@ class BuxClient implements TransportService {
    *
    * @param {TransactionConfigInput} transactionConfig Configuration of the new transaction
    * @param {Metadata} metadata                        Key value object to use to add to the draft transaction
-   * @return {DraftTransaction}                        Complete draft transaction object from Bux, all configuration options filled in
+   * @return {DraftTransaction}                        Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
   async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
     return await this.client.httpTransport.DraftTransaction(transactionConfig, metadata);
@@ -691,9 +691,9 @@ class BuxClient implements TransportService {
    * @return {Transaction}          The final transaction object, including the hex of the Bitcoin transaction
    * @example
    * // This function is a shorthand for:
-   * const draft = await buxClient.DraftToRecipients(recipients, metadata);
-   * const finalized = buxClient.FinalizeTransaction(draft);
-   * const tx = await buxClient.RecordTransaction(finalized, draft.id, metadata)
+   * const draft = await spvWalletClient.DraftToRecipients(recipients, metadata);
+   * const finalized = spvWalletClient.FinalizeTransaction(draft);
+   * const tx = await spvWalletClient.RecordTransaction(finalized, draft.id, metadata)
    */
   async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Transaction> {
     const draft = await this.DraftToRecipients(recipients, metadata);
@@ -768,15 +768,15 @@ class BuxClient implements TransportService {
   }
 
   /**
-   * Record a Bitcoin transaction (in hex) into Bux
+   * Record a Bitcoin transaction (in hex) into SPV Wallet
    *
-   * This will only work of an input or output of the transaction can be related to a Bux user. Bux does not record
+   * This will only work of an input or output of the transaction can be related to an SPV Wallet user. SPV Wallet does not record
    * unrelated transaction into its database.
    *
    * @param {string} hex         Hex string of the Bitcoin transaction
    * @param {string} referenceID Optional reference ID (draft transaction ID)
    * @param {Metadata} metadata  Key value object to use to add to the transaction
-   * @return {Transaction}       The Bux transaction object
+   * @return {Transaction}       The SPV Wallet transaction object
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
     return await this.client.httpTransport.RecordTransaction(hex, referenceID, metadata);
@@ -796,7 +796,7 @@ class BuxClient implements TransportService {
   }
 
   /**
-   * Admin only: Register a new xPub into the Bux server
+   * Admin only: Register a new xPub into the SPV Wallet server
    *
    * @param {string} rawXPub    XPub string
    * @param {Metadata} metadata Key value object to use to add to the xpub
@@ -812,6 +812,8 @@ const generateKeys = function(): KeyWithMnemonic {
   return generateNewKeys();
 }
 
+generateKeys().xPriv().toString()
+
 const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic{
   return generateKeysFromMnemonic(mnemonic);
 }
@@ -821,7 +823,7 @@ const getKeysFromString = function(xpriv: string): Key{
 }
 
 export {
-  BuxClient,
+  SpvWalletClient,
   generateKeys,
   getKeysFromMnemonic,
   getKeysFromString,

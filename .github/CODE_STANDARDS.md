@@ -116,7 +116,7 @@ const newObject = {}            // ✅
 ```
 
 - Use brackets `[]` instead of `new Array()`.
- 
+
 ```ts
 const newArray = new Array()  // 🟥
 const newArray = []           // ✅
@@ -143,7 +143,7 @@ return (
     <footer>
 	<MyFooterComponent />
     </footer>
-  </>
+  </>)
 ```
 
 List of all categorized html tags with short description: [HTML Elements Reference](https://developer.mozilla.org/en-US/docs/Web/HTML/Element)
@@ -351,9 +351,8 @@ Additional information and guidelines on Conventional Commits can be found [here
 ##### Commit message with scope
 
 Good example:
-
-```bash
-feat: add possibility to create a new user by admin (#BUX-123)
+```
+feat(#123): add possibility to create a new user by admin
 ```
 
 Bad example:

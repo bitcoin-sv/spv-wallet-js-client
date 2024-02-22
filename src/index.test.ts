@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals'
 import axios from "axios"
 import nock from 'nock'
-import {BuxClient} from "./index";
+import {SpvWalletClient} from "./index";
 import {ClientOptions, DraftTransaction, Recipients, TransactionConfigInput} from "./interface";
 
 const xPrivString = "xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A"
@@ -24,11 +24,11 @@ const httpTestClient: TestClient = {
 
 const testClient: TestClient = httpTestClient
 
-describe('BuxClient class', () => {
+describe('SPVWalletClient class', () => {
   test('instantiate', () => {
     const options: ClientOptions = {}
-    const buxClient = new BuxClient("https://bux.org/v1", options);
-    expect(buxClient).toBeInstanceOf(BuxClient);
+    const spvWalletClient = new SpvWalletClient("https://spv-wallet.org/v1", options);
+    expect(spvWalletClient).toBeInstanceOf(SpvWalletClient);
   });
 
   test('instantiate with options', () => {
@@ -38,50 +38,50 @@ describe('BuxClient class', () => {
       xPrivString,
       xPubString,
     }
-    const buxClient = new BuxClient("https://bux.org/v1", options);
-    expect(buxClient).toBeInstanceOf(BuxClient);
+    const spvWalletClient = new SpvWalletClient("https://spv-wallet.org/v1", options);
+    expect(spvWalletClient).toBeInstanceOf(SpvWalletClient);
   });
 });
 
 
-describe('BuxClient routing', () => {
+describe('SPVWalletClient routing', () => {
   const options: ClientOptions = {
     xPrivString: testClient.xPrivString,
     signRequest: true,
   };
-  const bux = new BuxClient(testClient.serverURL, options);
+  const spvWalletClient = new SpvWalletClient(testClient.serverURL, options);
 
   it.each`
-    buxMethod                                            | httpMethod  | path                             | act
-    ${'GetXpub'}                                         | ${'get'}    | ${'xpub'}                        | ${() => bux.GetXPub()}
-    ${'UpdateXPubMetadata'}                              | ${'patch'}  | ${'xpub'}                        | ${() => bux.UpdateXPubMetadata({})}
-    ${'GetAccessKey'}                                    | ${'get'}    | ${'access-key?id='}              | ${() => bux.GetAccessKey("")}
-    ${'GetAccessKeys'}                                   | ${'post'}   | ${'access-key/search'}           | ${() => bux.GetAccessKeys({}, {}, {})}
-    ${'GetAccessKeysCount'}                              | ${'post'}   | ${'access-key/count'}            | ${() => bux.GetAccessKeysCount({}, {})}
-    ${'CreateAccessKey'}                                 | ${'post'}   | ${'access-key'}                  | ${() => bux.CreateAccessKey({})}
-    ${'RevokeAccessKey'}                                 | ${'delete'} | ${'access-key?id='}              | ${() => bux.RevokeAccessKey("")}
-    ${'GetDestinationByID'}                              | ${'get'}    | ${'destination?id='}             | ${() => bux.GetDestinationByID("")}
-    ${'GetDestinationByLockingScript'}                   | ${'get'}    | ${'destination?locking_script='} | ${() => bux.GetDestinationByLockingScript("")}
-    ${'GetDestinationByAddress'}                         | ${'get'}    | ${'destination?address='}        | ${() => bux.GetDestinationByAddress("")}
-    ${'GetDestinations'}                                 | ${'post'}   | ${'destination/search'}          | ${() => bux.GetDestinations({}, {}, {})}
-    ${'GetDestinationsCount'}                            | ${'post'}   | ${'destination/count'}           | ${() => bux.GetDestinationsCount({}, {})}
-    ${'NewDestination'}                                  | ${'post'}   | ${'destination'}                 | ${() => bux.NewDestination({})}
-    ${'UpdateDestinationMetadataByID'}                   | ${'patch'}  | ${'destination'}                 | ${() => bux.UpdateDestinationMetadataByID("", {})}
-    ${'UpdateDestinationMetadataByLockingScript'}        | ${'patch'}  | ${'destination'}                 | ${() => bux.UpdateDestinationMetadataByLockingScript("", {})}
-    ${'UpdateDestinationMetadataByAddress'}              | ${'patch'}  | ${'destination'}                 | ${() => bux.UpdateDestinationMetadataByAddress("", {})}
-    ${'GetTransaction'}                                  | ${'get'}    | ${'transaction?id='}             | ${() => bux.GetTransaction("")}
-    ${'GetTransactions'}                                 | ${'post'}   | ${'transaction/search'}          | ${() => bux.GetTransactions({}, {}, {})}
-    ${'GetTransactionsCount'}                            | ${'post'}   | ${'transaction/count'}           | ${() => bux.GetTransactionsCount({}, {})}
-    ${'DraftTransaction'}                                | ${'post'}   | ${'transaction'}                 | ${() => bux.DraftTransaction({} as TransactionConfigInput, {})}
-    ${'DraftToRecipients'}                               | ${'post'}   | ${'transaction'}                 | ${() => bux.DraftToRecipients([] as Recipients, {})}
-    ${'RecordTransaction'}                               | ${'post'}   | ${'transaction/record'}          | ${() => bux.RecordTransaction("", "", {})}
-    ${'UpdateTransactionMetadata'}                       | ${'patch'}  | ${'transaction'}                 | ${() => bux.UpdateTransactionMetadata("", {})}
-    ${'GetUtxo'}                                         | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => bux.GetUtxo("", 0)}
-    ${'GetUtxos'}                                        | ${'post'}   | ${'utxo/search'}                 | ${() => bux.GetUtxos({}, {}, {})}
-    ${'GetUtxosCount'}                                   | ${'post'}   | ${'utxo/count'}                  | ${() => bux.GetUtxosCount({}, {})}
-    ${'NewPaymail'}                                      | ${'post'}   | ${'paymail'}                     | ${() => bux.NewPaymail("", "")}
-    ${'DeletePaymail'}                                   | ${'delete'} | ${'paymail'}                     | ${() => bux.DeletePaymail("")}
-    `("$buxMethod", async ({path, httpMethod, act}) => {
+    spvWalletMethod                                            | httpMethod  | path                             | act
+    ${'GetXpub'}                                               | ${'get'}    | ${'xpub'}                        | ${() => spvWalletClient.GetXPub()}
+    ${'UpdateXPubMetadata'}                                    | ${'patch'}  | ${'xpub'}                        | ${() => spvWalletClient.UpdateXPubMetadata({})}
+    ${'GetAccessKey'}                                          | ${'get'}    | ${'access-key?id='}              | ${() => spvWalletClient.GetAccessKey("")}
+    ${'GetAccessKeys'}                                         | ${'post'}   | ${'access-key/search'}           | ${() => spvWalletClient.GetAccessKeys({}, {}, {})}
+    ${'GetAccessKeysCount'}                                    | ${'post'}   | ${'access-key/count'}            | ${() => spvWalletClient.GetAccessKeysCount({}, {})}
+    ${'CreateAccessKey'}                                       | ${'post'}   | ${'access-key'}                  | ${() => spvWalletClient.CreateAccessKey({})}
+    ${'RevokeAccessKey'}                                       | ${'delete'} | ${'access-key?id='}              | ${() => spvWalletClient.RevokeAccessKey("")}
+    ${'GetDestinationByID'}                                    | ${'get'}    | ${'destination?id='}             | ${() => spvWalletClient.GetDestinationByID("")}
+    ${'GetDestinationByLockingScript'}                         | ${'get'}    | ${'destination?locking_script='} | ${() => spvWalletClient.GetDestinationByLockingScript("")}
+    ${'GetDestinationByAddress'}                               | ${'get'}    | ${'destination?address='}        | ${() => spvWalletClient.GetDestinationByAddress("")}
+    ${'GetDestinations'}                                       | ${'post'}   | ${'destination/search'}          | ${() => spvWalletClient.GetDestinations({}, {}, {})}
+    ${'GetDestinationsCount'}                                  | ${'post'}   | ${'destination/count'}           | ${() => spvWalletClient.GetDestinationsCount({}, {})}
+    ${'NewDestination'}                                        | ${'post'}   | ${'destination'}                 | ${() => spvWalletClient.NewDestination({})}
+    ${'UpdateDestinationMetadataByID'}                         | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByID("", {})}
+    ${'UpdateDestinationMetadataByLockingScript'}              | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByLockingScript("", {})}
+    ${'UpdateDestinationMetadataByAddress'}                    | ${'patch'}  | ${'destination'}                 | ${() => spvWalletClient.UpdateDestinationMetadataByAddress("", {})}
+    ${'GetTransaction'}                                        | ${'get'}    | ${'transaction?id='}             | ${() => spvWalletClient.GetTransaction("")}
+    ${'GetTransactions'}                                       | ${'post'}   | ${'transaction/search'}          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
+    ${'GetTransactionsCount'}                                  | ${'post'}   | ${'transaction/count'}           | ${() => spvWalletClient.GetTransactionsCount({}, {})}
+    ${'DraftTransaction'}                                      | ${'post'}   | ${'transaction'}                 | ${() => spvWalletClient.DraftTransaction({} as TransactionConfigInput, {})}
+    ${'DraftToRecipients'}                                     | ${'post'}   | ${'transaction'}                 | ${() => spvWalletClient.DraftToRecipients([] as Recipients, {})}
+    ${'RecordTransaction'}                                     | ${'post'}   | ${'transaction/record'}          | ${() => spvWalletClient.RecordTransaction("", "", {})}
+    ${'UpdateTransactionMetadata'}                             | ${'patch'}  | ${'transaction'}                 | ${() => spvWalletClient.UpdateTransactionMetadata("", {})}
+    ${'GetUtxo'}                                               | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => spvWalletClient.GetUtxo("", 0)}
+    ${'GetUtxos'}                                              | ${'post'}   | ${'utxo/search'}                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
+    ${'GetUtxosCount'}                                         | ${'post'}   | ${'utxo/count'}                  | ${() => spvWalletClient.GetUtxosCount({}, {})}
+    ${'NewPaymail'}                                            | ${'post'}   | ${'paymail'}                     | ${() => spvWalletClient.NewPaymail("", "")}
+    ${'DeletePaymail'}                                         | ${'delete'} | ${'paymail'}                     | ${() => spvWalletClient.DeletePaymail("")}
+    `("$spvWalletMethod", async ({path, httpMethod, act}) => {
 
     // given
     const mq = setupHttpMock(httpMethod, path)
@@ -98,38 +98,38 @@ describe('BuxClient routing', () => {
   });
 })
 
-describe('BuxClient admin routing', () => {
+describe('SPVWalletClient admin routing', () => {
   const options: ClientOptions = {
     adminKey: testClient.xPrivString,
     xPrivString: testClient.xPrivString,
     signRequest: true,
   };
-  const adminBux = new BuxClient(testClient.serverURL, options);
+  const adminSPVWalletClient = new SpvWalletClient(testClient.serverURL, options);
 
   it.each`
-    buxMethod                      | httpMethod  | path                            | act
-    ${'RegisterXpub'}              | ${'post'}   | ${'xpub'}                       | ${() => adminBux.RegisterXpub('', {})}
-    ${'AdminGetStatus'}            | ${'get'}    | ${'admin/status'}               | ${() => adminBux.AdminGetStatus()}
-    ${'AdminGetStats'}             | ${'get'}    | ${'admin/stats'}                | ${() => adminBux.AdminGetStats()}
-    ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}   | ${() => adminBux.AdminGetAccessKeys({}, {}, {})}
-    ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}    | ${() => adminBux.AdminGetAccessKeysCount({}, {})}
-    ${'AdminGetBlockHeaders'}      | ${'post'}   | ${'admin/block-headers/search'} | ${() => adminBux.AdminGetBlockHeaders({}, {}, {})}
-    ${'AdminGetBlockHeadersCount'} | ${'post'}   | ${'admin/block-headers/count'}  | ${() => adminBux.AdminGetBlockHeadersCount({}, {})}
-    ${'AdminGetDestinations'}      | ${'post'}   | ${'admin/destinations/search'}  | ${() => adminBux.AdminGetDestinations({}, {}, {})}
-    ${'AdminGetDestinationsCount'} | ${'post'}   | ${'admin/destinations/count'}   | ${() => adminBux.AdminGetDestinationsCount({}, {})}
-    ${'AdminGetPaymail'}           | ${'post'}   | ${'admin/paymail/get'}          | ${() => adminBux.AdminGetPaymail("")}
-    ${'AdminGetPaymails'}          | ${'post'}   | ${'admin/paymails/search'}      | ${() => adminBux.AdminGetPaymails({}, {}, {})}
-    ${'AdminGetPaymailsCount'}     | ${'post'}   | ${'admin/paymails/count'}       | ${() => adminBux.AdminGetPaymailsCount({}, {})}
-    ${'AdminCreatePaymail'}        | ${'post'}   | ${'admin/paymail/create'}       | ${() => adminBux.AdminCreatePaymail("", "", "", "")}
-    ${'AdminDeletePaymail'}        | ${'delete'} | ${'admin/paymail/delete'}       | ${() => adminBux.AdminDeletePaymail("")}
-    ${'AdminGetTransactions'}      | ${'post'}   | ${'admin/transactions/search'}  | ${() => adminBux.AdminGetTransactions({}, {}, {})}
-    ${'AdminGetTransactionsCount'} | ${'post'}   | ${'admin/transactions/count'}   | ${() => adminBux.AdminGetTransactionsCount({}, {})}
-    ${'AdminGetUtxos'}             | ${'post'}   | ${'admin/utxos/search'}         | ${() => adminBux.AdminGetUtxos({}, {}, {})}
-    ${'AdminGetUtxosCount'}        | ${'post'}   | ${'admin/utxos/count'}          | ${() => adminBux.AdminGetUtxosCount({}, {})}
-    ${'AdminGetXPubs'}             | ${'post'}   | ${'admin/xpubs/search'}         | ${() => adminBux.AdminGetXPubs({}, {}, {})}
-    ${'AdminGetXPubsCount'}        | ${'post'}   | ${'admin/xpubs/count'}          | ${() => adminBux.AdminGetXPubsCount({}, {})}
-    ${'AdminRecordTransaction'}    | ${'post'}   | ${'admin/transactions/record'}  | ${() => adminBux.AdminRecordTransaction("")}
-  `('$buxMethod', async ({path, httpMethod, act}) => {
+    spvWalletMethod                      | httpMethod  | path                            | act
+    ${'RegisterXpub'}                    | ${'post'}   | ${'xpub'}                       | ${() => adminSPVWalletClient.RegisterXpub('', {})}
+    ${'AdminGetStatus'}                  | ${'get'}    | ${'admin/status'}               | ${() => adminSPVWalletClient.AdminGetStatus()}
+    ${'AdminGetStats'}                   | ${'get'}    | ${'admin/stats'}                | ${() => adminSPVWalletClient.AdminGetStats()}
+    ${'AdminGetAccessKeys'}              | ${'post'}   | ${'admin/access-keys/search'}   | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
+    ${'AdminGetAccessKeysCount'}         | ${'post'}   | ${'admin/access-keys/count'}    | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
+    ${'AdminGetBlockHeaders'}            | ${'post'}   | ${'admin/block-headers/search'} | ${() => adminSPVWalletClient.AdminGetBlockHeaders({}, {}, {})}
+    ${'AdminGetBlockHeadersCount'}       | ${'post'}   | ${'admin/block-headers/count'}  | ${() => adminSPVWalletClient.AdminGetBlockHeadersCount({}, {})}
+    ${'AdminGetDestinations'}            | ${'post'}   | ${'admin/destinations/search'}  | ${() => adminSPVWalletClient.AdminGetDestinations({}, {}, {})}
+    ${'AdminGetDestinationsCount'}       | ${'post'}   | ${'admin/destinations/count'}   | ${() => adminSPVWalletClient.AdminGetDestinationsCount({}, {})}
+    ${'AdminGetPaymail'}                 | ${'post'}   | ${'admin/paymail/get'}          | ${() => adminSPVWalletClient.AdminGetPaymail("")}
+    ${'AdminGetPaymails'}                | ${'post'}   | ${'admin/paymails/search'}      | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
+    ${'AdminGetPaymailsCount'}           | ${'post'}   | ${'admin/paymails/count'}       | ${() => adminSPVWalletClient.AdminGetPaymailsCount({}, {})}
+    ${'AdminCreatePaymail'}              | ${'post'}   | ${'admin/paymail/create'}       | ${() => adminSPVWalletClient.AdminCreatePaymail("", "", "", "")}
+    ${'AdminDeletePaymail'}              | ${'delete'} | ${'admin/paymail/delete'}       | ${() => adminSPVWalletClient.AdminDeletePaymail("")}
+    ${'AdminGetTransactions'}            | ${'post'}   | ${'admin/transactions/search'}  | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
+    ${'AdminGetTransactionsCount'}       | ${'post'}   | ${'admin/transactions/count'}   | ${() => adminSPVWalletClient.AdminGetTransactionsCount({}, {})}
+    ${'AdminGetUtxos'}                   | ${'post'}   | ${'admin/utxos/search'}         | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
+    ${'AdminGetUtxosCount'}              | ${'post'}   | ${'admin/utxos/count'}          | ${() => adminSPVWalletClient.AdminGetUtxosCount({}, {})}
+    ${'AdminGetXPubs'}                   | ${'post'}   | ${'admin/xpubs/search'}         | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
+    ${'AdminGetXPubsCount'}              | ${'post'}   | ${'admin/xpubs/count'}          | ${() => adminSPVWalletClient.AdminGetXPubsCount({}, {})}
+    ${'AdminRecordTransaction'}          | ${'post'}   | ${'admin/transactions/record'}  | ${() => adminSPVWalletClient.AdminRecordTransaction("")}
+  `('$spvWalletMethod', async ({path, httpMethod, act}) => {
     // given
     const mq = setupHttpMock(httpMethod, path)
 
@@ -147,29 +147,29 @@ describe('BuxClient admin routing', () => {
 
 describe('Finalize transaction', () => {
   test('draftTxJSON', async () => {
-    const buxClient = new BuxClient(serverURL, {
+    const spvWalletClient = new SpvWalletClient(serverURL, {
       xPrivString,
       signRequest: true,
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON);
-    const transaction = buxClient.FinalizeTransaction(draftTransaction);
+    const transaction = spvWalletClient.FinalizeTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
   test('draftTxJSON2', async () => {
-    const buxClient = new BuxClient(serverURL, {
+    const spvWalletClient = new SpvWalletClient(serverURL, {
       xPrivString,
       signRequest: true,
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
-    const transaction = buxClient.FinalizeTransaction(draftTransaction);
+    const transaction = spvWalletClient.FinalizeTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
   test('draftTxJSON2 error', async () => {
-    const buxClient = new BuxClient(serverURL, {
+    const spvWalletClient = new SpvWalletClient(serverURL, {
       xPrivString,
       signRequest: true,
     });
@@ -178,7 +178,7 @@ describe('Finalize transaction', () => {
     // @ts-ignore
     draftTransaction.configuration.inputs[0].destination.num = 12333;
     expect(() => {
-      buxClient.FinalizeTransaction(draftTransaction);
+      spvWalletClient.FinalizeTransaction(draftTransaction);
     }).toThrow("transaction could not be fully signed")
   });
 });
