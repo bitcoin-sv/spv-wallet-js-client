@@ -1,8 +1,7 @@
 {
-  "name": "@bitcoin-sv/spv-wallet-js-client",
+  "name": "@bsv/spv-wallet-js-client",
   "version": "1.5.1",
   "description": "TypeScript library for connecting to a SPV Wallet server",
-  "author": "Siggi <github@icellan.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/bitcoin-sv/spv-wallet-js-client"
@@ -17,16 +16,6 @@
     "bitcoin",
     "bitcoinsv",
     "bsv"
-  ],
-  "contributors": [
-    {
-      "name": "Siggi",
-      "url": "https://github.com/icellan/"
-    },
-    {
-      "name": "MrZ",
-      "url": "https://github.com/mrz1836/"
-    }
   ],
   "main": "dist/typescript-npm-package.cjs.js",
   "module": "dist/typescript-npm-package.esm.js",
