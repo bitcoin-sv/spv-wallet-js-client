@@ -575,7 +575,7 @@ export interface TransportService {
   AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses>
   AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress>
-  AdminDeletePaymail(address: string): void
+  AdminDeletePaymail(address: string): Promise<void>
   AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>
   AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>
   AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>

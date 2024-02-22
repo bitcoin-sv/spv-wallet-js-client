@@ -296,8 +296,8 @@ class SpvWalletClient implements TransportService {
    * @param address string Paymail address (ie. example@bux.org)
    * @return void
    */
-  async AdminDeletePaymail(address: string) {
-    this.client.httpTransport.AdminDeletePaymail(address);
+  async AdminDeletePaymail(address: string): Promise<void> {
+    return await this.client.httpTransport.AdminDeletePaymail(address);
   }
 
   /**
