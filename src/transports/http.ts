@@ -573,7 +573,7 @@ class TransportHTTP implements TransportService {
       logger.error(Err)
       throw Err
     }
-    
+
     const res = await this.makeRequest(url, method, payload, this.adminKey)
 
     if (res.ok)
@@ -599,13 +599,12 @@ class TransportHTTP implements TransportService {
     signingKey?: bsv.HDPrivateKey | bsv.PrivateKey)
     : Promise<Response> {
 
-    let headers: Record<string, string> = {
-      'content-type': 'application/json'
-    }
+    const json = JSON.stringify(payload)
+    let headers: Record<string, string> = { 'content-type': 'application/json' }
 
     if (this.options.signRequest && signingKey) {
       // @ts-ignore
-      headers = setSignature(headers, signingKey, JSON.stringify(payload) || "");
+      headers = setSignature(headers, signingKey, json || "");
     } else if (this.options.xPubString) {
       headers[AuthHeader] = this.options.xPubString
     }
@@ -613,7 +612,7 @@ class TransportHTTP implements TransportService {
     const req = {
       method,
       headers,
-      body: payload
+      body: json
     };
 
     return global.fetch(url, req)
