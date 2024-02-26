@@ -1,5 +1,4 @@
 import { describe, expect, test } from '@jest/globals'
-import nock from 'nock'
 import fetchMock from "jest-fetch-mock"
 import { SpvWalletClient } from "./index";
 import { ClientOptions, DraftTransaction, Recipients, TransactionConfigInput } from "./interface";
@@ -139,7 +138,7 @@ describe('SPVWalletClient admin routing', () => {
     await act()
 
     // then
-    // verify the API call was actually made    
+    // verify the API call was actually made
     expect(fetchMock.mock.calls.length).toEqual(1)
     expect(fetchMock.mock.calls[0][0]).toEqual(`${serverURL}/${path}`)
 
