@@ -25,8 +25,6 @@ import {
 } from "../interface";
 import { AuthHeader, setSignature } from "../authentication";
 import logger from "../logger";
-import axios from "axios"
-import { AxiosRequestConfig, AxiosError } from "axios"
 
 interface ErrorData {
   message: string
@@ -576,70 +574,52 @@ class TransportHTTP implements TransportService {
       throw Err
     }
 
-    try {
-      return await this.makeRequest(url, method, payload, this.adminKey)
-    } catch (error: any) {
-      this.handleRequestError(error)
-    }
+    const res = await this.makeRequest(url, method, payload, this.adminKey)
+
+    if (res.ok)
+      return res.json()
+    else
+      this.handleRequestError(res)
   }
 
   async doHTTPRequest(url: string, method: string = 'GET', payload: any = null): Promise<any> {
     const signingKey = this.options.xPriv || this.options.accessKey;
+    const res = await this.makeRequest(url, method, payload, signingKey)
 
-    try {
-      return await this.makeRequest(url, method, payload, signingKey)
-    } catch (error: any) {
-      this.handleRequestError(error)
-    }
+    if (res.ok)
+      return res.json()
+    else
+      this.handleRequestError(res)
   }
 
   async makeRequest(url: string,
     method: string,
     payload: any,
     signingKey?: bsv.HDPrivateKey | bsv.PrivateKey)
-    : Promise<any> {
+    : Promise<Response> {
 
-    let headers: Record<string, string> = {
-      'content-type': 'application/json'
-    }
+    const json= payload ? JSON.stringify(payload) : null
+    let headers: Record<string, string> = { 'content-type': 'application/json' }
 
     if (this.options.signRequest && signingKey) {
       // @ts-ignore
-      headers = setSignature(headers, signingKey, JSON.stringify(payload) || "");
+      headers = setSignature(headers, signingKey, json || "");
     } else if (this.options.xPubString) {
       headers[AuthHeader] = this.options.xPubString
     }
 
-    const req: AxiosRequestConfig = {
+    const req = {
       method,
       headers,
-      data: payload
+      body: json
     };
 
-    const res = await axios(url, req)
-    return res.data
+    return global.fetch(url, req)
   }
 
-  handleRequestError(error: AxiosError<ErrorData | string>) {
-    let errMsg: string
-
-    if (error.response) {
-      const { status, data } = error.response
-      let msg: string = ""
-
-      if (typeof data === 'string') {
-        msg = data
-      } else if (data) {
-        msg = data.message
-      }
-      errMsg = `Status: ${status}, Message: ${msg}`;
-    }
-    else {
-      errMsg = `Status: ${error.status}, Message: ${error.message}`;
-    }
-
-    console.error(errMsg)
-    throw errMsg
+  async handleRequestError(res: Response) {
+    const error = await res.text()
+    throw `Status: ${res.status}, Message: ${error}`;
   }
 }
 
