@@ -293,7 +293,7 @@ class SpvWalletClient implements TransportService {
   /**
    * Admin only: Delete a paymail
    *
-   * @param address string Paymail address (ie. example@bux.org)
+   * @param address string Paymail address (ie. example@spv-wallet.org)
    * @return void
    */
   async AdminDeletePaymail(address: string): Promise<void> {
@@ -370,7 +370,7 @@ class SpvWalletClient implements TransportService {
   }
 
   /**
-   * Admin only: Register a new xPub into the Bux server
+   * Admin only: Register a new xPub into the SPV Wallet
    *
    * @param {string} rawXPub    XPub string
    * @param {Metadata} metadata Key value object to use to add to the xpub
