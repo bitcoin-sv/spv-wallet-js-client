@@ -586,10 +586,11 @@ class TransportHTTP implements TransportService {
     const signingKey = this.options.xPriv || this.options.accessKey;
     const res = await this.makeRequest(url, method, payload, signingKey)
 
-    if (res.ok)
+    if (res.ok) {
       return res.json()
-    else
-      this.handleRequestError(res)
+    } else {
+      await this.handleRequestError(res)
+    }
   }
 
   async makeRequest(url: string,
