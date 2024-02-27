@@ -584,7 +584,6 @@ class TransportHTTP implements TransportService {
 
   async doHTTPRequest(url: string, method: string = 'GET', payload: any = null): Promise<any> {
     const signingKey = this.options.xPriv || this.options.accessKey;
-
     const res = await this.makeRequest(url, method, payload, signingKey)
 
     if (res.ok)
@@ -599,7 +598,7 @@ class TransportHTTP implements TransportService {
     signingKey?: bsv.HDPrivateKey | bsv.PrivateKey)
     : Promise<Response> {
 
-    const json = JSON.stringify(payload)
+    const json= payload ? JSON.stringify(payload) : null
     let headers: Record<string, string> = { 'content-type': 'application/json' }
 
     if (this.options.signRequest && signingKey) {
