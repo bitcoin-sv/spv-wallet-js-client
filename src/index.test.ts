@@ -78,8 +78,6 @@ describe('SPVWalletClient routing', () => {
     ${'GetUtxo'}                                               | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => spvWalletClient.GetUtxo("", 0)}
     ${'GetUtxos'}                                              | ${'post'}   | ${'utxo/search'}                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
     ${'GetUtxosCount'}                                         | ${'post'}   | ${'utxo/count'}                  | ${() => spvWalletClient.GetUtxosCount({}, {})}
-    ${'NewPaymail'}                                            | ${'post'}   | ${'paymail'}                     | ${() => spvWalletClient.NewPaymail("", "")}
-    ${'DeletePaymail'}                                         | ${'delete'} | ${'paymail'}                     | ${() => spvWalletClient.DeletePaymail("")}
     `("$spvWalletMethod", async ({ path, httpMethod, act }) => {
 
     // given
@@ -109,7 +107,7 @@ describe('SPVWalletClient admin routing', () => {
 
   it.each`
     spvWalletMethod                      | httpMethod  | path                            | act
-    ${'RegisterXpub'}                    | ${'post'}   | ${'xpub'}                       | ${() => adminSPVWalletClient.RegisterXpub('', {})}
+    ${'AdminNewXpub'}                    | ${'post'}   | ${'admin/xpub'}                 | ${() => adminSPVWalletClient.AdminNewXpub('', {})}
     ${'AdminGetStatus'}                  | ${'get'}    | ${'admin/status'}               | ${() => adminSPVWalletClient.AdminGetStatus()}
     ${'AdminGetStats'}                   | ${'get'}    | ${'admin/stats'}                | ${() => adminSPVWalletClient.AdminGetStats()}
     ${'AdminGetAccessKeys'}              | ${'post'}   | ${'admin/access-keys/search'}   | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
