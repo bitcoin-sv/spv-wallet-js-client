@@ -139,9 +139,9 @@ class TransportHTTP implements TransportService {
     });
   }
 
-  async AdminCreatePaymail(xpub: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+  async AdminCreatePaymail(xpub_id: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/create`, 'POST', {
-      xpub,
+      xpub_id,
       address,
       public_name,
       avatar,
@@ -149,7 +149,7 @@ class TransportHTTP implements TransportService {
   }
 
   async AdminDeletePaymail(address: string): Promise<void> {
-    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, 'DELETE', { address });
+    await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, 'DELETE', { address });
   }
 
   async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
@@ -577,9 +577,13 @@ class TransportHTTP implements TransportService {
     const res = await this.makeRequest(url, method, payload, this.adminKey)
 
     if (res.ok) {
-      return res.json()
+      const contentType = res.headers.get('Content-Type');
+      if (contentType && contentType.includes('application/json')) {
+        return res.json()
+      }
+      return res.text()     
     } else {
-      await this.handleRequestError(res)
+      await this.throwRequestError(res)
     }
   }
 
@@ -590,7 +594,7 @@ class TransportHTTP implements TransportService {
     if (res.ok) {
       return res.json()
     } else {
-      await this.handleRequestError(res)
+      await this.throwRequestError(res)
     }
   }
 
@@ -619,7 +623,7 @@ class TransportHTTP implements TransportService {
     return global.fetch(url, req)
   }
 
-  async handleRequestError(res: Response) {
+  async throwRequestError(res: Response) {
     const error = await res.text()
     throw `Status: ${res.status}, Message: ${error}`;
   }
