@@ -268,6 +268,7 @@ class SpvWalletClient implements TransportService {
 
   /**
    * Admin only: Get a count of all paymails in the system, filtered by conditions, metadata and queryParams
+   * To get a count of not-deleted paymails, use the condition: { deleted_at: null }
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
@@ -297,7 +298,7 @@ class SpvWalletClient implements TransportService {
    * @return void
    */
   async AdminDeletePaymail(address: string): Promise<void> {
-    return await this.client.httpTransport.AdminDeletePaymail(address);
+    await this.client.httpTransport.AdminDeletePaymail(address);
   }
 
   /**
