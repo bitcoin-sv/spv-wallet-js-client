@@ -707,7 +707,13 @@ class SpvWalletClient implements TransportService {
     draftTransaction.configuration.inputs?.forEach((input, index) => {
       if (input.destination) {
         const chainKey = xPriv.deriveChild(input.destination.chain);
-        const numKey = chainKey.deriveChild(input.destination.num);
+        let numKey = chainKey.deriveChild(input.destination.num);
+
+        // Derive key for paymail destination
+        if (input.destination.paymail_external_derivation_num){
+          numKey= numKey.deriveChild(input.destination.paymail_external_derivation_num)
+        }
+
         privateKeys.push(numKey.privateKey);
 
         // small sanity check for the inputs

@@ -174,6 +174,10 @@ export interface Destination {
    * Num used for the derivation of the destination
    */
   num: number;
+   /**
+   * Paymail_external_derivation_num used for the derivation of the destination
+   */
+  paymail_external_derivation_num?: number;
   /**
    * Address of the destination, empty of not p2pkh
    */
