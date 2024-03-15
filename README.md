@@ -35,16 +35,18 @@ See more scripts in the [package.json](package.json) file or the [makefile](Make
 
 ### Connection options
 
-| Option          |  Description                                    |                     |
-|-----------------|-------------------------------------------------|---------------------|
-| accessKeyString | Hex private part of an access key               | string              |
-| debug           | Whether to turn debugging on                    | boolean             |
-| signRequest     | Whether to sign all requests sent to the server | boolean             |
-| transportType   | Transport type to use for server requests       | "http" or "graphql" |
-| xPriv           | bsv HDPrivateKey instance                       |                     |
-| xPrivString     | HD Private key string                           | "xprv....."         |
-| xPub            | bsv HD Public key instance                      |                     |
-| xPubString      | HD Public key string                            | "xpub....."         |
+| Option          | Description                                     |             |
+|-----------------|-------------------------------------------------|-------------|
+| accessKeyString | Hex private part of an access key               | string      |
+| accessKey       | bsv PrivateKey instance                         |             |
+| adminKey        | Admin Key string                                | "xprv....." |
+| debug           | Whether to turn debugging on                    | boolean     |
+| signRequest     | Whether to sign all requests sent to the server | boolean     |
+| xPriv           | bsv HDPrivateKey instance                       |             |
+| xPrivString     | HD Private key string                           | "xprv....." |
+| xPub            | bsv HD Public key instance                      |             |
+| xPubString      | HD Public key string                            | "xpub....." |
+| xPubID          | XPub Id string                                  | string      |
 
 <br />
 
@@ -129,12 +131,10 @@ update-contributors           Regenerates the contributors html/list
 import { SpvWalletClient, generateKeys } from 'spv-wallet-js-client';
 
 const server = "http://localhost:3003/v1";
-const transportType = 'http'; // or graphql
 const xPriv = generateKeys().xPriv()
 
 const client = new SpvWalletClient(server, {
   signRequest: true,
-  transportType,
   xPriv,
 });
 
