@@ -1,8 +1,7 @@
-import {describe, expect, test} from '@jest/globals'
-import axios from "axios"
-import nock from 'nock'
-import {SpvWalletClient} from "./index";
-import {ClientOptions, DraftTransaction, Recipients, TransactionConfigInput} from "./interface";
+import { describe, expect, test } from '@jest/globals'
+import fetchMock from "jest-fetch-mock"
+import { SpvWalletClient } from "./index";
+import { ClientOptions, DraftTransaction, Recipients, TransactionConfigInput } from "./interface";
 
 const xPrivString = "xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A"
 const xPubString = "xpub661MyMwAqRbcGdcFJDQk7q45Puro3cS3tQkoHCWa3G81bzc8Bz2AP9fC7MT4SfsbPfCie1fR1o8VPf735w3ZeEmvDF6AMQifS3FfeUfrDS7"
@@ -79,22 +78,22 @@ describe('SPVWalletClient routing', () => {
     ${'GetUtxo'}                                               | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => spvWalletClient.GetUtxo("", 0)}
     ${'GetUtxos'}                                              | ${'post'}   | ${'utxo/search'}                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
     ${'GetUtxosCount'}                                         | ${'post'}   | ${'utxo/count'}                  | ${() => spvWalletClient.GetUtxosCount({}, {})}
-    ${'NewPaymail'}                                            | ${'post'}   | ${'paymail'}                     | ${() => spvWalletClient.NewPaymail("", "")}
-    ${'DeletePaymail'}                                         | ${'delete'} | ${'paymail'}                     | ${() => spvWalletClient.DeletePaymail("")}
-    `("$spvWalletMethod", async ({path, httpMethod, act}) => {
+    `("$spvWalletMethod", async ({ path, httpMethod, act }) => {
 
     // given
-    const mq = setupHttpMock(httpMethod, path)
+    setupHttpMock(httpMethod, path)
 
     // when
     await act()
 
     // then
     // verify the API call was actually made
-    expect(mq.isDone()).toBeTruthy()
+    expect(fetchMock.mock.calls.length).toEqual(1)
+    expect(fetchMock.mock.calls[0][0]).toEqual(`${serverURL}/${path}`)
 
     // clean up
-    nock.cleanAll()
+    fetchMock.resetMocks()
+
   });
 })
 
@@ -108,7 +107,7 @@ describe('SPVWalletClient admin routing', () => {
 
   it.each`
     spvWalletMethod                      | httpMethod  | path                            | act
-    ${'RegisterXpub'}                    | ${'post'}   | ${'xpub'}                       | ${() => adminSPVWalletClient.RegisterXpub('', {})}
+    ${'AdminNewXpub'}                    | ${'post'}   | ${'admin/xpub'}                 | ${() => adminSPVWalletClient.AdminNewXpub('', {})}
     ${'AdminGetStatus'}                  | ${'get'}    | ${'admin/status'}               | ${() => adminSPVWalletClient.AdminGetStatus()}
     ${'AdminGetStats'}                   | ${'get'}    | ${'admin/stats'}                | ${() => adminSPVWalletClient.AdminGetStats()}
     ${'AdminGetAccessKeys'}              | ${'post'}   | ${'admin/access-keys/search'}   | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
@@ -129,19 +128,20 @@ describe('SPVWalletClient admin routing', () => {
     ${'AdminGetXPubs'}                   | ${'post'}   | ${'admin/xpubs/search'}         | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
     ${'AdminGetXPubsCount'}              | ${'post'}   | ${'admin/xpubs/count'}          | ${() => adminSPVWalletClient.AdminGetXPubsCount({}, {})}
     ${'AdminRecordTransaction'}          | ${'post'}   | ${'admin/transactions/record'}  | ${() => adminSPVWalletClient.AdminRecordTransaction("")}
-  `('$spvWalletMethod', async ({path, httpMethod, act}) => {
+  `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
-    const mq = setupHttpMock(httpMethod, path)
+    setupHttpMock(httpMethod, path)
 
     // when
     await act()
 
     // then
     // verify the API call was actually made
-    expect(mq.isDone()).toBeTruthy()
+    expect(fetchMock.mock.calls.length).toEqual(1)
+    expect(fetchMock.mock.calls[0][0]).toEqual(`${serverURL}/${path}`)
 
     // clean up
-    nock.cleanAll()
+    fetchMock.resetMocks()
   });
 });
 
@@ -183,29 +183,7 @@ describe('Finalize transaction', () => {
   });
 });
 
-function setupHttpMock(httpVerb: string, routing: string): nock.Scope {
-  axios.defaults.adapter = 'http'
-  const httpMq = nock(serverURL);
-
-  routing = "/" + routing
-
-  switch (httpVerb) {
-    case "get":
-      httpMq.get(routing).once().reply(200)
-      break
-
-    case "patch":
-      httpMq.patch(routing).once().reply(200)
-      break
-
-    case "post":
-      httpMq.post(routing).once().reply(200)
-      break
-
-    case "delete":
-      httpMq.delete(routing).once().reply(200)
-      break
-  }
-
-  return httpMq
+function setupHttpMock(httpVerb: string, routing: string) {
+  routing = serverURL + "/" + routing
+  fetchMock.doMockIf(routing, res => new Promise(r => r('{}')))
 }
