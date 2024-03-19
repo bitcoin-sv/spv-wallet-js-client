@@ -66,12 +66,6 @@ export class SpvWalletClient {
       options.xPub = undefined
       options.xPubString = undefined
       options.accessKeyString = options.accessKey.toString()
-      const pubAccessKey = options.accessKey.publicKey.toString()
-      options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(pubAccessKey || '')).toString('hex')
-    }
-
-    if (options.xPubString) {
-      options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(options.xPubString || '')).toString('hex')
     }
 
     this.options = options

@@ -590,7 +590,6 @@ export interface ClientOptions {
   xPrivString?: string
   xPub?: bsv.HDPublicKey
   xPubString?: string
-  xPubID?: string
 }
 
 /**
