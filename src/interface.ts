@@ -1,8 +1,7 @@
-import bsv from 'bsv';
+import bsv from 'bsv'
 
 export interface Client {
-  server_url: string;
-  httpTransport: TransportService;
+  server_url: string
 }
 
 /**
@@ -59,39 +58,39 @@ export interface XPub {
   /**
    * metadata object
    */
-  metadata?: Metadata;
+  metadata?: Metadata
   /**
    * xpub id
    */
-  id: string;
+  id: string
   /**
    * Current balance in sats of the xpub
    */
-  current_balance: number;
+  current_balance: number
   /**
    * Next internal (change address) number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_internal_num: number;
+  next_internal_num: number
   /**
    * Next external number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_external_num: number;
+  next_external_num: number
   /**
    * Date when this object was created
    */
-  created_at?: Date;
+  created_at?: Date
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updated_at?: Date
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deleted_at?: Date
 }
 
 /**
@@ -109,35 +108,35 @@ export interface AccessKey {
   /**
    * ID of the access key
    */
-  id: string;
+  id: string
   /**
    * Xpub ID this access key was created for
    */
-  xpub_id: string;
+  xpub_id: string
   /**
    * Private access key, only given out on creation
    */
-  key?: string;
+  key?: string
   /**
    * Metadata object
    */
-  metadata?: Metadata;
+  metadata?: Metadata
   /**
    * Date when this object was created
    */
-  created_at: Date;
+  created_at: Date
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updated_at?: Date
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deleted_at?: Date
   /**
    * If this access key has been revoked, this date will be set and the access key will not work anymore
    */
-  revoked_at?: Date;
+  revoked_at?: Date
 }
 
 /**
@@ -153,51 +152,51 @@ export interface Destination {
   /**
    * ID of the destination
    */
-  id: string;
+  id: string
   /**
    * Xpub ID this destination was created for
    */
-  xpub_id: string;
+  xpub_id: string
   /**
    * Locking script (script pub key) of the destination
    */
-  locking_script: string;
+  locking_script: string
   /**
    * Type of destination: pubkeyhash, nulldata (op return), multisig, nonstandard, scripthash (deprecated p2sh), metanet, token_stas
    */
-  type: string;
+  type: string
   /**
    * Chain num (0 = external, 1 = internal)
    */
-  chain: number;
+  chain: number
   /**
    * Num used for the derivation of the destination
    */
-  num: number;
+  num: number
   /**
    * Address of the destination, empty of not p2pkh
    */
-  address: string;
+  address: string
   /**
    * ID of the draft transaction associated with this destination
    */
-  draft_id: string;
+  draft_id: string
   /**
    * Metadata object
    */
-  metadata: Metadata;
+  metadata: Metadata
   /**
    * Date when this object was created
    */
-  created_at: Date;
+  created_at: Date
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updated_at?: Date
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deleted_at?: Date
 }
 
 /**
@@ -210,18 +209,18 @@ export interface Destinations extends Array<Destination> {}
  * Block header
  */
 export interface BlockHeader {
-  id: string;
-  height: number;
-  time: number;
-  nonce: number;
-  version: number;
-  hash_previous_block: string;
-  hash_merkle_root: string;
-  bits: string;
-  synced: string | null;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  id: string
+  height: number
+  time: number
+  nonce: number
+  version: number
+  hash_previous_block: string
+  hash_merkle_root: string
+  bits: string
+  synced: string | null
+  created_at: Date
+  updated_at?: Date
+  deleted_at?: Date
 }
 
 /**
@@ -234,22 +233,21 @@ export interface BlockHeaders extends Array<BlockHeader> {}
  * Transaction
  */
 export interface Transaction {
-  id: string;
-  hex: string;
-  block_hash: string;
-  block_height: number;
-  fee: number;
-  number_of_inputs: number;
-  number_of_outputs: number;
-  output_value: number;
-  total_value: number;
-  metadata?: Metadata;
-  direction: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  id: string
+  hex: string
+  block_hash: string
+  block_height: number
+  fee: number
+  number_of_inputs: number
+  number_of_outputs: number
+  output_value: number
+  total_value: number
+  metadata?: Metadata
+  direction: string
+  created_at: Date
+  updated_at?: Date
+  deleted_at?: Date
 }
-
 
 /**
  * Array of transactions
@@ -264,15 +262,15 @@ export interface MapProtocol {
   /**
    * App name
    */
-  app?: string;
+  app?: string
   /**
    * Type of MAP action
    */
-  type?: string;
+  type?: string
   /**
    * MAP key value pairs
    */
-  keys?: { [key: string]: any };
+  keys?: { [key: string]: any }
 }
 
 /**
@@ -282,29 +280,29 @@ export interface OpReturn {
   /**
    * HEX string of OP_RETURN
    */
-  hex?: string;
+  hex?: string
   /**
    * Array of parts of the OP_RETURN in hex
    */
-  hex_parts?: string[];
+  hex_parts?: string[]
   /**
    * MAP protocol definition
    * @see {@link Map}
    */
-  map?: MapProtocol;
+  map?: MapProtocol
   /**
    * String parts array
    */
-  string_parts?: string[];
+  string_parts?: string[]
 }
 
 /**
  * Recipient interface
  */
 export interface Recipient {
-  to: string;
-  satoshis: number;
-  op_return?: OpReturn;
+  to: string
+  satoshis: number
+  op_return?: OpReturn
 }
 
 /**
@@ -320,11 +318,11 @@ export interface FeeUnit {
   /**
    * Satoshis
    */
-  satoshis: number;
+  satoshis: number
   /**
    * Bytes
    */
-  bytes: number;
+  bytes: number
 }
 
 /**
@@ -334,47 +332,47 @@ export interface UtxoPointer {
   /**
    * Transaction ID
    */
-  transaction_id: string;
+  transaction_id: string
   /**
    * Output index
    */
-  output_index: number;
+  output_index: number
 }
 
 /**
  * Transaction used as an input in a draft transaction
  */
 export interface TransactionInput {
-  created_at?: Date;
-  updated_at?: Date;
-  metadata?: Metadata;
-  deleted_at?: Date;
-  id?: string;
-  transaction_id: string;
-  xpub_id?: string;
-  output_index: number;
-  satoshis: number;
-  script_pub_key: string;
-  type: string;
-  draft_id?: string;
-  reserved_at?: Date;
-  spending_tx_id?: string;
-  destination?: Destination;
+  created_at?: Date
+  updated_at?: Date
+  metadata?: Metadata
+  deleted_at?: Date
+  id?: string
+  transaction_id: string
+  xpub_id?: string
+  output_index: number
+  satoshis: number
+  script_pub_key: string
+  type: string
+  draft_id?: string
+  reserved_at?: Date
+  spending_tx_id?: string
+  destination?: Destination
 }
 
 /**
  * Paymail address interface
  */
 export interface PaymailAddress {
-  id: string;
-  xpub_id: string;
-  alias: string;
-  domain: string;
-  public_name: string;
-  avatar: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  id: string
+  xpub_id: string
+  alias: string
+  domain: string
+  public_name: string
+  avatar: string
+  created_at: Date
+  updated_at?: Date
+  deleted_at?: Date
 }
 
 /**
@@ -387,130 +385,130 @@ export interface PaymailAddresses extends Array<PaymailAddress> {}
  * Paymail p2p record for communicating with other p2p providers
  */
 export interface PaymailP4 {
-  alias: string;
-  domain: string;
-  from_paymail?: string;
-  note?: string;
-  pub_key?: string;
-  receive_endpoint?: string;
-  reference_id?: string;
-  resolution_type: string;
+  alias: string
+  domain: string
+  from_paymail?: string
+  note?: string
+  pub_key?: string
+  receive_endpoint?: string
+  reference_id?: string
+  resolution_type: string
 }
 
 /**
  * Script output of a transaction
  */
 export interface ScriptOutput {
-  address?: string;
-  satoshis?: number;
-  script: string;
-  script_type?: string;
+  address?: string
+  satoshis?: number
+  script: string
+  script_type?: string
 }
 
 /**
  * Transaction output record in a draft transaction
  */
 export interface TransactionOutput {
-  paymail_p4?: PaymailP4;
-  satoshis?: number;
-  script?: string;
-  scripts?: ScriptOutput[];
-  to?: string;
-  op_return?: OpReturn;
+  paymail_p4?: PaymailP4
+  satoshis?: number
+  script?: string
+  scripts?: ScriptOutput[]
+  to?: string
+  op_return?: OpReturn
 }
 
 /**
  * Configuration for syncing transaction on-chain
  */
 export interface SyncConfig {
-  broadcast: boolean;
-  broadcast_instant: boolean;
-  sync_on_chain: boolean;
-  paymail_p2p: boolean;
+  broadcast: boolean
+  broadcast_instant: boolean
+  sync_on_chain: boolean
+  paymail_p2p: boolean
 }
 
 /**
  * Configuration for a new transaction
  */
 export interface TransactionConfig {
-  change_destinations?: Destination[];
-  change_destinations_strategy?: ChangeStrategy;
-  change_minimum_satoshis?: number;
-  change_number_of_destinations?: number;
-  change_satoshis?: number;
-  expires_in?: number;
-  fee?: number;
-  fee_unit?: FeeUnit;
-  from_utxos?: UtxoPointer[];
-  include_utxos?: UtxoPointer[];
-  inputs?: TransactionInput[];
-  miner?: string;
-  outputs: TransactionOutput[];
-  send_all_to?: string;
-  sync?: SyncConfig;
+  change_destinations?: Destination[]
+  change_destinations_strategy?: ChangeStrategy
+  change_minimum_satoshis?: number
+  change_number_of_destinations?: number
+  change_satoshis?: number
+  expires_in?: number
+  fee?: number
+  fee_unit?: FeeUnit
+  from_utxos?: UtxoPointer[]
+  include_utxos?: UtxoPointer[]
+  inputs?: TransactionInput[]
+  miner?: string
+  outputs: TransactionOutput[]
+  send_all_to?: string
+  sync?: SyncConfig
 }
 
 /**
  * Transaction input in a new transaction
  */
 export interface TransactionConfigInput {
-  change_destinations?: Destination[];
-  change_destinations_strategy?: ChangeStrategy;
-  change_minimum_satoshis?: number;
-  change_number_of_destinations?: number;
-  change_satoshis?: number;
-  expires_in?: number;
-  fee?: number;
-  fee_unit?: FeeUnit;
-  from_utxos?: UtxoPointer[];
-  miner?: string;
-  outputs: TransactionOutput[];
-  send_all_to?: string;
-  sync?: SyncConfig;
+  change_destinations?: Destination[]
+  change_destinations_strategy?: ChangeStrategy
+  change_minimum_satoshis?: number
+  change_number_of_destinations?: number
+  change_satoshis?: number
+  expires_in?: number
+  fee?: number
+  fee_unit?: FeeUnit
+  from_utxos?: UtxoPointer[]
+  miner?: string
+  outputs: TransactionOutput[]
+  send_all_to?: string
+  sync?: SyncConfig
 }
 
 /**
  * Strategy to use for the change of a transaction
  */
-export type ChangeStrategy = "default" | "random" | "nominations";
+export type ChangeStrategy = 'default' | 'random' | 'nominations'
 /**
  * Status of a draft transaction
  */
-export type DraftStatus = "draft" | "canceled" | "expired" | "complete";
+export type DraftStatus = 'draft' | 'canceled' | 'expired' | 'complete'
 
 /**
  * Draft transaction interface
  */
 export interface DraftTransaction {
-  id: string;
-  hex: string;
-  metadata?: Metadata;
-  xpub_id: string;
-  expires_at: Date;
-  configuration: TransactionConfig;
-  status: DraftStatus;
-  final_tx_id?: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  id: string
+  hex: string
+  metadata?: Metadata
+  xpub_id: string
+  expires_at: Date
+  configuration: TransactionConfig
+  status: DraftStatus
+  final_tx_id?: string
+  created_at: Date
+  updated_at?: Date
+  deleted_at?: Date
 }
 
 /**
  * Utxo interface
  */
 export interface Utxo {
-  id: string;
-  xpub_id: string;
-  satoshis: number;
-  script_pub_key: string;
-  type: string;
-  draft_id?: string;
-  reserved_at?: Date;
-  spending_tx_id?: string;
+  id: string
+  xpub_id: string
+  satoshis: number
+  script_pub_key: string
+  type: string
+  draft_id?: string
+  reserved_at?: Date
+  spending_tx_id?: string
   transaction?: Transaction
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  created_at: Date
+  updated_at?: Date
+  deleted_at?: Date
 }
 
 /**
@@ -526,90 +524,35 @@ export interface AdminStats {
   /**
    * Total balance of all outputs in sats in the database
    */
-  balance: number;
+  balance: number
   /**
    * Number of destinations in the database
    */
-  destinations: number;
+  destinations: number
   /**
    * Number of transactions in the database
    */
-  transactions: number;
+  transactions: number
   /**
    * Number of paymail addresses in the database
    */
-  paymail_addresses: number;
+  paymail_addresses: number
   /**
    * Number of utxos in the database
    */
-  utxos: number;
+  utxos: number
   /**
    * Number of xpubs registered in the database
    */
-  xpubs: number;
+  xpubs: number
   /**
    * A key value object of dates and number of transactions on that date (YYYYMMDD)
    */
-  transactions_per_day: { [key: string]: any};
+  transactions_per_day: { [key: string]: any }
   /**
    * Number of utxos per output type
    */
-  utxos_per_type: { [key: string]: any};
-}
-
-export interface TransportService {
-  SetAdminKey(adminKey: string): void;
-  SetDebug(debug: boolean): void;
-  IsDebug(): boolean;
-  SetSignRequest(debug: boolean): void;
-  IsSignRequest(): boolean;
-  AdminGetStatus(): Promise<boolean>
-  AdminGetStats(): Promise<AdminStats>
-  AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>
-  AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders>
-  AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
-  AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetPaymail(address: string): Promise<PaymailAddress>
-  AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses>
-  AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminCreatePaymail(rawXPub: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress>
-  AdminDeletePaymail(address: string): Promise<void>
-  AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>
-  AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>
-  AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs>;
-  AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
-  AdminRecordTransaction(hex: string): Promise<Transaction>;
-  GetXPub(): Promise<XPub>;
-  UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;
-  GetAccessKey(id: string): Promise<AccessKey>;
-  GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>;
-  GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  CreateAccessKey(metadata: Metadata): Promise<AccessKey>;
-  RevokeAccessKey(id: string): Promise<AccessKey>
-  GetDestinationByID(id: string): Promise<Destination>
-  GetDestinationByLockingScript(locking_script: string): Promise<Destination>
-  GetDestinationByAddress(address: string): Promise<Destination>
-  GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
-  GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  NewDestination(metadata: Metadata): Promise<Destination>;
-  UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination>;
-  UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination>;
-  UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination>;
-  GetTransaction(txID: string): Promise<Transaction>;
-  GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
-  GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  GetUtxo(tx_id: string, output_index: number): Promise<Utxo>;
-  GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>;
-  GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
-  DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
-  RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
-  UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
+  utxos_per_type: { [key: string]: any }
 }
 
 /**
@@ -623,7 +566,7 @@ export interface Key {
 /**
  * Extends Key interface with mnemonic information
  */
-export interface KeyWithMnemonic extends Key{
+export interface KeyWithMnemonic extends Key {
   mnemonic: string
 }
 
@@ -634,21 +577,20 @@ export interface PubKey {
   toString(): string
 }
 
-
 /**
  * Client options for instantiating a new SPV Wallet client
  */
 export interface ClientOptions {
-  accessKeyString?: string;
-  accessKey?: bsv.PrivateKey;
-  adminKey?: string;
-  debug?: boolean;
-  signRequest?: boolean;
-  xPriv?: bsv.HDPrivateKey;
-  xPrivString?: string;
-  xPub?: bsv.HDPublicKey;
-  xPubString?: string;
-  xPubID?: string;
+  accessKeyString?: string
+  accessKey?: bsv.PrivateKey
+  adminKey?: string
+  debug?: boolean
+  signRequest?: boolean
+  xPriv?: bsv.HDPrivateKey
+  xPrivString?: string
+  xPub?: bsv.HDPublicKey
+  xPubString?: string
+  xPubID?: string
 }
 
 /**
@@ -658,17 +600,17 @@ export interface QueryParams {
   /**
    * Page number to return (1 is first page)
    */
-  page?: number;
+  page?: number
   /**
    * Number of items to return per page
    */
-  page_size?: number;
+  page_size?: number
   /**
    * Order the results by this field
    */
-  order_by_field?: string;
+  order_by_field?: string
   /**
    * Sort order (desc, asc)
    */
-  sort_direction?: string;
+  sort_direction?: string
 }

@@ -1,13 +1,11 @@
-import bsv from 'bsv';
-import "cross-fetch/polyfill";
-
-import TransportHTTP from "./transports/http";
+import bsv from 'bsv'
+import 'cross-fetch/polyfill'
+import { AuthHeader, setSignature } from './authentication'
 import {
   AccessKey,
   AccessKeys,
   AdminStats,
   BlockHeaders,
-  Client,
   ClientOptions,
   Conditions,
   Destination,
@@ -23,18 +21,13 @@ import {
   Transaction,
   TransactionConfigInput,
   Transactions,
-  TransportService,
   Utxos,
   XPub,
   XPubs,
   Utxo,
-} from "./interface";
-import {
-  generateNewKeys,
-  generateKeysFromMnemonic,
-  generateKeysFromString,
-} from "./utils/keys";
-import logger from "./logger"
+} from './interface'
+import { generateNewKeys, generateKeysFromMnemonic, generateKeysFromString } from './utils/keys'
+import logger from './logger'
 
 /**
  * SpvWallet class
@@ -46,64 +39,50 @@ import logger from "./logger"
  *   xPriv: <xpriv...>
  * })
  */
-class SpvWalletClient implements TransportService {
-  client: Client;
-  options: ClientOptions | undefined;
+class SpvWalletClient {
+  serverUrl: string
+  options: ClientOptions
+  adminKey: bsv.HDPrivateKey | null
 
   constructor(serverUrl: string, options: ClientOptions) {
-    this.client = {
-      server_url: serverUrl,
-      httpTransport: this.parseOptions(serverUrl, options),
-    }
-
-    if (!this.client.httpTransport) {
-      const Err = new Error("http transport cannot be null")
-      logger.error(Err)
-      throw Err
-    }
-  }
-
-  private parseOptions(serverUrl: string, options: ClientOptions) {
+    this.serverUrl = serverUrl
+    this.adminKey = null
 
     if (options.xPriv) {
-      options.xPrivString = options.xPriv.toString();
-      options.xPub = options.xPriv.hdPublicKey;
-      options.xPubString = options.xPub.toString();
+      options.xPrivString = options.xPriv.toString()
+      options.xPub = options.xPriv.hdPublicKey
+      options.xPubString = options.xPub.toString()
     } else if (options.xPrivString) {
-      options.xPriv = bsv.HDPrivateKey.fromString(options.xPrivString);
-      options.xPub = options.xPriv?.hdPublicKey;
-      options.xPubString = options.xPub?.toString();
+      options.xPriv = bsv.HDPrivateKey.fromString(options.xPrivString)
+      options.xPub = options.xPriv?.hdPublicKey
+      options.xPubString = options.xPub?.toString()
     } else if (options.xPub) {
-      options.xPriv = undefined;
-      options.xPrivString = undefined;
-      options.xPubString = options.xPub.toString();
+      options.xPriv = undefined
+      options.xPrivString = undefined
+      options.xPubString = options.xPub.toString()
     } else if (options.xPubString) {
-      options.xPriv = undefined;
-      options.xPrivString = undefined;
-      options.xPub = bsv.HDPublicKey.fromString(options.xPubString);
+      options.xPriv = undefined
+      options.xPrivString = undefined
+      options.xPub = bsv.HDPublicKey.fromString(options.xPubString)
     } else if (options.accessKey) {
-      options.xPriv = undefined;
-      options.xPrivString = undefined;
-      options.xPub = undefined;
-      options.xPubString = undefined;
-      options.accessKeyString = options.accessKey.toString();
-      const pubAccessKey = options.accessKey.publicKey.toString();
-      options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(pubAccessKey || '')).toString('hex');
+      options.xPriv = undefined
+      options.xPrivString = undefined
+      options.xPub = undefined
+      options.xPubString = undefined
+      options.accessKeyString = options.accessKey.toString()
+      const pubAccessKey = options.accessKey.publicKey.toString()
+      options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(pubAccessKey || '')).toString('hex')
     }
 
     if (options.xPubString) {
-      options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(options.xPubString || '')).toString('hex');
+      options.xPubID = bsv.crypto.Hash.sha256(Buffer.from(options.xPubString || '')).toString('hex')
     }
 
-    let httpTransport: TransportService = new TransportHTTP(serverUrl, options)
+    this.options = options
 
     if (options.adminKey) {
-      httpTransport.SetAdminKey(options.adminKey)
+      this.SetAdminKey(options.adminKey)
     }
-
-    this.options = options;
-
-    return httpTransport;
   }
 
   /**
@@ -113,7 +92,8 @@ class SpvWalletClient implements TransportService {
    * @return void
    */
   SetAdminKey(adminKey: string): void {
-    this.client.httpTransport.SetAdminKey(adminKey)
+    this.options.adminKey = adminKey
+    this.adminKey = bsv.HDPrivateKey.fromString(adminKey)
   }
 
   /**
@@ -123,7 +103,7 @@ class SpvWalletClient implements TransportService {
    * @return void
    */
   SetDebug(debug: boolean): void {
-    this.client.httpTransport.SetDebug(debug)
+    this.options.debug = debug
   }
 
   /**
@@ -136,7 +116,7 @@ class SpvWalletClient implements TransportService {
    * @return void
    */
   SetSignRequest(signRequest: boolean): void {
-    this.client.httpTransport.SetSignRequest(signRequest)
+    this.options.signRequest = signRequest
   }
 
   /**
@@ -145,7 +125,7 @@ class SpvWalletClient implements TransportService {
    * @return {boolean}
    */
   IsDebug(): boolean {
-    return this.client.httpTransport.IsDebug();
+    return !!this.options.debug
   }
 
   /**
@@ -154,7 +134,7 @@ class SpvWalletClient implements TransportService {
    * @return {boolean}
    */
   IsSignRequest(): boolean {
-    return this.client.httpTransport.IsSignRequest();
+    return !!this.options.signRequest
   }
 
   /**
@@ -163,7 +143,7 @@ class SpvWalletClient implements TransportService {
    * @return {boolean}
    */
   async AdminGetStatus(): Promise<boolean> {
-    return await this.client.httpTransport.AdminGetStatus();
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/status`)
   }
 
   /**
@@ -172,7 +152,7 @@ class SpvWalletClient implements TransportService {
    * @return {AdminStats}
    */
   async AdminGetStats(): Promise<AdminStats> {
-    return await this.client.httpTransport.AdminGetStats();
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/stats`)
   }
 
   /**
@@ -180,11 +160,15 @@ class SpvWalletClient implements TransportService {
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {AccessKeys}
    */
-  async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
-    return await this.client.httpTransport.AdminGetAccessKeys(conditions, metadata, queryParams);
+  async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    })
   }
 
   /**
@@ -195,7 +179,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetAccessKeysCount(conditions, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/access-keys/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -203,11 +190,15 @@ class SpvWalletClient implements TransportService {
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {BlockHeaders}
    */
-  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders> {
-    return await this.client.httpTransport.AdminGetBlockHeaders(conditions, metadata, queryParams);
+  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<BlockHeaders> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    })
   }
 
   /**
@@ -218,7 +209,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetBlockHeadersCount(conditions, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/block-headers/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -226,11 +220,15 @@ class SpvWalletClient implements TransportService {
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {Destinations}
    */
-  async AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
-    return await this.client.httpTransport.AdminGetDestinations(conditions, metadata, queryParams);
+  async AdminGetDestinations(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Destinations> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    })
   }
 
   /**
@@ -241,7 +239,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetDestinationsCount(conditions, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/destinations/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -251,7 +252,7 @@ class SpvWalletClient implements TransportService {
    * @return {PaymailAddress}
    */
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
-    return await this.client.httpTransport.AdminGetPaymail(address);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/get`, 'POST', { address })
   }
 
   /**
@@ -259,11 +260,15 @@ class SpvWalletClient implements TransportService {
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {PaymailAddresses}
    */
-  async AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses> {
-    return await this.client.httpTransport.AdminGetPaymails(conditions, metadata, queryParams);
+  async AdminGetPaymails(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<PaymailAddresses> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    })
   }
 
   /**
@@ -275,7 +280,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetPaymailsCount(conditions, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymails/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -287,8 +295,18 @@ class SpvWalletClient implements TransportService {
    * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
    * @return {PaymailAddress}
    */
-  async AdminCreatePaymail(rawXPub: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
-    return await this.client.httpTransport.AdminCreatePaymail(rawXPub, address, public_name, avatar);
+  async AdminCreatePaymail(
+    rawXPub: string,
+    address: string,
+    public_name: string,
+    avatar: string
+  ): Promise<PaymailAddress> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/create`, 'POST', {
+      key: rawXPub,
+      address,
+      public_name,
+      avatar,
+    })
   }
 
   /**
@@ -298,7 +316,7 @@ class SpvWalletClient implements TransportService {
    * @return void
    */
   async AdminDeletePaymail(address: string): Promise<void> {
-    await this.client.httpTransport.AdminDeletePaymail(address);
+    await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/delete`, 'DELETE', { address })
   }
 
   /**
@@ -306,11 +324,15 @@ class SpvWalletClient implements TransportService {
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {Transactions}
    */
-  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
-    return await this.client.httpTransport.AdminGetTransactions(conditions, metadata, queryParams);
+  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    })
   }
 
   /**
@@ -321,7 +343,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetTransactionsCount(conditions, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -329,11 +354,15 @@ class SpvWalletClient implements TransportService {
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {Utxos}
    */
-  async AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
-    return await this.client.httpTransport.AdminGetUtxos(conditions, metadata, queryParams);
+  async AdminGetUtxos(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Utxos> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    })
   }
 
   /**
@@ -344,7 +373,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetUtxosCount(conditions, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/utxos/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -352,11 +384,15 @@ class SpvWalletClient implements TransportService {
    *
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {XPubs}
    */
-  async AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs> {
-    return await this.client.httpTransport.AdminGetXPubs(conditions, metadata, queryParams);
+  async AdminGetXPubs(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<XPubs> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    })
   }
 
   /**
@@ -367,7 +403,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.AdminGetXPubsCount(conditions, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpubs/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -378,17 +417,20 @@ class SpvWalletClient implements TransportService {
    * @return {XPub}             The newly registered xpub
    */
   async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.client.httpTransport.AdminNewXpub(rawXPub, metadata);
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/xpub`, 'POST', {
+      key: rawXPub,
+      metadata,
+    })
   }
 
   /**
    * Admin only: Record a transaction without any of the normal checks
    *
-   * @param {string} txHex  Hex string of the transaction
+   * @param {string} hex  Hex string of the transaction
    * @return {Transaction}
    */
-  async AdminRecordTransaction(txHex: string): Promise<Transaction> {
-    return await this.client.httpTransport.AdminRecordTransaction(txHex);
+  async AdminRecordTransaction(hex: string): Promise<Transaction> {
+    return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/transactions/record`, 'POST', { hex })
   }
 
   /**
@@ -397,7 +439,7 @@ class SpvWalletClient implements TransportService {
    * @return {XPub}
    */
   async GetXPub(): Promise<XPub> {
-    return await this.client.httpTransport.GetXPub();
+    return await this.doHTTPRequest(`${this.serverUrl}/xpub`)
   }
 
   /**
@@ -409,7 +451,7 @@ class SpvWalletClient implements TransportService {
    * @return {XPub}
    */
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
-    return await this.client.httpTransport.UpdateXPubMetadata(metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/xpub`, 'PATCH', { metadata })
   }
 
   /**
@@ -419,7 +461,7 @@ class SpvWalletClient implements TransportService {
    * @return {AccessKey}
    */
   async GetAccessKey(id: string): Promise<AccessKey> {
-    return await this.client.httpTransport.GetAccessKey(id);
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key?id=${id}`)
   }
 
   /**
@@ -431,7 +473,14 @@ class SpvWalletClient implements TransportService {
    * @return {AccessKeys}
    */
   async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
-    return await this.client.httpTransport.GetAccessKeys(conditions, metadata, queryParams);
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key/search`, 'POST', {
+      conditions,
+      metadata,
+      page: queryParams?.page || 0,
+      page_size: queryParams?.page_size || 0,
+      order_by_field: queryParams?.order_by_field || '',
+      sort_direction: queryParams?.sort_direction || '',
+    })
   }
 
   /**
@@ -442,7 +491,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.GetAccessKeysCount(conditions, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -454,7 +506,7 @@ class SpvWalletClient implements TransportService {
    * @return {AccessKey}
    */
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return await this.client.httpTransport.CreateAccessKey(metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key`, 'POST', { metadata })
   }
 
   /**
@@ -466,7 +518,7 @@ class SpvWalletClient implements TransportService {
    * @return {AccessKey}
    */
   async RevokeAccessKey(id: string): Promise<AccessKey> {
-    return await this.client.httpTransport.RevokeAccessKey(id);
+    return await this.doHTTPRequest(`${this.serverUrl}/access-key?id=${id}`, 'DELETE')
   }
 
   /**
@@ -476,7 +528,7 @@ class SpvWalletClient implements TransportService {
    * @return {Destination}
    */
   async GetDestinationByID(id: string): Promise<Destination> {
-    return await this.client.httpTransport.GetDestinationByID(id);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination?id=${id}`)
   }
 
   /**
@@ -486,7 +538,7 @@ class SpvWalletClient implements TransportService {
    * @return {Destination}
    */
   async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return await this.client.httpTransport.GetDestinationByLockingScript(locking_script);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination?locking_script=${locking_script}`)
   }
 
   /**
@@ -496,7 +548,7 @@ class SpvWalletClient implements TransportService {
    * @return {Destination}
    */
   async GetDestinationByAddress(address: string): Promise<Destination> {
-    return await this.client.httpTransport.GetDestinationByAddress(address);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination?address=${address}`)
   }
 
   /**
@@ -508,7 +560,14 @@ class SpvWalletClient implements TransportService {
    * @return {Destinations}
    */
   async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
-    return await this.client.httpTransport.GetDestinations(conditions, metadata, queryParams);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination/search`, 'POST', {
+      conditions,
+      metadata,
+      page: queryParams?.page || 0,
+      page_size: queryParams?.page_size || 0,
+      order_by_field: queryParams?.order_by_field || '',
+      sort_direction: queryParams?.sort_direction || '',
+    })
   }
 
   /**
@@ -519,7 +578,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.GetDestinationsCount(conditions, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -533,7 +595,7 @@ class SpvWalletClient implements TransportService {
    * @return {Destination}
    */
   async NewDestination(metadata: Metadata): Promise<Destination> {
-    return await this.client.httpTransport.NewDestination(metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, 'POST', { metadata })
   }
 
   /**
@@ -546,7 +608,10 @@ class SpvWalletClient implements TransportService {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
-    return await this.client.httpTransport.UpdateDestinationMetadataByID(id, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, 'PATCH', {
+      id,
+      metadata,
+    })
   }
 
   /**
@@ -559,7 +624,10 @@ class SpvWalletClient implements TransportService {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByLockingScript(locking_script: string, metadata: Metadata): Promise<Destination> {
-    return await this.client.httpTransport.UpdateDestinationMetadataByLockingScript(locking_script, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, 'PATCH', {
+      locking_script,
+      metadata,
+    })
   }
 
   /**
@@ -572,7 +640,10 @@ class SpvWalletClient implements TransportService {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
-    return await this.client.httpTransport.UpdateDestinationMetadataByAddress(address, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/destination`, 'PATCH', {
+      address,
+      metadata,
+    })
   }
 
   /**
@@ -582,7 +653,7 @@ class SpvWalletClient implements TransportService {
    * @return {Transaction}
    */
   async GetTransaction(txID: string): Promise<Transaction> {
-    return await this.client.httpTransport.GetTransaction(txID);
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction?id=${txID}`, 'GET')
   }
 
   /**
@@ -594,7 +665,14 @@ class SpvWalletClient implements TransportService {
    * @return {Transactions}
    */
   async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
-    return await this.client.httpTransport.GetTransactions(conditions, metadata, queryParams);
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction/search`, 'POST', {
+      conditions,
+      metadata,
+      page: queryParams?.page || 0,
+      page_size: queryParams?.page_size || 0,
+      order_by_field: queryParams?.order_by_field || '',
+      sort_direction: queryParams?.sort_direction || '',
+    })
   }
 
   /**
@@ -605,7 +683,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.GetTransactionsCount(conditions, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -616,7 +697,7 @@ class SpvWalletClient implements TransportService {
    * @return {Utxo}
    */
   async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
-    return await this.client.httpTransport.GetUtxo(tx_id, output_index);
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo?tx_id=${tx_id}&output_index=${output_index}`)
   }
 
   /**
@@ -628,7 +709,14 @@ class SpvWalletClient implements TransportService {
    * @return {Utxos}
    */
   async GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
-    return await this.client.httpTransport.GetUtxos(conditions, metadata, queryParams);
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo/search`, 'POST', {
+      conditions,
+      metadata,
+      page: queryParams?.page || 0,
+      page_size: queryParams?.page_size || 0,
+      order_by_field: queryParams?.order_by_field || '',
+      sort_direction: queryParams?.sort_direction || '',
+    })
   }
 
   /**
@@ -639,7 +727,10 @@ class SpvWalletClient implements TransportService {
    * @return {number}
    */
   async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.client.httpTransport.GetUtxosCount(conditions, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/utxo/count`, 'POST', {
+      conditions,
+      metadata,
+    })
   }
 
   /**
@@ -653,7 +744,14 @@ class SpvWalletClient implements TransportService {
    * @return {DraftTransaction}     Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.client.httpTransport.DraftToRecipients(recipients, metadata);
+    const transactionConfig: TransactionConfigInput = {
+      outputs: recipients,
+    }
+
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction`, 'POST', {
+      config: transactionConfig,
+      metadata,
+    })
   }
 
   /**
@@ -664,7 +762,10 @@ class SpvWalletClient implements TransportService {
    * @return {DraftTransaction}                        Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
   async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.client.httpTransport.DraftTransaction(transactionConfig, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction`, 'POST', {
+      config: transactionConfig,
+      metadata,
+    })
   }
 
   /**
@@ -680,8 +781,8 @@ class SpvWalletClient implements TransportService {
    * const tx = await spvWalletClient.RecordTransaction(finalized, draft.id, metadata)
    */
   async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Transaction> {
-    const draft = await this.DraftToRecipients(recipients, metadata);
-    const finalized = this.FinalizeTransaction(draft);
+    const draft = await this.DraftToRecipients(recipients, metadata)
+    const finalized = this.FinalizeTransaction(draft)
     return this.RecordTransaction(finalized, draft.id, metadata)
   }
 
@@ -693,30 +794,29 @@ class SpvWalletClient implements TransportService {
    */
   FinalizeTransaction(draftTransaction: DraftTransaction): string {
     if (!this.options?.xPriv) {
-      const Err = new Error("cannot sign transaction without an xPriv")
+      const Err = new Error('cannot sign transaction without an xPriv')
       logger.error(Err)
       throw Err
     }
 
-    const Input = bsv.Transaction.Input;
-    const xPriv = this.options.xPriv as bsv.HDPrivateKey;
-    const txDraft = new bsv.Transaction(draftTransaction.hex);
+    const Input = bsv.Transaction.Input
+    const xPriv = this.options.xPriv as bsv.HDPrivateKey
+    const txDraft = new bsv.Transaction(draftTransaction.hex)
 
     // sign the inputs
-    const privateKeys: bsv.PrivateKey[] = [];
+    const privateKeys: bsv.PrivateKey[] = []
     draftTransaction.configuration.inputs?.forEach((input, index) => {
       if (input.destination) {
-        const chainKey = xPriv.deriveChild(input.destination.chain);
-        const numKey = chainKey.deriveChild(input.destination.num);
-        privateKeys.push(numKey.privateKey);
+        const chainKey = xPriv.deriveChild(input.destination.chain)
+        const numKey = chainKey.deriveChild(input.destination.num)
+        privateKeys.push(numKey.privateKey)
 
         // small sanity check for the inputs
         if (
-          input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex')
-          ||
+          input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex') ||
           input.output_index != txDraft.inputs[index].outputIndex
         ) {
-          const Err = new Error("input tx ids do not match in draft and transaction hex");
+          const Err = new Error('input tx ids do not match in draft and transaction hex')
           logger.error(Err)
           throw Err
         }
@@ -731,24 +831,24 @@ class SpvWalletClient implements TransportService {
         output: new bsv.Transaction.Output({
           script: new bsv.Script(input.script_pub_key),
           satoshis: input.satoshis,
-        })
-      });
-    });
+        }),
+      })
+    })
 
     txDraft.sign(privateKeys)
 
     if (!txDraft.verify()) {
-      const Err = new Error("transaction verification failed");
+      const Err = new Error('transaction verification failed')
       logger.error(Err)
       throw Err
     }
     if (!txDraft.isFullySigned()) {
-      const Err = new Error("transaction could not be fully signed");
+      const Err = new Error('transaction could not be fully signed')
       logger.error(Err)
       throw Err
     }
 
-    return txDraft.toString();
+    return txDraft.toString()
   }
 
   /**
@@ -763,7 +863,11 @@ class SpvWalletClient implements TransportService {
    * @return {Transaction}       The SPV Wallet transaction object
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
-    return await this.client.httpTransport.RecordTransaction(hex, referenceID, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction/record`, 'POST', {
+      hex,
+      reference_id: referenceID,
+      metadata,
+    })
   }
 
   /**
@@ -776,29 +880,88 @@ class SpvWalletClient implements TransportService {
    * @return {Transaction}      The complete transaction object, with the new changes
    */
   async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
-    return await this.client.httpTransport.UpdateTransactionMetadata(txID, metadata);
+    return await this.doHTTPRequest(`${this.serverUrl}/transaction`, 'PATCH', {
+      id: txID,
+      metadata,
+    })
+  }
+
+  async doHTTPAdminRequest(url: string, method: string = 'GET', payload: any = null): Promise<any> {
+    if (!this.adminKey) {
+      const Err = new Error('Admin key has not been set. Cannot do admin queries')
+      logger.error(Err)
+      throw Err
+    }
+
+    const res = await this.makeRequest(url, method, payload, this.adminKey)
+
+    if (res.ok) {
+      const contentType = res.headers.get('Content-Type')
+      if (contentType && contentType.includes('application/json')) {
+        return res.json()
+      }
+      return res.text()
+    } else {
+      await this.throwRequestError(res)
+    }
+  }
+
+  async doHTTPRequest(url: string, method: string = 'GET', payload: any = null): Promise<any> {
+    const signingKey = this.options.xPriv || this.options.accessKey
+    const res = await this.makeRequest(url, method, payload, signingKey)
+
+    if (res.ok) {
+      return res.json()
+    } else {
+      await this.throwRequestError(res)
+    }
+  }
+
+  async makeRequest(
+    url: string,
+    method: string,
+    payload: any,
+    signingKey?: bsv.HDPrivateKey | bsv.PrivateKey
+  ): Promise<Response> {
+    const json = payload ? JSON.stringify(payload) : null
+    let headers: Record<string, string> = { 'content-type': 'application/json' }
+
+    if (this.options.signRequest && signingKey) {
+      // @ts-ignore
+      headers = setSignature(headers, signingKey, json || '')
+    } else if (this.options.xPubString) {
+      headers[AuthHeader] = this.options.xPubString
+    }
+
+    const req = {
+      method,
+      headers,
+      body: json,
+    }
+
+    return global.fetch(url, req)
+  }
+
+  async throwRequestError(res: Response) {
+    const error = await res.text()
+    throw `Status: ${res.status}, Message: ${error}`
   }
 }
 
-const generateKeys = function(): KeyWithMnemonic {
-  return generateNewKeys();
+const generateKeys = function (): KeyWithMnemonic {
+  return generateNewKeys()
 }
 
 generateKeys().xPriv().toString()
 
-const getKeysFromMnemonic= function(mnemonic: string): KeyWithMnemonic{
-  return generateKeysFromMnemonic(mnemonic);
+const getKeysFromMnemonic = function (mnemonic: string): KeyWithMnemonic {
+  return generateKeysFromMnemonic(mnemonic)
 }
 
-const getKeysFromString = function(xpriv: string): Key{
-  return generateKeysFromString(xpriv);
+const getKeysFromString = function (xpriv: string): Key {
+  return generateKeysFromString(xpriv)
 }
 
-export {
-  SpvWalletClient,
-  generateKeys,
-  getKeysFromMnemonic,
-  getKeysFromString,
-};
-export * from "./authentication";
-export * from "./interface";
+export { SpvWalletClient, generateKeys, getKeysFromMnemonic, getKeysFromString }
+export * from './authentication'
+export * from './interface'
