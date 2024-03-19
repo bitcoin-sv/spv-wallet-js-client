@@ -279,16 +279,16 @@ class SpvWalletClient implements TransportService {
   }
 
   /**
-   * Admin only: Create a new paymail for an xPub ID
+   * Admin only: Create a new paymail for an xPub
    *
-   * @param {string} xpub_id The ID of the xPub to register the paymail to (note: NOT the xpub itself, but the ID (hash))
+   * @param {string} rawXPub Raw xPub to register the paymail to
    * @param {string} address Paymail address (i.e. alias@example.com)
    * @param {string} public_name Public name for the user to return in Paymail address resolution requests
    * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
    * @return {PaymailAddress}
    */
-  async AdminCreatePaymail(xpub_id: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
-    return await this.client.httpTransport.AdminCreatePaymail(xpub_id, address, public_name, avatar);
+  async AdminCreatePaymail(rawXPub: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+    return await this.client.httpTransport.AdminCreatePaymail(rawXPub, address, public_name, avatar);
   }
 
   /**
