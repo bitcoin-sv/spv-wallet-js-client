@@ -38,13 +38,13 @@ export const deriveHDPublicChildKeyFromHex = function (hdKey: bsv.HDPublicKey, h
   return childKey
 }
 
-export const generateNewKeys = function (): KeyWithMnemonic {
+export const generateKeys = function (): KeyWithMnemonic {
   bsv.HDPrivateKey.fromRandom()
   const mnemonic = Mnemonic.fromRandom()
-  return generateKeysFromMnemonic(mnemonic.toString())
+  return getKeysFromMnemonic(mnemonic.toString())
 }
 
-export const generateKeysFromMnemonic = function (mnemonicStr: string): KeyWithMnemonic {
+export const getKeysFromMnemonic = function (mnemonicStr: string): KeyWithMnemonic {
   const mnemonic = Mnemonic.fromString(mnemonicStr)
   const seed = mnemonic.toSeed()
   const hdPrivateKey = bsv.HDPrivateKey.fromSeed(seed, bsv.Networks.mainnet)
@@ -60,7 +60,7 @@ export const generateKeysFromMnemonic = function (mnemonicStr: string): KeyWithM
   }
 }
 
-export const generateKeysFromString = function (privateKey: string): Key {
+export const getKeysFromString = function (privateKey: string): Key {
   let hdPrivateKey = bsv.HDPrivateKey.fromString(privateKey)
 
   return {
