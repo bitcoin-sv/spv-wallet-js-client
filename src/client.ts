@@ -22,7 +22,7 @@ import {
   XPub,
   XPubs,
   Utxo,
-} from './interface'
+} from './types'
 import logger from './logger'
 
 /**

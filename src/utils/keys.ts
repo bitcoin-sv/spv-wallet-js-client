@@ -2,7 +2,7 @@ import bsv from 'bsv'
 import Mnemonic from 'bsv/mnemonic'
 import { getChildNumsFromHex } from './index'
 
-import { Key, KeyWithMnemonic } from '../interface'
+import { Key, KeyWithMnemonic } from '../types'
 
 // deriveChildKeyFromHex derive the child extended key from the hex string
 export const deriveChildKeyFromHex = function (

@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 import fetchMock from 'jest-fetch-mock'
 import { SpvWalletClient } from './index'
-import { ClientOptions, DraftTransaction, Recipients, TransactionConfigInput } from './interface'
+import { ClientOptions, DraftTransaction, Recipients, TransactionConfigInput } from './types'
 
 const xPrivString =
   'xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A'
