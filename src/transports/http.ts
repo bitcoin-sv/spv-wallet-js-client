@@ -139,9 +139,9 @@ class TransportHTTP implements TransportService {
     });
   }
 
-  async AdminCreatePaymail(xpub_id: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
+  async AdminCreatePaymail(rawXPub: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress> {
     return await this.doHTTPAdminRequest(`${this.serverUrl}/admin/paymail/create`, 'POST', {
-      xpub_id,
+      key: rawXPub,
       address,
       public_name,
       avatar,
@@ -581,7 +581,7 @@ class TransportHTTP implements TransportService {
       if (contentType && contentType.includes('application/json')) {
         return res.json()
       }
-      return res.text()     
+      return res.text()
     } else {
       await this.throwRequestError(res)
     }
