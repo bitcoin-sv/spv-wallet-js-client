@@ -23,7 +23,7 @@ import {
   XPubs,
   Utxo,
 } from './types'
-import logger from './logger'
+import { logger } from './logger'
 
 /**
  * SpvWallet class
@@ -785,7 +785,7 @@ export class SpvWalletClient {
   FinalizeTransaction(draftTransaction: DraftTransaction): string {
     if (!this.options?.xPriv) {
       const Err = new Error('cannot sign transaction without an xPriv')
-      logger.error(Err)
+      logger.error(Err.message)
       throw Err
     }
 
@@ -807,7 +807,7 @@ export class SpvWalletClient {
           input.output_index != txDraft.inputs[index].outputIndex
         ) {
           const Err = new Error('input tx ids do not match in draft and transaction hex')
-          logger.error(Err)
+          logger.error(Err.message)
           throw Err
         }
       }
@@ -829,12 +829,12 @@ export class SpvWalletClient {
 
     if (!txDraft.verify()) {
       const Err = new Error('transaction verification failed')
-      logger.error(Err)
+      logger.error(Err.message)
       throw Err
     }
     if (!txDraft.isFullySigned()) {
       const Err = new Error('transaction could not be fully signed')
-      logger.error(Err)
+      logger.error(Err.message)
       throw Err
     }
 
@@ -879,7 +879,7 @@ export class SpvWalletClient {
   async doHTTPAdminRequest(url: string, method: string = 'GET', payload: any = null): Promise<any> {
     if (!this.adminKey) {
       const Err = new Error('Admin key has not been set. Cannot do admin queries')
-      logger.error(Err)
+      logger.error(Err.message)
       throw Err
     }
 

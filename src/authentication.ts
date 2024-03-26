@@ -3,7 +3,7 @@ import bsv from 'bsv'
 import { RandomHex, Hash } from './utils'
 import { deriveHDPrivateChildKeyFromHex } from './utils/keys'
 import { signMessage } from './utils/sign'
-import logger from './logger'
+import { logger } from './logger'
 
 export interface AuthPayload {
   AuthHash?: string
@@ -82,7 +82,7 @@ export const createSignature = function (signingKey: bsv.HDPrivateKey | bsv.Priv
   // No key?
   if (!signingKey) {
     const Err = new Error('missing signingKey key')
-    logger.error(Err)
+    logger.error(Err.message)
     throw Err
   }
 

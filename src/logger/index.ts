@@ -1,13 +1,21 @@
-import pino from 'pino'
+export interface Logger {
+  debug(msg: string, ...args: any[]): void;
+  info(msg: string, ...args: any[]): void;
+  warn(msg: string, ...args: any[]): void;
+  error(msg: string, ...args: any[]): void;
+}
 
-const logger = pino({
-  name: 'spv-wallet-js-client',
-  browser: {
-    asObject: true,
+export const logger: Logger = {
+  debug(msg: string, ...args: any[]) {
+    console.debug(msg, ...args);
   },
-  formatters: {
-    level: (label) => ({ level: label }),
+  info(msg: string, ...args: any[]) {
+    console.info(msg, ...args);
   },
-})
-
-export default logger
+  warn(msg: string, ...args: any[]) {
+    console.warn(msg, ...args);
+  },
+  error(msg: string, ...args: any[]) {
+    console.error(msg, ...args);
+  }
+};
