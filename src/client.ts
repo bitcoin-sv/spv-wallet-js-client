@@ -802,7 +802,7 @@ export class SpvWalletClient {
         let privKey =xPriv.deriveChild(dst.chain)
                           .deriveChild(dst.num)
 
-        if (dst.paymail_external_derivation_num){
+        if (dst.paymail_external_derivation_num != null){
           // derive private key (m/chain/num/paymail_num)
           privKey= privKey.deriveChild(dst.paymail_external_derivation_num)
         }
