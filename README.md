@@ -10,6 +10,8 @@
 <br/>
 </div>
 
+[SPV Wallet GitBook](https://bsvblockchain.gitbook.io/docs)
+
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
