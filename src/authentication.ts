@@ -3,6 +3,7 @@ import bsv from 'bsv'
 import { RandomHex, Hash } from './utils'
 import { deriveHDPrivateChildKeyFromHex } from './utils/keys'
 import { signMessage } from './utils/sign'
+import { isHDPrivateKey } from './typeguards'
 
 export interface AuthPayload {
   AuthHash?: string
@@ -90,18 +91,17 @@ export const createSignature = function (signingKey: bsv.HDPrivateKey | bsv.Priv
   payload.AuthNonce = RandomHex(32)
 
   let privateKey: bsv.PrivateKey
-  // @ts-ignore
-  if (signingKey.hdPublicKey) {
-    const hdKey = signingKey as bsv.HDPrivateKey
+
+  if (isHDPrivateKey(signingKey)) {
     // Get the xPub
-    payload.xPub = hdKey.hdPublicKey.toString() // will throw
+    payload.xPub = signingKey.hdPublicKey.toString() // will throw
     payload.accessKey = undefined
 
     // Derive the address for signing
-    const key: bsv.HDPrivateKey = deriveHDPrivateChildKeyFromHex(hdKey, payload.AuthNonce)
+    const key: bsv.HDPrivateKey = deriveHDPrivateChildKeyFromHex(signingKey, payload.AuthNonce)
     privateKey = key.privateKey
   } else {
-    privateKey = signingKey as bsv.PrivateKey
+    privateKey = signingKey
     payload.xPub = undefined
     payload.accessKey = privateKey.publicKey.toString()
   }
