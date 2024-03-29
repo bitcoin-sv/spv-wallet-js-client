@@ -29,7 +29,6 @@ describe('deriveChildKeyFromHex', () => {
     const key = bsv.HDPrivateKey.fromString(testXpriv);
     const childKey = deriveChildKeyFromHex(key, testHash);
 
-    // @ts-ignore
     const pubKey = bsv.HDPublicKey.fromHDPrivateKey(childKey).toString();
     expect(pubKey).toEqual(derivedXpub);
   });

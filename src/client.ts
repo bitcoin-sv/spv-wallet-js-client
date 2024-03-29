@@ -763,7 +763,6 @@ export class SpvWalletClient {
       }
 
       // @todo add support for other types of transaction inputs
-      // @ts-ignore Typescript does not understand the way this is setup in bsv lib
       txDraft.inputs[index] = new Input.PublicKeyHash({
         prevTxId: input.transaction_id,
         outputIndex: input.output_index,

@@ -167,8 +167,8 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
-    // @ts-ignore
-    draftTransaction.configuration.inputs[0].destination.num = 12333;
+    const input = draftTransaction.configuration.inputs?.[0];
+    input!.destination!.num = 12333;
     expect(() => {
       spvWalletClient.FinalizeTransaction(draftTransaction);
     }).toThrow('transaction could not be fully signed');
