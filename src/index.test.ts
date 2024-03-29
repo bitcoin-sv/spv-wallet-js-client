@@ -28,10 +28,10 @@ const testClient: TestClient = httpTestClient;
 describe('SPVWalletClient class', () => {
   test('instantiate with options', () => {
     const options: ClientOptions = {
+      signRequest: true,
+
       adminKey: xPrivString,
-      debug: true,
-      xPrivString,
-      xPubString,
+      xPriv: xPrivString,
     };
     const spvWalletClient = new SpvWalletClient('https://spv-wallet.org/v1', options);
     expect(spvWalletClient).toBeInstanceOf(SpvWalletClient);
@@ -40,8 +40,8 @@ describe('SPVWalletClient class', () => {
 
 describe('SPVWalletClient routing', () => {
   const options: ClientOptions = {
-    xPrivString: testClient.xPrivString,
     signRequest: true,
+    xPriv: testClient.xPrivString,
   };
   const spvWalletClient = new SpvWalletClient(testClient.serverURL, options);
 
@@ -92,9 +92,8 @@ describe('SPVWalletClient routing', () => {
 
 describe('SPVWalletClient admin routing', () => {
   const options: ClientOptions = {
-    adminKey: testClient.xPrivString,
-    xPrivString: testClient.xPrivString,
     signRequest: true,
+    adminKey: testClient.xPrivString,
   };
   const adminSPVWalletClient = new SpvWalletClient(testClient.serverURL, options);
 
@@ -141,8 +140,8 @@ describe('SPVWalletClient admin routing', () => {
 describe('Finalize transaction', () => {
   test('draftTxJSON', async () => {
     const spvWalletClient = new SpvWalletClient(serverURL, {
-      xPrivString,
       signRequest: true,
+      xPriv: xPrivString,
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON);
@@ -152,8 +151,8 @@ describe('Finalize transaction', () => {
 
   test('draftTxJSON2', async () => {
     const spvWalletClient = new SpvWalletClient(serverURL, {
-      xPrivString,
       signRequest: true,
+      xPriv: xPrivString,
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
@@ -163,8 +162,8 @@ describe('Finalize transaction', () => {
 
   test('draftTxJSON2 error', async () => {
     const spvWalletClient = new SpvWalletClient(serverURL, {
-      xPrivString,
       signRequest: true,
+      xPriv: xPrivString,
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
