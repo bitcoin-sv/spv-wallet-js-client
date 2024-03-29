@@ -1,5 +1,5 @@
-import bsv from 'bsv'
-import { AuthHeader, setSignature } from './authentication'
+import bsv from 'bsv';
+import { AuthHeader, setSignature } from './authentication';
 import {
   AccessKey,
   AccessKeys,
@@ -22,9 +22,9 @@ import {
   XPub,
   XPubs,
   Utxo,
-} from './types'
-import { Logger, LoggerConfig, makeLogger, defaultLogger } from './logger/logger'
-import { Requester } from './requester'
+} from './types';
+import { Logger, LoggerConfig, makeLogger, defaultLogger } from './logger/logger';
+import { Requester } from './requester';
 
 /**
  * SpvWallet class
@@ -37,54 +37,54 @@ import { Requester } from './requester'
  * })
  */
 export class SpvWalletClient {
-  serverUrl: string
-  options: ClientOptions
-  adminKey?: bsv.HDPrivateKey
-  logger: Logger
-  requester: Requester
+  serverUrl: string;
+  options: ClientOptions;
+  adminKey?: bsv.HDPrivateKey;
+  logger: Logger;
+  requester: Requester;
 
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
-    this.serverUrl = serverUrl
-    this.logger = makeLogger(loggerConfig)
+    this.serverUrl = serverUrl;
+    this.logger = makeLogger(loggerConfig);
 
     if (options.xPriv) {
-      options.xPrivString = options.xPriv.toString()
-      options.xPub = options.xPriv.hdPublicKey
-      options.xPubString = options.xPub.toString()
+      options.xPrivString = options.xPriv.toString();
+      options.xPub = options.xPriv.hdPublicKey;
+      options.xPubString = options.xPub.toString();
     } else if (options.xPrivString) {
-      options.xPriv = bsv.HDPrivateKey.fromString(options.xPrivString)
-      options.xPub = options.xPriv?.hdPublicKey
-      options.xPubString = options.xPub?.toString()
+      options.xPriv = bsv.HDPrivateKey.fromString(options.xPrivString);
+      options.xPub = options.xPriv?.hdPublicKey;
+      options.xPubString = options.xPub?.toString();
     } else if (options.xPub) {
-      options.xPriv = undefined
-      options.xPrivString = undefined
-      options.xPubString = options.xPub.toString()
+      options.xPriv = undefined;
+      options.xPrivString = undefined;
+      options.xPubString = options.xPub.toString();
     } else if (options.xPubString) {
-      options.xPriv = undefined
-      options.xPrivString = undefined
-      options.xPub = bsv.HDPublicKey.fromString(options.xPubString)
+      options.xPriv = undefined;
+      options.xPrivString = undefined;
+      options.xPub = bsv.HDPublicKey.fromString(options.xPubString);
     } else if (options.accessKey) {
-      options.xPriv = undefined
-      options.xPrivString = undefined
-      options.xPub = undefined
-      options.xPubString = undefined
-      options.accessKeyString = options.accessKey.toString()
+      options.xPriv = undefined;
+      options.xPrivString = undefined;
+      options.xPub = undefined;
+      options.xPubString = undefined;
+      options.accessKeyString = options.accessKey.toString();
     }
 
-    this.options = options
+    this.options = options;
 
     if (options.adminKey) {
-      this.SetAdminKey(options.adminKey)
+      this.SetAdminKey(options.adminKey);
     }
 
     if (!options.signRequest && options.xPubString) {
-      this.requester = Requester.CreateXPubRequester(options.xPubString)
+      this.requester = Requester.CreateXPubRequester(options.xPubString);
     } else if (options.signRequest) {
-      this.requester = Requester.CreateSigningRequester(options.xPriv || options.accessKey, this.adminKey)
+      this.requester = Requester.CreateSigningRequester(options.xPriv || options.accessKey, this.adminKey);
     } else {
       throw new Error(
-        'Invalid options. For unsigned requests: must set xPriv or xPub. For signed requests: must set xPriv or accessKey. Admin key also needs signed equests.'
-      )
+        'Invalid options. For unsigned requests: must set xPriv or xPub. For signed requests: must set xPriv or accessKey. AdminKey also needs signRequest option.',
+      );
     }
   }
 
@@ -95,8 +95,8 @@ export class SpvWalletClient {
    * @return void
    */
   SetAdminKey(adminKey: string): void {
-    this.options.adminKey = adminKey
-    this.adminKey = bsv.HDPrivateKey.fromString(adminKey)
+    this.options.adminKey = adminKey;
+    this.adminKey = bsv.HDPrivateKey.fromString(adminKey);
   }
 
   /**
@@ -106,7 +106,7 @@ export class SpvWalletClient {
    * @return void
    */
   SetDebug(debug: boolean): void {
-    this.options.debug = debug
+    this.options.debug = debug;
   }
 
   /**
@@ -119,7 +119,7 @@ export class SpvWalletClient {
    * @return void
    */
   SetSignRequest(signRequest: boolean): void {
-    this.options.signRequest = signRequest
+    this.options.signRequest = signRequest;
   }
 
   /**
@@ -128,7 +128,7 @@ export class SpvWalletClient {
    * @return {boolean}
    */
   IsDebug(): boolean {
-    return !!this.options.debug
+    return !!this.options.debug;
   }
 
   /**
@@ -137,7 +137,7 @@ export class SpvWalletClient {
    * @return {boolean}
    */
   IsSignRequest(): boolean {
-    return !!this.options.signRequest
+    return !!this.options.signRequest;
   }
 
   /**
@@ -146,7 +146,7 @@ export class SpvWalletClient {
    * @return {boolean}
    */
   async AdminGetStatus(): Promise<boolean> {
-    return await this.requester.AdminRequest(`${this.serverUrl}/admin/status`)
+    return await this.requester.AdminRequest(`${this.serverUrl}/admin/status`);
   }
 
   /**
@@ -155,7 +155,7 @@ export class SpvWalletClient {
    * @return {AdminStats}
    */
   async AdminGetStats(): Promise<AdminStats> {
-    return await this.requester.AdminRequest(`${this.serverUrl}/admin/stats`)
+    return await this.requester.AdminRequest(`${this.serverUrl}/admin/stats`);
   }
 
   /**
@@ -171,7 +171,7 @@ export class SpvWalletClient {
       conditions,
       metadata,
       params,
-    })
+    });
   }
 
   /**
@@ -185,7 +185,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/access-keys/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -201,7 +201,7 @@ export class SpvWalletClient {
       conditions,
       metadata,
       params,
-    })
+    });
   }
 
   /**
@@ -215,7 +215,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/block-headers/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -231,7 +231,7 @@ export class SpvWalletClient {
       conditions,
       metadata,
       params,
-    })
+    });
   }
 
   /**
@@ -245,7 +245,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/destinations/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -255,7 +255,7 @@ export class SpvWalletClient {
    * @return {PaymailAddress}
    */
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
-    return await this.requester.AdminRequest(`${this.serverUrl}/admin/paymail/get`, 'POST', { address })
+    return await this.requester.AdminRequest(`${this.serverUrl}/admin/paymail/get`, 'POST', { address });
   }
 
   /**
@@ -271,7 +271,7 @@ export class SpvWalletClient {
       conditions,
       metadata,
       params,
-    })
+    });
   }
 
   /**
@@ -286,7 +286,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/paymails/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -302,14 +302,14 @@ export class SpvWalletClient {
     rawXPub: string,
     address: string,
     public_name: string,
-    avatar: string
+    avatar: string,
   ): Promise<PaymailAddress> {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/paymail/create`, 'POST', {
       key: rawXPub,
       address,
       public_name,
       avatar,
-    })
+    });
   }
 
   /**
@@ -319,7 +319,7 @@ export class SpvWalletClient {
    * @return void
    */
   async AdminDeletePaymail(address: string): Promise<void> {
-    await this.requester.AdminRequest(`${this.serverUrl}/admin/paymail/delete`, 'DELETE', { address })
+    await this.requester.AdminRequest(`${this.serverUrl}/admin/paymail/delete`, 'DELETE', { address });
   }
 
   /**
@@ -335,7 +335,7 @@ export class SpvWalletClient {
       conditions,
       metadata,
       params,
-    })
+    });
   }
 
   /**
@@ -349,7 +349,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/transactions/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -365,7 +365,7 @@ export class SpvWalletClient {
       conditions,
       metadata,
       params,
-    })
+    });
   }
 
   /**
@@ -379,7 +379,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/utxos/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -395,7 +395,7 @@ export class SpvWalletClient {
       conditions,
       metadata,
       params,
-    })
+    });
   }
 
   /**
@@ -409,7 +409,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/xpubs/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -423,7 +423,7 @@ export class SpvWalletClient {
     return await this.requester.AdminRequest(`${this.serverUrl}/admin/xpub`, 'POST', {
       key: rawXPub,
       metadata,
-    })
+    });
   }
 
   /**
@@ -433,7 +433,7 @@ export class SpvWalletClient {
    * @return {Transaction}
    */
   async AdminRecordTransaction(hex: string): Promise<Transaction> {
-    return await this.requester.AdminRequest(`${this.serverUrl}/admin/transactions/record`, 'POST', { hex })
+    return await this.requester.AdminRequest(`${this.serverUrl}/admin/transactions/record`, 'POST', { hex });
   }
 
   /**
@@ -442,7 +442,7 @@ export class SpvWalletClient {
    * @return {XPub}
    */
   async GetXPub(): Promise<XPub> {
-    return await this.requester.Request(`${this.serverUrl}/xpub`)
+    return await this.requester.Request(`${this.serverUrl}/xpub`);
   }
 
   /**
@@ -454,7 +454,7 @@ export class SpvWalletClient {
    * @return {XPub}
    */
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
-    return await this.requester.Request(`${this.serverUrl}/xpub`, 'PATCH', { metadata })
+    return await this.requester.Request(`${this.serverUrl}/xpub`, 'PATCH', { metadata });
   }
 
   /**
@@ -464,7 +464,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async GetAccessKey(id: string): Promise<AccessKey> {
-    return await this.requester.Request(`${this.serverUrl}/access-key?id=${id}`)
+    return await this.requester.Request(`${this.serverUrl}/access-key?id=${id}`);
   }
 
   /**
@@ -483,7 +483,7 @@ export class SpvWalletClient {
       page_size: queryParams?.page_size || 0,
       order_by_field: queryParams?.order_by_field || '',
       sort_direction: queryParams?.sort_direction || '',
-    })
+    });
   }
 
   /**
@@ -497,7 +497,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/access-key/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -509,7 +509,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return await this.requester.Request(`${this.serverUrl}/access-key`, 'POST', { metadata })
+    return await this.requester.Request(`${this.serverUrl}/access-key`, 'POST', { metadata });
   }
 
   /**
@@ -521,7 +521,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async RevokeAccessKey(id: string): Promise<AccessKey> {
-    return await this.requester.Request(`${this.serverUrl}/access-key?id=${id}`, 'DELETE')
+    return await this.requester.Request(`${this.serverUrl}/access-key?id=${id}`, 'DELETE');
   }
 
   /**
@@ -531,7 +531,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async GetDestinationByID(id: string): Promise<Destination> {
-    return await this.requester.Request(`${this.serverUrl}/destination?id=${id}`)
+    return await this.requester.Request(`${this.serverUrl}/destination?id=${id}`);
   }
 
   /**
@@ -541,7 +541,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return await this.requester.Request(`${this.serverUrl}/destination?locking_script=${locking_script}`)
+    return await this.requester.Request(`${this.serverUrl}/destination?locking_script=${locking_script}`);
   }
 
   /**
@@ -551,7 +551,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async GetDestinationByAddress(address: string): Promise<Destination> {
-    return await this.requester.Request(`${this.serverUrl}/destination?address=${address}`)
+    return await this.requester.Request(`${this.serverUrl}/destination?address=${address}`);
   }
 
   /**
@@ -570,7 +570,7 @@ export class SpvWalletClient {
       page_size: queryParams?.page_size || 0,
       order_by_field: queryParams?.order_by_field || '',
       sort_direction: queryParams?.sort_direction || '',
-    })
+    });
   }
 
   /**
@@ -584,7 +584,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/destination/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -598,7 +598,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async NewDestination(metadata: Metadata): Promise<Destination> {
-    return await this.requester.Request(`${this.serverUrl}/destination`, 'POST', { metadata })
+    return await this.requester.Request(`${this.serverUrl}/destination`, 'POST', { metadata });
   }
 
   /**
@@ -614,7 +614,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/destination`, 'PATCH', {
       id,
       metadata,
-    })
+    });
   }
 
   /**
@@ -630,7 +630,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/destination`, 'PATCH', {
       locking_script,
       metadata,
-    })
+    });
   }
 
   /**
@@ -646,7 +646,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/destination`, 'PATCH', {
       address,
       metadata,
-    })
+    });
   }
 
   /**
@@ -656,7 +656,7 @@ export class SpvWalletClient {
    * @return {Transaction}
    */
   async GetTransaction(txID: string): Promise<Transaction> {
-    return await this.requester.Request(`${this.serverUrl}/transaction?id=${txID}`, 'GET')
+    return await this.requester.Request(`${this.serverUrl}/transaction?id=${txID}`, 'GET');
   }
 
   /**
@@ -675,7 +675,7 @@ export class SpvWalletClient {
       page_size: queryParams?.page_size || 0,
       order_by_field: queryParams?.order_by_field || '',
       sort_direction: queryParams?.sort_direction || '',
-    })
+    });
   }
 
   /**
@@ -689,7 +689,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/transaction/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -700,7 +700,7 @@ export class SpvWalletClient {
    * @return {Utxo}
    */
   async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
-    return await this.requester.Request(`${this.serverUrl}/utxo?tx_id=${tx_id}&output_index=${output_index}`)
+    return await this.requester.Request(`${this.serverUrl}/utxo?tx_id=${tx_id}&output_index=${output_index}`);
   }
 
   /**
@@ -719,7 +719,7 @@ export class SpvWalletClient {
       page_size: queryParams?.page_size || 0,
       order_by_field: queryParams?.order_by_field || '',
       sort_direction: queryParams?.sort_direction || '',
-    })
+    });
   }
 
   /**
@@ -733,7 +733,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/utxo/count`, 'POST', {
       conditions,
       metadata,
-    })
+    });
   }
 
   /**
@@ -749,12 +749,12 @@ export class SpvWalletClient {
   async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
     const transactionConfig: TransactionConfigInput = {
       outputs: recipients,
-    }
+    };
 
     return await this.requester.Request(`${this.serverUrl}/transaction`, 'POST', {
       config: transactionConfig,
       metadata,
-    })
+    });
   }
 
   /**
@@ -768,7 +768,7 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/transaction`, 'POST', {
       config: transactionConfig,
       metadata,
-    })
+    });
   }
 
   /**
@@ -784,9 +784,9 @@ export class SpvWalletClient {
    * const tx = await spvWalletClient.RecordTransaction(finalized, draft.id, metadata)
    */
   async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Transaction> {
-    const draft = await this.DraftToRecipients(recipients, metadata)
-    const finalized = this.FinalizeTransaction(draft)
-    return this.RecordTransaction(finalized, draft.id, metadata)
+    const draft = await this.DraftToRecipients(recipients, metadata);
+    const finalized = this.FinalizeTransaction(draft);
+    return this.RecordTransaction(finalized, draft.id, metadata);
   }
 
   /**
@@ -797,31 +797,31 @@ export class SpvWalletClient {
    */
   FinalizeTransaction(draftTransaction: DraftTransaction): string {
     if (!this.options?.xPriv) {
-      const Err = new Error('cannot sign transaction without an xPriv')
-      this.logger.error(Err.message)
-      throw Err
+      const Err = new Error('cannot sign transaction without an xPriv');
+      this.logger.error(Err.message);
+      throw Err;
     }
 
-    const Input = bsv.Transaction.Input
-    const xPriv = this.options.xPriv as bsv.HDPrivateKey
-    const txDraft = new bsv.Transaction(draftTransaction.hex)
+    const Input = bsv.Transaction.Input;
+    const xPriv = this.options.xPriv as bsv.HDPrivateKey;
+    const txDraft = new bsv.Transaction(draftTransaction.hex);
 
     // sign the inputs
-    const privateKeys: bsv.PrivateKey[] = []
+    const privateKeys: bsv.PrivateKey[] = [];
     draftTransaction.configuration.inputs?.forEach((input, index) => {
       if (input.destination) {
-        const chainKey = xPriv.deriveChild(input.destination.chain)
-        const numKey = chainKey.deriveChild(input.destination.num)
-        privateKeys.push(numKey.privateKey)
+        const chainKey = xPriv.deriveChild(input.destination.chain);
+        const numKey = chainKey.deriveChild(input.destination.num);
+        privateKeys.push(numKey.privateKey);
 
         // small sanity check for the inputs
         if (
           input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex') ||
           input.output_index != txDraft.inputs[index].outputIndex
         ) {
-          const Err = new Error('input tx ids do not match in draft and transaction hex')
-          this.logger.error(Err.message)
-          throw Err
+          const Err = new Error('input tx ids do not match in draft and transaction hex');
+          this.logger.error(Err.message);
+          throw Err;
         }
       }
 
@@ -835,23 +835,23 @@ export class SpvWalletClient {
           script: new bsv.Script(input.script_pub_key),
           satoshis: input.satoshis,
         }),
-      })
-    })
+      });
+    });
 
-    txDraft.sign(privateKeys)
+    txDraft.sign(privateKeys);
 
     if (!txDraft.verify()) {
-      const Err = new Error('transaction verification failed')
-      this.logger.error(Err.message)
-      throw Err
+      const Err = new Error('transaction verification failed');
+      this.logger.error(Err.message);
+      throw Err;
     }
     if (!txDraft.isFullySigned()) {
-      const Err = new Error('transaction could not be fully signed')
-      this.logger.error(Err.message)
-      throw Err
+      const Err = new Error('transaction could not be fully signed');
+      this.logger.error(Err.message);
+      throw Err;
     }
 
-    return txDraft.toString()
+    return txDraft.toString();
   }
 
   /**
@@ -870,7 +870,7 @@ export class SpvWalletClient {
       hex,
       reference_id: referenceID,
       metadata,
-    })
+    });
   }
 
   /**
@@ -886,6 +886,6 @@ export class SpvWalletClient {
     return await this.requester.Request(`${this.serverUrl}/transaction`, 'PATCH', {
       id: txID,
       metadata,
-    })
+    });
   }
 }
