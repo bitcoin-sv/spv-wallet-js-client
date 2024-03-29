@@ -580,15 +580,43 @@ export interface PubKey {
 /**
  * Client options for instantiating a new SPV Wallet client
  */
-export interface ClientOptions {
-  adminKey?: string;
+export type ClientOptions =
+  | {
+      /**
+       * Making request with the 'xPub' doesn't sign requests, which means that the xPub will be placed into the request header.
+       */
+      signRequest: false;
 
-  signRequest?: boolean;
+      /**
+       * With xPub you can make non-admin requests without signing.
+       * The SendToRecipients function will not work because it requires the xPriv.
+       */
+      xPub: string;
+    }
+  | {
+      /**
+       * All below options require signing.
+       */
+      signRequest: true;
 
-  xPrivAsString?: string;
-  xPubAsString?: string;
-  accessKeyAsString?: string;
-}
+      /**
+       * xPriv is used for signing non-admin requests.
+       * It has priority over the 'accessKey' - if they are both defined, the xPriv is used.
+       * If you want to use SendToRecipients function, you have to provide the xPriv.
+       */
+      xPriv?: string;
+
+      /**
+       * When 'xPriv' is not defined, the 'accessKey' is used for signing non-admin requests.
+       */
+      accessKey?: string;
+
+      /**
+       * adminKey is used for signing admin requests.
+       * It will not work for non-admin requests - to use them, provide xPriv or accessKey.
+       */
+      adminKey?: string;
+    };
 
 /**
  * Query params to limit and order database list results

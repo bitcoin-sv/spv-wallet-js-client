@@ -43,37 +43,38 @@ export class SpvWalletClient {
   requester: Requester;
 
   private xPriv?: bsv.HDPrivateKey;
-  private accessKey?: bsv.PrivateKey;
-  private adminKey?: bsv.HDPrivateKey;
-
-  private xPubString?: string;
 
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
     this.serverUrl = serverUrl;
     this.logger = makeLogger(loggerConfig);
 
-    if (options.xPrivAsString) {
-      this.xPriv = bsv.HDPrivateKey.fromString(options.xPrivAsString);
-      this.xPubString = this.xPriv?.hdPublicKey.toString();
-    } else if (options.xPubAsString) {
-      this.xPubString = options.xPubAsString;
-    } else if (options.accessKeyAsString) {
-      this.accessKey = bsv.PrivateKey.fromString(options.accessKeyAsString);
+    if (options.signRequest && options.xPriv) {
+      this.xPriv = bsv.HDPrivateKey.fromString(options.xPriv);
+    }
+    this.requester = this.initRequester(options);
+  }
+
+  private initRequester(options: ClientOptions): Requester {
+    if (!options.signRequest && options.xPub) {
+      return Requester.CreateXPubRequester(options.xPub);
     }
 
-    if (options.adminKey) {
-      this.adminKey = bsv.HDPrivateKey.fromString(options.adminKey);
-    }
-
-    if (!options.signRequest && this.xPubString) {
-      this.requester = Requester.CreateXPubRequester(this.xPubString);
-    } else if (options.signRequest) {
-      this.requester = Requester.CreateSigningRequester(this.xPriv || this.accessKey, this.adminKey);
-    } else {
+    //below are options which all requires signRequest
+    if (!options.signRequest) {
       throw new Error(
-        'Invalid options. For unsigned requests: must set xPriv or xPub. For signed requests: must set xPriv or accessKey. AdminKey also needs signRequest option.',
+        'Invalid options. For unsigned requests: must set xPub. For signed requests: must set xPriv or accessKey. AdminKey also needs signRequest option.',
       );
     }
+
+    const adminKey = options.adminKey ? bsv.HDPrivateKey.fromString(options.adminKey) : undefined;
+
+    const signingKey = this.xPriv ?? (options.accessKey ? bsv.PrivateKey.fromString(options.accessKey) : undefined);
+
+    if (!adminKey && !signingKey) {
+      throw new Error('Invalid options. The signRequest is on but none of xPriv, accessKey nor adminKey is set');
+    }
+
+    return Requester.CreateSigningRequester(signingKey, adminKey);
   }
 
   /**
