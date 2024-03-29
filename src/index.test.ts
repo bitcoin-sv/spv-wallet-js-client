@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
 import { SpvWalletClient } from './index';
 import { ClientOptions, DraftTransaction, Recipients, TransactionConfigInput } from './types';
+import { ErrorDraftFullySign } from './errors';
 
 const xPrivString =
   'xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A';
@@ -171,7 +172,7 @@ describe('Finalize transaction', () => {
     input!.destination!.num = 12333;
     expect(() => {
       spvWalletClient.FinalizeTransaction(draftTransaction);
-    }).toThrow('transaction could not be fully signed');
+    }).toThrow(ErrorDraftFullySign);
   });
 });
 

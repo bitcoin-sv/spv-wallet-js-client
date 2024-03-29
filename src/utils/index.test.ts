@@ -1,5 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { getChildNumsFromHex } from './index';
+import { ErrorWrongHex } from '../errors';
 
 const testHash = '8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414';
 
@@ -12,7 +13,7 @@ describe('getChildNumsFromHex', () => {
   test('empty hex', () => {
     expect(() => {
       getChildNumsFromHex('test');
-    }).toThrow('hexHash is not a valid hex string');
+    }).toThrow(ErrorWrongHex);
   });
 
   test('hex ababab', () => {
