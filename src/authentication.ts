@@ -79,12 +79,6 @@ const setSignatureHeaders = function (
 };
 
 export const createSignature = function (signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string) {
-  // No key?
-  if (!signingKey) {
-    const Err = new Error('missing signingKey key');
-    throw Err;
-  }
-
   const payload: AuthPayload = {};
   // x-auth-nonce is a random unique string to seed the signing message
   // this can be checked server side to make sure the request is not being replayed

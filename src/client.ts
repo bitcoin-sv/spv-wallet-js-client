@@ -1,5 +1,4 @@
 import bsv from 'bsv';
-import { AuthHeader, setSignature } from './authentication';
 import {
   AccessKey,
   AccessKeys,
@@ -23,8 +22,16 @@ import {
   XPubs,
   Utxo,
 } from './types';
-import { Logger, LoggerConfig, makeLogger, defaultLogger } from './logger/logger';
+import { Logger, LoggerConfig, makeLogger, defaultLogger } from './logger';
 import { Requester } from './requester';
+import {
+  ErrorDraftFullySign,
+  ErrorDraftVerification,
+  ErrorNoSigningMethod,
+  ErrorNoXPrivToSignTransaction,
+  ErrorTxIdsDontMatchToDraft,
+  ErrorWithDisabledSignRequest,
+} from './errors';
 
 /**
  * SpvWallet class
@@ -56,25 +63,38 @@ export class SpvWalletClient {
 
   private initRequester(options: ClientOptions): Requester {
     if (!options.signRequest && options.xPub) {
-      return Requester.CreateXPubRequester(options.xPub);
+      this.logger.info(
+        'Using XPub without signing requests. Admin requests and SendToRecipients will not be available.',
+      );
+      return Requester.CreateXPubRequester(this.logger, options.xPub);
     }
 
-    //below are options which all requires signRequest
     if (!options.signRequest) {
-      throw new Error(
-        'Invalid options. For unsigned requests: must set xPub. For signed requests: must set xPriv or accessKey. AdminKey also needs signRequest option.',
-      );
+      throw new ErrorWithDisabledSignRequest(this.logger, options);
     }
+    //below are options which all require signRequest
 
     const adminKey = options.adminKey ? bsv.HDPrivateKey.fromString(options.adminKey) : undefined;
 
-    const signingKey = this.xPriv ?? (options.accessKey ? bsv.PrivateKey.fromString(options.accessKey) : undefined);
+    let signingKey: bsv.HDPrivateKey | bsv.PrivateKey | undefined;
 
-    if (!adminKey && !signingKey) {
-      throw new Error('Invalid options. The signRequest is on but none of xPriv, accessKey nor adminKey is set');
+    if (this.xPriv != null) {
+      signingKey = this.xPriv;
+      this.logger.info('Using xPriv to sign requests');
+    } else if (options.accessKey) {
+      signingKey = bsv.PrivateKey.fromString(options.accessKey);
+      this.logger.info('Using accessKey to sign requests. SendToRecipients will not be available.');
     }
 
-    return Requester.CreateSigningRequester(signingKey, adminKey);
+    if (!adminKey && !signingKey) {
+      throw new ErrorNoSigningMethod(this.logger, options);
+    }
+
+    if (adminKey != null) {
+      this.logger.info('Using adminKey to sign admin requests.');
+    }
+
+    return Requester.CreateSigningRequester(this.logger, signingKey, adminKey);
   }
 
   /**
@@ -734,14 +754,12 @@ export class SpvWalletClient {
    */
   FinalizeTransaction(draftTransaction: DraftTransaction): string {
     if (!this?.xPriv) {
-      const Err = new Error('cannot sign transaction without an xPriv');
-      this.logger.error(Err.message);
-      throw Err;
+      throw new ErrorNoXPrivToSignTransaction();
     }
 
     const Input = bsv.Transaction.Input;
     const xPriv = this.xPriv as bsv.HDPrivateKey;
-    const txDraft = new bsv.Transaction(draftTransaction.hex);
+    const txDraft: bsv.Transaction = new bsv.Transaction(draftTransaction.hex);
 
     // sign the inputs
     const privateKeys: bsv.PrivateKey[] = [];
@@ -756,9 +774,7 @@ export class SpvWalletClient {
           input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex') ||
           input.output_index != txDraft.inputs[index].outputIndex
         ) {
-          const Err = new Error('input tx ids do not match in draft and transaction hex');
-          this.logger.error(Err.message);
-          throw Err;
+          throw new ErrorTxIdsDontMatchToDraft(this.logger, input, index, txDraft.inputs[index]);
         }
       }
 
@@ -777,14 +793,10 @@ export class SpvWalletClient {
     txDraft.sign(privateKeys);
 
     if (!txDraft.verify()) {
-      const Err = new Error('transaction verification failed');
-      this.logger.error(Err.message);
-      throw Err;
+      throw new ErrorDraftVerification(this.logger, txDraft);
     }
     if (!txDraft.isFullySigned()) {
-      const Err = new Error('transaction could not be fully signed');
-      this.logger.error(Err.message);
-      throw Err;
+      throw new ErrorDraftFullySign(this.logger, txDraft);
     }
 
     return txDraft.toString();

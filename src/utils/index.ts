@@ -1,4 +1,5 @@
 import bsv from 'bsv';
+import { ErrorWrongHex } from '../errors';
 
 const maxInt32 = 2147483648 - 1; // 0x80000000
 
@@ -21,7 +22,7 @@ export const isHex = function (hexString: string): boolean {
 // getChildNumsFromHex get an array of numbers from the hex string
 export const getChildNumsFromHex = function (hexHash: string): number[] {
   if (!isHex(hexHash)) {
-    throw new Error('hexHash is not a valid hex string');
+    throw new ErrorWrongHex(hexHash);
   }
 
   const strLen = hexHash.length;
