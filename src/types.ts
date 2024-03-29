@@ -581,15 +581,13 @@ export interface PubKey {
  * Client options for instantiating a new SPV Wallet client
  */
 export interface ClientOptions {
-  accessKeyString?: string;
-  accessKey?: bsv.PrivateKey;
   adminKey?: string;
-  debug?: boolean;
+
   signRequest?: boolean;
-  xPriv?: bsv.HDPrivateKey;
-  xPrivString?: string;
-  xPub?: bsv.HDPublicKey;
-  xPubString?: string;
+
+  xPrivAsString?: string;
+  xPubAsString?: string;
+  accessKeyAsString?: string;
 }
 
 /**

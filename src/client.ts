@@ -38,106 +38,42 @@ import { Requester } from './requester';
  */
 export class SpvWalletClient {
   serverUrl: string;
-  options: ClientOptions;
-  adminKey?: bsv.HDPrivateKey;
+
   logger: Logger;
   requester: Requester;
+
+  private xPriv?: bsv.HDPrivateKey;
+  private accessKey?: bsv.PrivateKey;
+  private adminKey?: bsv.HDPrivateKey;
+
+  private xPubString?: string;
 
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
     this.serverUrl = serverUrl;
     this.logger = makeLogger(loggerConfig);
 
-    if (options.xPriv) {
-      options.xPrivString = options.xPriv.toString();
-      options.xPub = options.xPriv.hdPublicKey;
-      options.xPubString = options.xPub.toString();
-    } else if (options.xPrivString) {
-      options.xPriv = bsv.HDPrivateKey.fromString(options.xPrivString);
-      options.xPub = options.xPriv?.hdPublicKey;
-      options.xPubString = options.xPub?.toString();
-    } else if (options.xPub) {
-      options.xPriv = undefined;
-      options.xPrivString = undefined;
-      options.xPubString = options.xPub.toString();
-    } else if (options.xPubString) {
-      options.xPriv = undefined;
-      options.xPrivString = undefined;
-      options.xPub = bsv.HDPublicKey.fromString(options.xPubString);
-    } else if (options.accessKey) {
-      options.xPriv = undefined;
-      options.xPrivString = undefined;
-      options.xPub = undefined;
-      options.xPubString = undefined;
-      options.accessKeyString = options.accessKey.toString();
+    if (options.xPrivAsString) {
+      this.xPriv = bsv.HDPrivateKey.fromString(options.xPrivAsString);
+      this.xPubString = this.xPriv?.hdPublicKey.toString();
+    } else if (options.xPubAsString) {
+      this.xPubString = options.xPubAsString;
+    } else if (options.accessKeyAsString) {
+      this.accessKey = bsv.PrivateKey.fromString(options.accessKeyAsString);
     }
-
-    this.options = options;
 
     if (options.adminKey) {
-      this.SetAdminKey(options.adminKey);
+      this.adminKey = bsv.HDPrivateKey.fromString(options.adminKey);
     }
 
-    if (!options.signRequest && options.xPubString) {
-      this.requester = Requester.CreateXPubRequester(options.xPubString);
+    if (!options.signRequest && this.xPubString) {
+      this.requester = Requester.CreateXPubRequester(this.xPubString);
     } else if (options.signRequest) {
-      this.requester = Requester.CreateSigningRequester(options.xPriv || options.accessKey, this.adminKey);
+      this.requester = Requester.CreateSigningRequester(this.xPriv || this.accessKey, this.adminKey);
     } else {
       throw new Error(
         'Invalid options. For unsigned requests: must set xPriv or xPub. For signed requests: must set xPriv or accessKey. AdminKey also needs signRequest option.',
       );
     }
-  }
-
-  /**
-   * Set an admin key to use for transactions
-   *
-   * @param {string} adminKey Admin xPriv
-   * @return void
-   */
-  SetAdminKey(adminKey: string): void {
-    this.options.adminKey = adminKey;
-    this.adminKey = bsv.HDPrivateKey.fromString(adminKey);
-  }
-
-  /**
-   * Set debugging on (true) and off (false)
-   *
-   * @param {boolean} debug
-   * @return void
-   */
-  SetDebug(debug: boolean): void {
-    this.options.debug = debug;
-  }
-
-  /**
-   * Set whether to sign all requests to the server
-   *
-   * This option is on (true) by default and should only be turned off in development. The SPV Wallet server needs to accept
-   * unsigned requests for this to work.
-   *
-   * @param {boolean} signRequest
-   * @return void
-   */
-  SetSignRequest(signRequest: boolean): void {
-    this.options.signRequest = signRequest;
-  }
-
-  /**
-   * Returns whether debugging is on (true) or off (false)
-   *
-   * @return {boolean}
-   */
-  IsDebug(): boolean {
-    return !!this.options.debug;
-  }
-
-  /**
-   * Returns whether all requests will be fully signed
-   *
-   * @return {boolean}
-   */
-  IsSignRequest(): boolean {
-    return !!this.options.signRequest;
   }
 
   /**
@@ -796,14 +732,14 @@ export class SpvWalletClient {
    * @return {string} Final transaction hex
    */
   FinalizeTransaction(draftTransaction: DraftTransaction): string {
-    if (!this.options?.xPriv) {
+    if (!this?.xPriv) {
       const Err = new Error('cannot sign transaction without an xPriv');
       this.logger.error(Err.message);
       throw Err;
     }
 
     const Input = bsv.Transaction.Input;
-    const xPriv = this.options.xPriv as bsv.HDPrivateKey;
+    const xPriv = this.xPriv as bsv.HDPrivateKey;
     const txDraft = new bsv.Transaction(draftTransaction.hex);
 
     // sign the inputs
