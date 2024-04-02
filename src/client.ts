@@ -777,9 +777,7 @@ export class SpvWalletClient {
         input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex') ||
         input.output_index != txDraft.inputs[index].outputIndex
       ) {
-        const Err = new Error('input tx ids do not match in draft and transaction hex');
-        this.logger.error(Err.message);
-        throw Err;
+        throw new ErrorTxIdsDontMatchToDraft(this.logger, input, index, txDraft.inputs[index]);
       }
 
       // @todo add support for other types of transaction inputs
