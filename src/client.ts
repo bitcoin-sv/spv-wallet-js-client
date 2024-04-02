@@ -45,7 +45,7 @@ import {
  */
 export class SpvWalletClient {
   logger: Logger;
-  requester: Requester;
+  http: Requester;
 
   private xPriv?: bsv.HDPrivateKey;
 
@@ -55,7 +55,7 @@ export class SpvWalletClient {
     if (options.signRequest && options.xPriv) {
       this.xPriv = bsv.HDPrivateKey.fromString(options.xPriv);
     }
-    this.requester = this.initRequester(options, serverUrl);
+    this.http = this.initRequester(options, serverUrl);
   }
 
   private initRequester(options: ClientOptions, serverUrl: string): Requester {
@@ -98,7 +98,7 @@ export class SpvWalletClient {
    * @return {boolean}
    */
   async AdminGetStatus(): Promise<boolean> {
-    return await this.requester.AdminRequest(`admin/status`);
+    return await this.http.AdminRequest(`admin/status`);
   }
 
   /**
@@ -107,7 +107,7 @@ export class SpvWalletClient {
    * @return {AdminStats}
    */
   async AdminGetStats(): Promise<AdminStats> {
-    return await this.requester.AdminRequest(`admin/stats`);
+    return await this.http.AdminRequest(`admin/stats`);
   }
 
   /**
@@ -119,7 +119,7 @@ export class SpvWalletClient {
    * @return {AccessKeys}
    */
   async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
-    return await this.requester.AdminRequest(`admin/access-keys/search`, 'POST', {
+    return await this.http.AdminRequest(`admin/access-keys/search`, 'POST', {
       conditions,
       metadata,
       params,
@@ -134,7 +134,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.AdminRequest(`admin/access-keys/count`, 'POST', {
+    return await this.http.AdminRequest(`admin/access-keys/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -149,7 +149,7 @@ export class SpvWalletClient {
    * @return {BlockHeaders}
    */
   async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<BlockHeaders> {
-    return await this.requester.AdminRequest(`admin/block-headers/search`, 'POST', {
+    return await this.http.AdminRequest(`admin/block-headers/search`, 'POST', {
       conditions,
       metadata,
       params,
@@ -164,7 +164,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.AdminRequest(`admin/block-headers/count`, 'POST', {
+    return await this.http.AdminRequest(`admin/block-headers/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -179,7 +179,7 @@ export class SpvWalletClient {
    * @return {Destinations}
    */
   async AdminGetDestinations(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Destinations> {
-    return await this.requester.AdminRequest(`admin/destinations/search`, 'POST', {
+    return await this.http.AdminRequest(`admin/destinations/search`, 'POST', {
       conditions,
       metadata,
       params,
@@ -194,7 +194,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.AdminRequest(`admin/destinations/count`, 'POST', {
+    return await this.http.AdminRequest(`admin/destinations/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -207,7 +207,7 @@ export class SpvWalletClient {
    * @return {PaymailAddress}
    */
   async AdminGetPaymail(address: string): Promise<PaymailAddress> {
-    return await this.requester.AdminRequest(`admin/paymail/get`, 'POST', { address });
+    return await this.http.AdminRequest(`admin/paymail/get`, 'POST', { address });
   }
 
   /**
@@ -219,7 +219,7 @@ export class SpvWalletClient {
    * @return {PaymailAddresses}
    */
   async AdminGetPaymails(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<PaymailAddresses> {
-    return await this.requester.AdminRequest(`admin/paymails/search`, 'POST', {
+    return await this.http.AdminRequest(`admin/paymails/search`, 'POST', {
       conditions,
       metadata,
       params,
@@ -235,7 +235,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.AdminRequest(`admin/paymails/count`, 'POST', {
+    return await this.http.AdminRequest(`admin/paymails/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -256,7 +256,7 @@ export class SpvWalletClient {
     public_name: string,
     avatar: string,
   ): Promise<PaymailAddress> {
-    return await this.requester.AdminRequest(`admin/paymail/create`, 'POST', {
+    return await this.http.AdminRequest(`admin/paymail/create`, 'POST', {
       key: rawXPub,
       address,
       public_name,
@@ -271,7 +271,7 @@ export class SpvWalletClient {
    * @return void
    */
   async AdminDeletePaymail(address: string): Promise<void> {
-    await this.requester.AdminRequest(`admin/paymail/delete`, 'DELETE', { address });
+    await this.http.AdminRequest(`admin/paymail/delete`, 'DELETE', { address });
   }
 
   /**
@@ -283,7 +283,7 @@ export class SpvWalletClient {
    * @return {Transactions}
    */
   async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
-    return await this.requester.AdminRequest(`admin/transactions/search`, 'POST', {
+    return await this.http.AdminRequest(`admin/transactions/search`, 'POST', {
       conditions,
       metadata,
       params,
@@ -298,7 +298,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.AdminRequest(`admin/transactions/count`, 'POST', {
+    return await this.http.AdminRequest(`admin/transactions/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -313,7 +313,7 @@ export class SpvWalletClient {
    * @return {Utxos}
    */
   async AdminGetUtxos(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Utxos> {
-    return await this.requester.AdminRequest(`admin/utxos/search`, 'POST', {
+    return await this.http.AdminRequest(`admin/utxos/search`, 'POST', {
       conditions,
       metadata,
       params,
@@ -328,7 +328,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.AdminRequest(`admin/utxos/count`, 'POST', {
+    return await this.http.AdminRequest(`admin/utxos/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -343,7 +343,7 @@ export class SpvWalletClient {
    * @return {XPubs}
    */
   async AdminGetXPubs(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<XPubs> {
-    return await this.requester.AdminRequest(`admin/xpubs/search`, 'POST', {
+    return await this.http.AdminRequest(`admin/xpubs/search`, 'POST', {
       conditions,
       metadata,
       params,
@@ -358,7 +358,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.AdminRequest(`admin/xpubs/count`, 'POST', {
+    return await this.http.AdminRequest(`admin/xpubs/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -372,7 +372,7 @@ export class SpvWalletClient {
    * @return {XPub}             The newly registered xpub
    */
   async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.requester.AdminRequest(`admin/xpub`, 'POST', {
+    return await this.http.AdminRequest(`admin/xpub`, 'POST', {
       key: rawXPub,
       metadata,
     });
@@ -385,7 +385,7 @@ export class SpvWalletClient {
    * @return {Transaction}
    */
   async AdminRecordTransaction(hex: string): Promise<Transaction> {
-    return await this.requester.AdminRequest(`admin/transactions/record`, 'POST', { hex });
+    return await this.http.AdminRequest(`admin/transactions/record`, 'POST', { hex });
   }
 
   /**
@@ -394,7 +394,7 @@ export class SpvWalletClient {
    * @return {XPub}
    */
   async GetXPub(): Promise<XPub> {
-    return await this.requester.Request(`xpub`);
+    return await this.http.Request(`xpub`);
   }
 
   /**
@@ -406,7 +406,7 @@ export class SpvWalletClient {
    * @return {XPub}
    */
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
-    return await this.requester.Request(`xpub`, 'PATCH', { metadata });
+    return await this.http.Request(`xpub`, 'PATCH', { metadata });
   }
 
   /**
@@ -416,7 +416,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async GetAccessKey(id: string): Promise<AccessKey> {
-    return await this.requester.Request(`access-key?id=${id}`);
+    return await this.http.Request(`access-key?id=${id}`);
   }
 
   /**
@@ -428,7 +428,7 @@ export class SpvWalletClient {
    * @return {AccessKeys}
    */
   async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
-    return await this.requester.Request(`access-key/search`, 'POST', {
+    return await this.http.Request(`access-key/search`, 'POST', {
       conditions,
       metadata,
       page: queryParams?.page || 0,
@@ -446,7 +446,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.Request(`access-key/count`, 'POST', {
+    return await this.http.Request(`access-key/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -461,7 +461,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return await this.requester.Request(`access-key`, 'POST', { metadata });
+    return await this.http.Request(`access-key`, 'POST', { metadata });
   }
 
   /**
@@ -473,7 +473,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async RevokeAccessKey(id: string): Promise<AccessKey> {
-    return await this.requester.Request(`access-key?id=${id}`, 'DELETE');
+    return await this.http.Request(`access-key?id=${id}`, 'DELETE');
   }
 
   /**
@@ -483,7 +483,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async GetDestinationByID(id: string): Promise<Destination> {
-    return await this.requester.Request(`destination?id=${id}`);
+    return await this.http.Request(`destination?id=${id}`);
   }
 
   /**
@@ -493,7 +493,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return await this.requester.Request(`destination?locking_script=${locking_script}`);
+    return await this.http.Request(`destination?locking_script=${locking_script}`);
   }
 
   /**
@@ -503,7 +503,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async GetDestinationByAddress(address: string): Promise<Destination> {
-    return await this.requester.Request(`destination?address=${address}`);
+    return await this.http.Request(`destination?address=${address}`);
   }
 
   /**
@@ -515,7 +515,7 @@ export class SpvWalletClient {
    * @return {Destinations}
    */
   async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
-    return await this.requester.Request(`destination/search`, 'POST', {
+    return await this.http.Request(`destination/search`, 'POST', {
       conditions,
       metadata,
       page: queryParams?.page || 0,
@@ -533,7 +533,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.Request(`destination/count`, 'POST', {
+    return await this.http.Request(`destination/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -550,7 +550,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async NewDestination(metadata: Metadata): Promise<Destination> {
-    return await this.requester.Request(`destination`, 'POST', { metadata });
+    return await this.http.Request(`destination`, 'POST', { metadata });
   }
 
   /**
@@ -563,7 +563,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
-    return await this.requester.Request(`destination`, 'PATCH', {
+    return await this.http.Request(`destination`, 'PATCH', {
       id,
       metadata,
     });
@@ -579,7 +579,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByLockingScript(locking_script: string, metadata: Metadata): Promise<Destination> {
-    return await this.requester.Request(`destination`, 'PATCH', {
+    return await this.http.Request(`destination`, 'PATCH', {
       locking_script,
       metadata,
     });
@@ -595,7 +595,7 @@ export class SpvWalletClient {
    * @return {Destination}
    */
   async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
-    return await this.requester.Request(`destination`, 'PATCH', {
+    return await this.http.Request(`destination`, 'PATCH', {
       address,
       metadata,
     });
@@ -608,7 +608,7 @@ export class SpvWalletClient {
    * @return {Transaction}
    */
   async GetTransaction(txID: string): Promise<Transaction> {
-    return await this.requester.Request(`transaction?id=${txID}`, 'GET');
+    return await this.http.Request(`transaction?id=${txID}`, 'GET');
   }
 
   /**
@@ -620,7 +620,7 @@ export class SpvWalletClient {
    * @return {Transactions}
    */
   async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
-    return await this.requester.Request(`transaction/search`, 'POST', {
+    return await this.http.Request(`transaction/search`, 'POST', {
       conditions,
       metadata,
       page: queryParams?.page || 0,
@@ -638,7 +638,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.Request(`transaction/count`, 'POST', {
+    return await this.http.Request(`transaction/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -652,7 +652,7 @@ export class SpvWalletClient {
    * @return {Utxo}
    */
   async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
-    return await this.requester.Request(`utxo?tx_id=${tx_id}&output_index=${output_index}`);
+    return await this.http.Request(`utxo?tx_id=${tx_id}&output_index=${output_index}`);
   }
 
   /**
@@ -664,7 +664,7 @@ export class SpvWalletClient {
    * @return {Utxos}
    */
   async GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
-    return await this.requester.Request(`utxo/search`, 'POST', {
+    return await this.http.Request(`utxo/search`, 'POST', {
       conditions,
       metadata,
       page: queryParams?.page || 0,
@@ -682,7 +682,7 @@ export class SpvWalletClient {
    * @return {number}
    */
   async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.requester.Request(`utxo/count`, 'POST', {
+    return await this.http.Request(`utxo/count`, 'POST', {
       conditions,
       metadata,
     });
@@ -703,7 +703,7 @@ export class SpvWalletClient {
       outputs: recipients,
     };
 
-    return await this.requester.Request(`transaction`, 'POST', {
+    return await this.http.Request(`transaction`, 'POST', {
       config: transactionConfig,
       metadata,
     });
@@ -717,7 +717,7 @@ export class SpvWalletClient {
    * @return {DraftTransaction}                        Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
   async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
-    return await this.requester.Request(`transaction`, 'POST', {
+    return await this.http.Request(`transaction`, 'POST', {
       config: transactionConfig,
       metadata,
     });
@@ -809,7 +809,7 @@ export class SpvWalletClient {
    * @return {Transaction}       The SPV Wallet transaction object
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
-    return await this.requester.Request(`transaction/record`, 'POST', {
+    return await this.http.Request(`transaction/record`, 'POST', {
       hex,
       reference_id: referenceID,
       metadata,
@@ -826,7 +826,7 @@ export class SpvWalletClient {
    * @return {Transaction}      The complete transaction object, with the new changes
    */
   async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
-    return await this.requester.Request(`transaction`, 'PATCH', {
+    return await this.http.Request(`transaction`, 'PATCH', {
       id: txID,
       metadata,
     });
