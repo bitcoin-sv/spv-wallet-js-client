@@ -2,37 +2,39 @@ import bsv from 'bsv';
 import { Logger } from './logger';
 import { ClientOptions, DraftTransaction, TransactionInput } from './types';
 
-//new Error('Invalid options with signRequest off.');
-//new Error('Invalid options with signRequest on.');
+export class SpvWalletError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = this.constructor.name;
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+}
 
-//new Error('input tx ids do not match in draft and transaction hex')
-//new Error('cannot sign transaction without an xPriv');
-//new Error('transaction verification failed');
-//new Error('transaction could not be fully signed')
-
-export class ErrorWithDisabledSignRequest extends Error {
+export class ErrorWithDisabledSignRequest extends SpvWalletError {
   constructor(logger: Logger, options: ClientOptions) {
-    logger.debug('Invalid options: ', options);
     super(
       'Invalid options with signRequest off. Must set xPub. For signed requests: must set xPriv or accessKey. AdminKey also needs signRequest option.',
     );
-  }
-}
-
-export class ErrorNoSigningMethod extends Error {
-  constructor(logger: Logger, options: ClientOptions) {
     logger.debug('Invalid options: ', options);
-    super('Invalid options with signRequest on. None of xPriv, accessKey nor adminKey is set');
   }
 }
 
-export class ErrorNoXPrivToSignTransaction extends Error {
+export class ErrorNoSigningMethod extends SpvWalletError {
+  constructor(logger: Logger, options: ClientOptions) {
+    super('Invalid options with signRequest on. None of xPriv, accessKey nor adminKey is set');
+    logger.debug('Invalid options: ', options);
+  }
+}
+
+export class ErrorNoXPrivToSignTransaction extends SpvWalletError {
   constructor() {
     super('Cannot sign transaction without an xPriv');
   }
 }
 
-export class ErrorTxIdsDontMatchToDraft extends Error {
+export class ErrorTxIdsDontMatchToDraft extends SpvWalletError {
   input: TransactionInput;
   draftInput: bsv.Transaction.Input;
   constructor(logger: Logger, input: TransactionInput, index: number, draftInput: bsv.Transaction.Input) {
@@ -44,7 +46,7 @@ export class ErrorTxIdsDontMatchToDraft extends Error {
   }
 }
 
-export class ErrorDraftVerification extends Error {
+export class ErrorDraftVerification extends SpvWalletError {
   draft: bsv.Transaction;
   constructor(logger: Logger, draft: bsv.Transaction) {
     super('transaction verification failed');
@@ -54,7 +56,7 @@ export class ErrorDraftVerification extends Error {
   }
 }
 
-export class ErrorDraftFullySign extends Error {
+export class ErrorDraftFullySign extends SpvWalletError {
   draft: bsv.Transaction;
   constructor(logger: Logger, draft: bsv.Transaction) {
     super('Transaction could not be fully signed');
@@ -64,13 +66,13 @@ export class ErrorDraftFullySign extends Error {
   }
 }
 
-export class ErrorNoAdminKey extends Error {
+export class ErrorNoAdminKey extends SpvWalletError {
   constructor() {
     super('Admin key has not been set. Cannot do admin queries.');
   }
 }
 
-export class ErrorResponse extends Error {
+export class ErrorResponse extends SpvWalletError {
   response: Response;
   content: string;
   constructor(logger: Logger, response: Response, content: string) {
@@ -82,7 +84,7 @@ export class ErrorResponse extends Error {
   }
 }
 
-export class ErrorWrongHex extends Error {
+export class ErrorWrongHex extends SpvWalletError {
   value: string;
   constructor(wrongHex: string) {
     super('Provided hexHash is not a valid hex string');
