@@ -800,19 +800,27 @@ export class SpvWalletClient {
     const privateKeys: bsv.PrivateKey[] = []
     draftTransaction.configuration.inputs?.forEach((input, index) => {
       if (input.destination) {
-        const chainKey = xPriv.deriveChild(input.destination.chain)
-        const numKey = chainKey.deriveChild(input.destination.num)
-        privateKeys.push(numKey.privateKey)
+        const dst = input.destination
+        // derive private key (m/chain/num)
+        let privKey =xPriv.deriveChild(dst.chain)
+                          .deriveChild(dst.num)
 
-        // small sanity check for the inputs
-        if (
-          input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex') ||
-          input.output_index != txDraft.inputs[index].outputIndex
-        ) {
-          const Err = new Error('input tx ids do not match in draft and transaction hex')
-          this.logger.error(Err.message)
-          throw Err
+        if (dst.paymail_external_derivation_num != null){
+          // derive private key (m/chain/num/paymail_num)
+          privKey= privKey.deriveChild(dst.paymail_external_derivation_num)
         }
+
+        privateKeys.push(privKey.privateKey)
+      }
+
+      // small sanity check for the inputs
+      if (
+        input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex') ||
+        input.output_index != txDraft.inputs[index].outputIndex
+      ) {
+        const Err = new Error('input tx ids do not match in draft and transaction hex')
+        this.logger.error(Err.message)
+        throw Err
       }
 
       // @todo add support for other types of transaction inputs
