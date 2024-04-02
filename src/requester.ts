@@ -9,43 +9,46 @@ export class Requester {
   private adminKey?: bsv.HDPrivateKey;
   private signingKey?: bsv.HDPrivateKey | bsv.PrivateKey;
   private xPubString?: string;
+  private url: string;
 
   static CreateSigningRequester(
     logger: Logger,
+    url: string,
     signingKey?: bsv.HDPrivateKey | bsv.PrivateKey,
     adminKey?: bsv.HDPrivateKey,
   ) {
-    const requester = new Requester(logger);
+    const requester = new Requester(logger, url);
     requester.signingKey = signingKey;
     requester.adminKey = adminKey;
     return requester;
   }
 
-  static CreateXPubRequester(logger: Logger, xPubString: string) {
-    const requester = new Requester(logger);
+  static CreateXPubRequester(logger: Logger, url: string, xPubString: string) {
+    const requester = new Requester(logger, url);
     requester.xPubString = xPubString;
     return requester;
   }
 
-  private constructor(logger: Logger) {
+  private constructor(logger: Logger, url: string) {
     this.logger = logger;
+    this.url = url.endsWith('/') ? url : url + '/'; //make sure the url ends with a '/'
   }
 
-  async AdminRequest(url: string, method: string = 'GET', payload: any = null): Promise<any> {
+  async AdminRequest(path: string, method: string = 'GET', payload: any = null): Promise<any> {
     if (!this.adminKey) {
       throw new ErrorNoAdminKey();
     }
-    this.logger.debug('Making AdminRequest', url);
-    return this.makeRequest(url, method, payload, this.adminKey);
+    this.logger.debug('Making AdminRequest', path);
+    return this.makeRequest(path, method, payload, this.adminKey);
   }
 
-  async Request(url: string, method: string = 'GET', payload: any = null): Promise<any> {
-    this.logger.debug('Making Request', url);
-    return this.makeRequest(url, method, payload, this.signingKey);
+  async Request(path: string, method: string = 'GET', payload: any = null): Promise<any> {
+    this.logger.debug('Making Request', path);
+    return this.makeRequest(path, method, payload, this.signingKey);
   }
 
   private async makeRequest(
-    url: string,
+    path: string,
     method: string,
     payload: any,
     currentSigningKey?: bsv.HDPrivateKey | bsv.PrivateKey,
@@ -65,7 +68,7 @@ export class Requester {
       body: json,
     };
 
-    const res = await global.fetch(url, req);
+    const res = await global.fetch(this.prepareUrl(path), req);
 
     if (res.ok) {
       const contentType = res.headers.get('Content-Type');
@@ -77,5 +80,10 @@ export class Requester {
       const rawContent = await res.text();
       throw new ErrorResponse(this.logger, res, rawContent);
     }
+  }
+
+  private prepareUrl(path: string): string {
+    path = path.startsWith('/') ? path.substring(1) : path;
+    return this.url + path;
   }
 }

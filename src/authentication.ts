@@ -3,7 +3,6 @@ import bsv from 'bsv';
 import { RandomHex, Hash } from './utils';
 import { deriveHDPrivateChildKeyFromHex } from './utils/keys';
 import { signMessage } from './utils/sign';
-import { isHDPrivateKey } from './typeguards';
 
 export interface AuthPayload {
   AuthHash?: string;
@@ -130,4 +129,8 @@ const createSignatureCommon = function (
 // getSigningMessage will build the signing message string
 export const getSigningMessage = function (xPub: string, auth: AuthPayload): string {
   return `${xPub}${auth.AuthHash}${auth.AuthNonce}${auth.AuthTime}`;
+};
+
+const isHDPrivateKey = (key: bsv.HDPrivateKey | bsv.PrivateKey): key is bsv.HDPrivateKey => {
+  return key != null && (key as bsv.HDPrivateKey).hdPublicKey !== undefined;
 };
