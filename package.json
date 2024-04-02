@@ -1,6 +1,6 @@
 {
   "name": "@bsv/spv-wallet-js-client",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "TypeScript library for connecting to a SPV Wallet server",
   "repository": {
     "type": "git",
@@ -71,8 +71,7 @@
   "dependencies": {
     "@apollo/client": "^3.5.8",
     "@types/rollup-plugin-node-builtins": "^2.1.5",
-    "cross-fetch": "^4.0.0",
-    "pino": "^8.16.2"
+    "cross-fetch": "^4.0.0"
   },
   "peerDependencies": {
     "bsv": "^1.5.6"
