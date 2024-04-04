@@ -582,20 +582,36 @@ export interface PubKey {
 }
 
 export interface AdminKey {
+  /**
+   * adminKey is used for signing admin requests.
+   * Regardless of the signing method, the adminKey is required for admin requests.
+   * It will not work for non-admin requests - to use them, provide xPub, xPriv or accessKey.
+   */
   adminKey: string;
 }
 
 export interface OptionalAdminKey extends Partial<AdminKey> {}
 
 export interface XpubWithoutSigning extends OptionalAdminKey {
+  /**
+   * With xPub you can make non-admin requests without signing.
+   * The SendToRecipients function will not work because it requires the xPriv.
+   */
   xPub: string;
 }
 
 export interface XprivWithSigning extends OptionalAdminKey {
+  /**
+   * xPriv is used for signing non-admin requests.
+   */
   xPriv: string;
 }
 
 export interface AccessKeyWithSigning extends OptionalAdminKey {
+  /**
+   * accessKey is used for signing non-admin requests.
+   * If you want to use SendToRecipients function, you have to provide the xPriv.
+   */
   accessKey: string;
 }
 
@@ -627,3 +643,5 @@ export interface QueryParams {
    */
   sort_direction?: string;
 }
+
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE';

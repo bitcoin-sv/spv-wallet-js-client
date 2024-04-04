@@ -2,14 +2,15 @@ import bsv from 'bsv';
 import { AuthHeader, setSignature } from './authentication';
 import { Logger } from './logger';
 import { ErrorNoAdminKey, ErrorResponse } from './errors';
+import { HttpMethod } from './types';
 
-export class Requester {
+export class HttpClient {
   private logger: Logger;
 
   private adminKey?: bsv.HDPrivateKey;
   private signingKey?: bsv.HDPrivateKey | bsv.PrivateKey;
   private xPubString?: string;
-  private url: string;
+  private baseUrl: string;
 
   constructor(logger: Logger, url: string, key?: string | bsv.HDPrivateKey | bsv.PrivateKey, adminKey?: string) {
     if (key != null) {
@@ -24,25 +25,25 @@ export class Requester {
       this.adminKey = bsv.HDPrivateKey.fromString(adminKey);
     }
     this.logger = logger;
-    this.url = url.endsWith('/') ? url : url + '/'; //make sure the url ends with a '/'
+    this.baseUrl = url.endsWith('/') ? url : url + '/'; //make sure the url ends with a '/'
   }
 
-  async AdminRequest(path: string, method: string = 'GET', payload: any = null): Promise<any> {
+  async adminRequest(path: string, method: HttpMethod = 'GET', payload: any = null): Promise<any> {
     if (!this.adminKey) {
       throw new ErrorNoAdminKey();
     }
-    this.logger.debug('Making AdminRequest', path);
+    this.logger.debug('Making request as admin on', method, path);
     return this.makeRequest(path, method, payload, this.adminKey);
   }
 
-  async Request(path: string, method: string = 'GET', payload: any = null): Promise<any> {
-    this.logger.debug('Making Request', path);
+  async request(path: string, method: HttpMethod = 'GET', payload: any = null): Promise<any> {
+    this.logger.debug('Making request on', method, path);
     return this.makeRequest(path, method, payload, this.signingKey);
   }
 
   private async makeRequest(
     path: string,
-    method: string,
+    method: HttpMethod,
     payload: any,
     currentSigningKey?: bsv.HDPrivateKey | bsv.PrivateKey,
   ): Promise<any> {
@@ -55,13 +56,11 @@ export class Requester {
       headers[AuthHeader] = this.xPubString;
     }
 
-    const req = {
+    const res = await global.fetch(this.prepareUrl(path), {
       method,
       headers,
       body: json,
-    };
-
-    const res = await global.fetch(this.prepareUrl(path), req);
+    });
 
     if (res.ok) {
       const contentType = res.headers.get('Content-Type');
@@ -77,6 +76,6 @@ export class Requester {
 
   private prepareUrl(path: string): string {
     path = path.startsWith('/') ? path.substring(1) : path;
-    return this.url + path;
+    return this.baseUrl + path;
   }
 }

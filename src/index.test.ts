@@ -141,7 +141,7 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON);
-    const transaction = spvWalletClient.FinalizeTransaction(draftTransaction);
+    const transaction = spvWalletClient.SignTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
@@ -151,7 +151,7 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
-    const transaction = spvWalletClient.FinalizeTransaction(draftTransaction);
+    const transaction = spvWalletClient.SignTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
@@ -164,7 +164,7 @@ describe('Finalize transaction', () => {
     const input = draftTransaction.configuration.inputs?.[0];
     input!.destination!.num = 12333;
     expect(() => {
-      spvWalletClient.FinalizeTransaction(draftTransaction);
+      spvWalletClient.SignTransaction(draftTransaction);
     }).toThrow(ErrorDraftFullySign);
   });
 });
