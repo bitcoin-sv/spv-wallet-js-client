@@ -29,8 +29,6 @@ const testClient: TestClient = httpTestClient;
 describe('SPVWalletClient class', () => {
   test('instantiate with options', () => {
     const options: ClientOptions = {
-      signRequest: true,
-
       adminKey: xPrivString,
       xPriv: xPrivString,
     };
@@ -41,7 +39,6 @@ describe('SPVWalletClient class', () => {
 
 describe('SPVWalletClient routing', () => {
   const options: ClientOptions = {
-    signRequest: true,
     xPriv: testClient.xPrivString,
   };
   const spvWalletClient = new SpvWalletClient(testClient.serverURL, options);
@@ -93,7 +90,6 @@ describe('SPVWalletClient routing', () => {
 
 describe('SPVWalletClient admin routing', () => {
   const options: ClientOptions = {
-    signRequest: true,
     adminKey: testClient.xPrivString,
   };
   const adminSPVWalletClient = new SpvWalletClient(testClient.serverURL, options);
@@ -141,7 +137,6 @@ describe('SPVWalletClient admin routing', () => {
 describe('Finalize transaction', () => {
   test('draftTxJSON', async () => {
     const spvWalletClient = new SpvWalletClient(serverURL, {
-      signRequest: true,
       xPriv: xPrivString,
     });
 
@@ -152,7 +147,6 @@ describe('Finalize transaction', () => {
 
   test('draftTxJSON2', async () => {
     const spvWalletClient = new SpvWalletClient(serverURL, {
-      signRequest: true,
       xPriv: xPrivString,
     });
 
@@ -163,7 +157,6 @@ describe('Finalize transaction', () => {
 
   test('draftTxJSON2 error', async () => {
     const spvWalletClient = new SpvWalletClient(serverURL, {
-      signRequest: true,
       xPriv: xPrivString,
     });
 

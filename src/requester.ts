@@ -11,25 +11,18 @@ export class Requester {
   private xPubString?: string;
   private url: string;
 
-  static CreateSigningRequester(
-    logger: Logger,
-    url: string,
-    signingKey?: bsv.HDPrivateKey | bsv.PrivateKey,
-    adminKey?: bsv.HDPrivateKey,
-  ) {
-    const requester = new Requester(logger, url);
-    requester.signingKey = signingKey;
-    requester.adminKey = adminKey;
-    return requester;
-  }
-
-  static CreateXPubRequester(logger: Logger, url: string, xPubString: string) {
-    const requester = new Requester(logger, url);
-    requester.xPubString = xPubString;
-    return requester;
-  }
-
-  private constructor(logger: Logger, url: string) {
+  constructor(logger: Logger, url: string, key?: string | bsv.HDPrivateKey | bsv.PrivateKey, adminKey?: string) {
+    if (key != null) {
+      if (typeof key === 'string') {
+        //only xPub can be a string
+        this.xPubString = key;
+      } else {
+        this.signingKey = key;
+      }
+    }
+    if (adminKey) {
+      this.adminKey = bsv.HDPrivateKey.fromString(adminKey);
+    }
     this.logger = logger;
     this.url = url.endsWith('/') ? url : url + '/'; //make sure the url ends with a '/'
   }

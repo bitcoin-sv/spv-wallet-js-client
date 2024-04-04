@@ -12,18 +12,9 @@ export class SpvWalletError extends Error {
   }
 }
 
-export class ErrorWithDisabledSignRequest extends SpvWalletError {
+export class ErrorInvalidOptions extends SpvWalletError {
   constructor(logger: Logger, options: ClientOptions) {
-    super(
-      'Invalid options with signRequest off. Must set xPub. For signed requests: must set xPriv or accessKey. AdminKey also needs signRequest option.',
-    );
-    logger.debug('Invalid options: ', options);
-  }
-}
-
-export class ErrorNoSigningMethod extends SpvWalletError {
-  constructor(logger: Logger, options: ClientOptions) {
-    super('Invalid options with signRequest on. None of xPriv, accessKey nor adminKey is set');
+    super('Invalid options. None of xPub, xPriv, accessKey nor adminKey is set');
     logger.debug('Invalid options: ', options);
   }
 }

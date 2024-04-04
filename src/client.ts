@@ -27,10 +27,9 @@ import { Requester } from './requester';
 import {
   ErrorDraftFullySign,
   ErrorDraftVerification,
-  ErrorNoSigningMethod,
+  ErrorInvalidOptions,
   ErrorNoXPrivToSignTransaction,
   ErrorTxIdsDontMatchToDraft,
-  ErrorWithDisabledSignRequest,
 } from './errors';
 
 /**
@@ -39,7 +38,6 @@ import {
  * @constructor
  * @example
  * const SpvWalletClient = new SpvWalletClient(<serverUrl>, {
- *   signRequest: true,
  *   xPriv: <xpriv...>
  * })
  */
@@ -51,45 +49,37 @@ export class SpvWalletClient {
 
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
     this.logger = makeLogger(loggerConfig);
-
-    if (options.signRequest && options.xPriv) {
-      this.xPriv = bsv.HDPrivateKey.fromString(options.xPriv);
-    }
-    this.http = this.initRequester(options, serverUrl);
+    this.http = this.makeRequester(options, serverUrl);
   }
 
-  private initRequester(options: ClientOptions, serverUrl: string): Requester {
-    if (!options.signRequest && options.xPub) {
-      this.logger.info('Using XPub. Admin requests and SendToRecipients function will not be available.');
-      return Requester.CreateXPubRequester(this.logger, serverUrl, options.xPub);
-    }
-
-    if (!options.signRequest) {
-      throw new ErrorWithDisabledSignRequest(this.logger, options);
-    }
-    //below are options which all require signRequest
-
-    const adminKey = options.adminKey ? bsv.HDPrivateKey.fromString(options.adminKey) : undefined;
-
-    let signingKey: bsv.HDPrivateKey | bsv.PrivateKey | undefined;
-
-    if (this.xPriv != null) {
-      signingKey = this.xPriv;
-      this.logger.info('Using xPriv to sign requests');
-    } else if (options.accessKey) {
-      signingKey = bsv.PrivateKey.fromString(options.accessKey);
-      this.logger.info('Using accessKey to sign requests. SendToRecipients will not be available.');
-    }
-
-    if (!adminKey && !signingKey) {
-      throw new ErrorNoSigningMethod(this.logger, options);
-    }
-
-    if (adminKey != null) {
+  private makeRequester(options: ClientOptions, serverUrl: string): Requester {
+    if (options.adminKey) {
       this.logger.info('Using adminKey to sign admin requests.');
     }
 
-    return Requester.CreateSigningRequester(this.logger, serverUrl, signingKey, adminKey);
+    if ('xPub' in options) {
+      this.logger.info('Using XPub. SendToRecipients function will not be available.');
+      return new Requester(this.logger, serverUrl, options.xPub, options.adminKey);
+    }
+
+    if ('xPriv' in options) {
+      this.logger.info('Using xPriv to sign requests');
+      this.xPriv = bsv.HDPrivateKey.fromString(options.xPriv);
+      return new Requester(this.logger, serverUrl, this.xPriv!, options.adminKey);
+    }
+
+    if ('accessKey' in options) {
+      this.logger.info('Using accessKey to sign requests. SendToRecipients will not be available.');
+      const signingKey = bsv.PrivateKey.fromString(options.accessKey);
+      return new Requester(this.logger, serverUrl, signingKey, options.adminKey);
+    }
+
+    if (options.adminKey != null) {
+      this.logger.warn('Non-admin requests will not work because xPub, xPriv nor accessKey is provided.');
+      return new Requester(this.logger, serverUrl, undefined, options.adminKey);
+    }
+
+    throw new ErrorInvalidOptions(this.logger, options);
   }
 
   /**
@@ -752,7 +742,6 @@ export class SpvWalletClient {
       throw new ErrorNoXPrivToSignTransaction();
     }
 
-    const Input = bsv.Transaction.Input;
     const xPriv = this.xPriv as bsv.HDPrivateKey;
     const txDraft: bsv.Transaction = new bsv.Transaction(draftTransaction.hex);
 
@@ -781,7 +770,7 @@ export class SpvWalletClient {
       }
 
       // @todo add support for other types of transaction inputs
-      txDraft.inputs[index] = new Input.PublicKeyHash({
+      txDraft.inputs[index] = new bsv.Transaction.Input.PublicKeyHash({
         prevTxId: input.transaction_id,
         outputIndex: input.output_index,
         script: new bsv.Script(input.script_pub_key),
