@@ -21,6 +21,10 @@ import {
   XPub,
   XPubs,
   Utxo,
+  XpubWithoutSigning,
+  AccessKeyWithSigning,
+  XprivWithSigning,
+  AdminKey,
 } from './types';
 import { Logger, LoggerConfig, makeLogger, defaultLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -47,6 +51,10 @@ export class SpvWalletClient {
 
   private xPriv?: bsv.HDPrivateKey;
 
+  constructor(serverUrl: string, options: XpubWithoutSigning, loggerConfig?: LoggerConfig);
+  constructor(serverUrl: string, options: AccessKeyWithSigning, loggerConfig?: LoggerConfig);
+  constructor(serverUrl: string, options: XprivWithSigning, loggerConfig?: LoggerConfig);
+  constructor(serverUrl: string, options: AdminKey, loggerConfig?: LoggerConfig);
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
     this.logger = makeLogger(loggerConfig);
     this.http = this.makeRequester(options, serverUrl);
