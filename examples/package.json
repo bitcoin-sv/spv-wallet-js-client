@@ -1,0 +1,16 @@
+{
+  "name": "example",
+  "type": "module",
+  "scripts": {
+    "preinstall": "cd ../ && yarn install && yarn build",
+    "build": "tsc",
+    "build:client": "cd .. && yarn build",
+    "run:example": "yarn build:client && node --loader ts-node/esm",
+    "list-transactions": "yarn run:example list-transactions.ts"
+  },
+  "version": "0.0.0",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.4"
+  }
+}
