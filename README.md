@@ -35,18 +35,12 @@ See more scripts in the [package.json](package.json) file or the [makefile](Make
 
 ### Connection options
 
-| Option          | Description                                     |             |
-|-----------------|-------------------------------------------------|-------------|
-| accessKeyString | Hex private part of an access key               | string      |
-| accessKey       | bsv PrivateKey instance                         |             |
-| adminKey        | Admin Key string                                | "xprv....." |
-| debug           | Whether to turn debugging on                    | boolean     |
-| signRequest     | Whether to sign all requests sent to the server | boolean     |
-| xPriv           | bsv HDPrivateKey instance                       |             |
-| xPrivString     | HD Private key string                           | "xprv....." |
-| xPub            | bsv HD Public key instance                      |             |
-| xPubString      | HD Public key string                            | "xpub....." |
-| xPubID          | XPub Id string                                  | string      |
+| Option          | Description       |             |
+|-----------------|-------------------|-------------|
+| accessKey       | Access Key string | string      |
+| adminKey        | Admin Key string  | string      |
+| xPriv           | xPriv string      | "xprv....." |
+| xPub            | xPub string       | "xpub....." |
 
 <br />
 
@@ -131,15 +125,15 @@ update-contributors           Regenerates the contributors html/list
 import { SpvWalletClient, generateKeys } from 'spv-wallet-js-client';
 
 const server = "http://localhost:3003/v1";
-const xPriv = generateKeys().xPriv()
+const xPriv = "xpriv..."
+
 
 const client = new SpvWalletClient(server, {
-  signRequest: true,
   xPriv,
 });
 
 const recipients = [{
-  to: "test@handcash.io",
+  to: "test@example.com",
   satoshis: 10000,
 }];
 const result = await client.SendToRecipients(recipients, { agent: 'Spv Wallet test' })
