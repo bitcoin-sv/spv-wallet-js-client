@@ -14,9 +14,7 @@ const txsFiltered = await client.GetTransactions(
   {
     block_height: 839228,
   },
-  {
-    some_metadata: 'example',
-  },
+  {},
   {
     page_size: 100,
     page: 1,

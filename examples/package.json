@@ -8,6 +8,7 @@
     "run:example": "yarn build:client && node --loader ts-node/esm",
     "generate-keys": "yarn run:example generate-keys.ts",
     "admin-add-user": "yarn run:example admin-add-user.ts",
+    "get-balance": "yarn run:example get-balance.ts",
     "create-transaction": "yarn run:example create-transaction.ts",
     "list-transactions": "yarn run:example list-transactions.ts",
     "admin-remove-user": "yarn run:example admin-remove-user.ts"

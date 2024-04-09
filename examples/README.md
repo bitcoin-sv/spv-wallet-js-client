@@ -24,11 +24,12 @@ In this directory you can find examples of how to use the `spv-wallet-js-client`
 1. `generate-keys` - generates new keys (you can copy them to `example-keys` if you want to use them in next examples)
 2. `admin-add-user` - adds a new user (more precisely adds `exampleXPub` and then `examplePaymail` to the wallet)
 
-> Before proceeding to the next step (`create-transaction`), it's necessary to ensure that your `examplePaymail` has sufficient funds. You can transfer funds to your `examplePaymail` using a Bitcoin SV wallet application such as HandCash or any other that supports Paymail.
+> To fully experience the next steps, it would be beneficial to transfer some funds to your `examplePaymail`. This ensures the examples run smoothly by demonstrating the creation of a transaction with an actual balance. You can transfer funds to your `examplePaymail` using a Bitcoin SV wallet application such as HandCash or any other that supports Paymail.
 
-3. `create-transaction` - creates a transaction (you can adjust the `outputs` to your needs)
-4. `list-transactions` - lists all transactions and with example filtering
-5. `admin-remove-user` - removes the user
+3. `get-balance` - checks the balance - if you've transferred funds to your `examplePaymail`, you should see them here
+4. `create-transaction` - creates a transaction (you can adjust the `outputs` to your needs)
+5. `list-transactions` - lists all transactions and with example filtering
+6. `admin-remove-user` - removes the user
 
 ## How to run an example
 

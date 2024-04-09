@@ -7,5 +7,4 @@ const adminClient = new SpvWalletClient(server, {
   adminKey: exampleAdminKey,
 });
 
-const delPaymail = await adminClient.AdminDeletePaymail(examplePaymail);
-console.log('AdminDeletePaymail response:', delPaymail);
+await adminClient.AdminDeletePaymail(examplePaymail);
