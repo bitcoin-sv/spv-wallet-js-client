@@ -10,13 +10,10 @@
 <br/>
 </div>
 
-## Documentation
-
-For in-depth information and guidance, please refer to the [SPV Wallet Documentation](https://bsvblockchain.gitbook.io/docs).
-
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
+- [About](#about)
 - [Code Standards](#code-standards)
 - [Contributing](#contributing)
 - [License](#license)
@@ -150,6 +147,9 @@ const result = await client.SendToRecipients(recipients, { agent: 'Spv Wallet te
 ```
 
 <br />
+
+## About
+For comprehensive information and guidance on the [SPV Wallet Documentation](https://bsvblockchain.gitbook.io/docs).
 
 ## Code Standards
 Please read our [code standards document](.github/CODE_STANDARDS.md)
