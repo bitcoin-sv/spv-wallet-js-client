@@ -2,7 +2,6 @@ import bsv from 'bsv';
 
 export interface Client {
   server_url: string;
-  httpTransport: TransportService;
 }
 
 /**
@@ -18,7 +17,7 @@ export interface Conditions {
   /**
    * Key value element
    */
-  [key: string]: any
+  [key: string]: any;
 }
 
 /**
@@ -34,7 +33,7 @@ export interface Metadata {
   /**
    * Key value element
    */
-  [key: string]: any
+  [key: string]: any;
 }
 
 /**
@@ -175,6 +174,10 @@ export interface Destination {
    */
   num: number;
   /**
+   * Paymail derivation number used for the derivation of the destination
+   */
+  paymail_external_derivation_num?: number;
+  /**
    * Address of the destination, empty of not p2pkh
    */
   address: string;
@@ -249,7 +252,6 @@ export interface Transaction {
   updated_at?: Date;
   deleted_at?: Date;
 }
-
 
 /**
  * Array of transactions
@@ -472,11 +474,11 @@ export interface TransactionConfigInput {
 /**
  * Strategy to use for the change of a transaction
  */
-export type ChangeStrategy = "default" | "random" | "nominations";
+export type ChangeStrategy = 'default' | 'random' | 'nominations';
 /**
  * Status of a draft transaction
  */
-export type DraftStatus = "draft" | "canceled" | "expired" | "complete";
+export type DraftStatus = 'draft' | 'canceled' | 'expired' | 'complete';
 
 /**
  * Draft transaction interface
@@ -507,7 +509,7 @@ export interface Utxo {
   draft_id?: string;
   reserved_at?: Date;
   spending_tx_id?: string;
-  transaction?: Transaction
+  transaction?: Transaction;
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -550,108 +552,75 @@ export interface AdminStats {
   /**
    * A key value object of dates and number of transactions on that date (YYYYMMDD)
    */
-  transactions_per_day: { [key: string]: any};
+  transactions_per_day: { [key: string]: any };
   /**
    * Number of utxos per output type
    */
-  utxos_per_type: { [key: string]: any};
-}
-
-export interface TransportService {
-  SetAdminKey(adminKey: string): void;
-  SetDebug(debug: boolean): void;
-  IsDebug(): boolean;
-  SetSignRequest(debug: boolean): void;
-  IsSignRequest(): boolean;
-  RegisterXpub(rawXPub: string, metadata: Metadata): Promise<XPub>;
-  AdminGetStatus(): Promise<boolean>
-  AdminGetStats(): Promise<AdminStats>
-  AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>
-  AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<BlockHeaders>
-  AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
-  AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetPaymail(address: string): Promise<PaymailAddress>
-  AdminGetPaymails(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<PaymailAddresses>
-  AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminCreatePaymail(xPubID: string, address: string, public_name: string, avatar: string): Promise<PaymailAddress>
-  AdminDeletePaymail(address: string): Promise<PaymailAddress>
-  AdminGetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>
-  AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>
-  AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  AdminGetXPubs(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<XPubs>;
-  AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  AdminRecordTransaction(hex: string): Promise<Transaction>;
-  GetXPub(): Promise<XPub>;
-  UpdateXPubMetadata(metadata: Metadata): Promise<XPub>;
-  GetAccessKey(id: string): Promise<AccessKey>;
-  GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys>;
-  GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  CreateAccessKey(metadata: Metadata): Promise<AccessKey>;
-  RevokeAccessKey(id: string): Promise<AccessKey>
-  GetDestinationByID(id: string): Promise<Destination>
-  GetDestinationByLockingScript(locking_script: string): Promise<Destination>
-  GetDestinationByAddress(address: string): Promise<Destination>
-  GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations>
-  GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number>
-  NewDestination(metadata: Metadata): Promise<Destination>;
-  UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination>;
-  UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination>;
-  UpdateDestinationMetadataByLockingScript(lockingScript: string, metadata: Metadata): Promise<Destination>;
-  NewPaymail(key: string, address: string, publicName?: string, avatar?: string, metadata?: Metadata): Promise<void>;
-  DeletePaymail(address: string): Promise<void>;
-  GetTransaction(txID: string): Promise<Transaction>;
-  GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions>;
-  GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  GetUtxo(tx_id: string, output_index: number): Promise<Utxo>;
-  GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos>;
-  GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number>;
-  DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction>;
-  DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction>;
-  RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction>;
-  UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction>;
+  utxos_per_type: { [key: string]: any };
 }
 
 /**
  * Key basic information
  */
 export interface Key {
-  xPriv(): string
-  xPub: PubKey
+  xPriv(): string;
+  xPub: PubKey;
 }
 
 /**
  * Extends Key interface with mnemonic information
  */
-export interface KeyWithMnemonic extends Key{
-  mnemonic: string
+export interface KeyWithMnemonic extends Key {
+  mnemonic: string;
 }
 
 /**
  * Public key information
  */
 export interface PubKey {
-  toString(): string
+  toString(): string;
 }
 
+export interface AdminKey {
+  /**
+   * adminKey is used for signing admin requests.
+   * Regardless of the signing method, the adminKey is required for admin requests.
+   * It will not work for non-admin requests - to use them, provide xPub, xPriv or accessKey.
+   */
+  adminKey: string;
+}
+
+export interface OptionalAdminKey extends Partial<AdminKey> {}
+
+export interface XpubWithoutSigning extends OptionalAdminKey {
+  /**
+   * With xPub you can make non-admin requests without signing.
+   * The SendToRecipients function will not work because it requires the xPriv.
+   */
+  xPub: string;
+}
+
+export interface XprivWithSigning extends OptionalAdminKey {
+  /**
+   * xPriv is used for signing non-admin requests.
+   */
+  xPriv: string;
+}
+
+export interface AccessKeyWithSigning extends OptionalAdminKey {
+  /**
+   * accessKey is used for signing non-admin requests.
+   * If you want to use SendToRecipients function, you have to provide the xPriv.
+   */
+  accessKey: string;
+}
+
+export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning | AdminKey;
 
 /**
  * Client options for instantiating a new SPV Wallet client
  */
-export interface ClientOptions {
-  accessKeyString?: string;
-  accessKey?: bsv.PrivateKey;
-  adminKey?: string;
-  debug?: boolean;
-  signRequest?: boolean;
-  xPriv?: bsv.HDPrivateKey;
-  xPrivString?: string;
-  xPub?: bsv.HDPublicKey;
-  xPubString?: string;
-  xPubID?: string;
-}
+// export type ClientOptions = NonSigningOptions | SigningOptions;
 
 /**
  * Query params to limit and order database list results
@@ -674,3 +643,5 @@ export interface QueryParams {
    */
   sort_direction?: string;
 }
+
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE';

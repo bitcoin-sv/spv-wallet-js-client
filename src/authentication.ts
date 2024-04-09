@@ -1,42 +1,44 @@
 import bsv from 'bsv';
 
-import { RandomHex, Hash } from "./utils";
-import { deriveHDPrivateChildKeyFromHex } from "./utils/keys";
-import { signMessage } from "./utils/sign";
-import logger from "./logger";
+import { RandomHex, Hash } from './utils';
+import { deriveHDPrivateChildKeyFromHex } from './utils/keys';
+import { signMessage } from './utils/sign';
 
 export interface AuthPayload {
-  AuthHash?:     string;
-  AuthNonce?:    string;
-  AuthTime?:     number;
+  AuthHash?: string;
+  AuthNonce?: string;
+  AuthTime?: number;
   BodyContents?: string;
-  Signature?:    string;
-  xPub?:         string;
-  accessKey?:    string;
+  Signature?: string;
+  xPub?: string;
+  accessKey?: string;
 }
 
 // AuthHeader is the header to use for authentication (raw xPub)
-export const AuthHeader = "x-auth-xpub";
+export const AuthHeader = 'x-auth-xpub';
 
 // AuthAccessKey is the header to use for access key authentication (access public key)
-export const AuthAccessKey = "x-auth-key";
+export const AuthAccessKey = 'x-auth-key';
 
 // AuthSignature is the given signature (body + timestamp)
-export const AuthSignature = "x-auth-signature";
+export const AuthSignature = 'x-auth-signature';
 
 // AuthHeaderHash hash of the body coming from the request
-export const AuthHeaderHash = "x-auth-hash";
+export const AuthHeaderHash = 'x-auth-hash';
 
 // AuthHeaderNonce random nonce for the request
-export const AuthHeaderNonce = "x-auth-nonce";
+export const AuthHeaderNonce = 'x-auth-nonce';
 
 // AuthHeaderTime the time of the request, only valid for 30 seconds
-export const AuthHeaderTime = "x-auth-time";
+export const AuthHeaderTime = 'x-auth-time';
 
-export const setSignature = function(headers: { [key: string]: string }, signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string): { [key: string]: string } {
-
+export const setSignature = function (
+  headers: { [key: string]: string },
+  signingKey: bsv.HDPrivateKey | bsv.PrivateKey,
+  bodyString: string,
+): { [key: string]: string } {
   // Create the signature
-  const authData = createSignature(signingKey, bodyString)
+  const authData = createSignature(signingKey, bodyString);
 
   // Set the auth header
   if (authData.xPub) {
@@ -45,11 +47,13 @@ export const setSignature = function(headers: { [key: string]: string }, signing
     headers[AuthAccessKey] = authData.accessKey;
   }
 
-  return setSignatureHeaders(headers, authData)
-}
+  return setSignatureHeaders(headers, authData);
+};
 
-const setSignatureHeaders = function(headers: { [key: string]: string }, authData: AuthPayload): { [key: string]: string } {
-
+const setSignatureHeaders = function (
+  headers: { [key: string]: string },
+  authData: AuthPayload,
+): { [key: string]: string } {
   // Create the auth header hash
   if (authData.AuthHash) {
     headers[AuthHeaderHash] = authData.AuthHash;
@@ -71,64 +75,62 @@ const setSignatureHeaders = function(headers: { [key: string]: string }, authDat
   }
 
   return headers;
-}
+};
 
-export const createSignature = function(signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string) {
-
-  // No key?
-  if (!signingKey) {
-    const Err = new Error("missing signingKey key")
-    logger.error(Err)
-    throw Err
-  }
-
+export const createSignature = function (signingKey: bsv.HDPrivateKey | bsv.PrivateKey, bodyString: string) {
   const payload: AuthPayload = {};
   // x-auth-nonce is a random unique string to seed the signing message
   // this can be checked server side to make sure the request is not being replayed
-  payload.AuthNonce = RandomHex(32)
+  payload.AuthNonce = RandomHex(32);
 
   let privateKey: bsv.PrivateKey;
-  // @ts-ignore
-  if (signingKey.hdPublicKey) {
-    const hdKey = signingKey as bsv.HDPrivateKey;
+
+  if (isHDPrivateKey(signingKey)) {
     // Get the xPub
-    payload.xPub = hdKey.hdPublicKey.toString(); // will throw
+    payload.xPub = signingKey.hdPublicKey.toString(); // will throw
     payload.accessKey = undefined;
 
     // Derive the address for signing
-    const key: bsv.HDPrivateKey = deriveHDPrivateChildKeyFromHex(hdKey, payload.AuthNonce);
+    const key: bsv.HDPrivateKey = deriveHDPrivateChildKeyFromHex(signingKey, payload.AuthNonce);
     privateKey = key.privateKey;
   } else {
-    privateKey = signingKey as bsv.PrivateKey;
+    privateKey = signingKey;
     payload.xPub = undefined;
     payload.accessKey = privateKey.publicKey.toString();
   }
 
-  return createSignatureCommon(payload, bodyString, privateKey)
-}
+  return createSignatureCommon(payload, bodyString, privateKey);
+};
 
-const createSignatureCommon = function(payload: AuthPayload, bodyString: string, privateKey: bsv.PrivateKey): AuthPayload {
-
+const createSignatureCommon = function (
+  payload: AuthPayload,
+  bodyString: string,
+  privateKey: bsv.PrivateKey,
+): AuthPayload {
   // Create the auth header hash
-  payload.AuthHash = Hash(bodyString)
+  payload.AuthHash = Hash(bodyString);
 
   // x-auth-time is the current time and makes sure a request can not be sent after 30 secs
   payload.AuthTime = +new Date();
 
-  let key = payload.xPub
+  let key = payload.xPub;
   if (!key && payload.accessKey) {
-    key = payload.accessKey
+    key = payload.accessKey;
   }
 
   // Signature, using bitcoin signMessage
-  const message = getSigningMessage(key || "", payload);
+  const message = getSigningMessage(key || '', payload);
   //payload.Signature = Message.sign(Buffer.from(message), privateKey);
   payload.Signature = signMessage(message, privateKey);
 
-  return payload
-}
+  return payload;
+};
 
 // getSigningMessage will build the signing message string
-export const getSigningMessage = function(xPub: string, auth: AuthPayload): string {
+export const getSigningMessage = function (xPub: string, auth: AuthPayload): string {
   return `${xPub}${auth.AuthHash}${auth.AuthNonce}${auth.AuthTime}`;
-}
+};
+
+const isHDPrivateKey = (key: bsv.HDPrivateKey | bsv.PrivateKey): key is bsv.HDPrivateKey => {
+  return key != null && (key as bsv.HDPrivateKey).hdPublicKey !== undefined;
+};
