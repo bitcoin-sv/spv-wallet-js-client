@@ -29,7 +29,8 @@ In this directory you can find examples of how to use the `spv-wallet-js-client`
 3. `get-balance` - checks the balance - if you've transferred funds to your `examplePaymail`, you should see them here
 4. `create-transaction` - creates a transaction (you can adjust the `outputs` to your needs)
 5. `list-transactions` - lists all transactions and with example filtering
-6. `admin-remove-user` - removes the user
+6. `send-op-return` - sends an OP_RETURN transaction
+7. `admin-remove-user` - removes the user
 
 ## How to run an example
 

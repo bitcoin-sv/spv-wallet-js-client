@@ -11,6 +11,7 @@
     "get-balance": "yarn run:example get-balance.ts",
     "create-transaction": "yarn run:example create-transaction.ts",
     "list-transactions": "yarn run:example list-transactions.ts",
+    "send-op-return": "yarn run:example send-op-return.ts",
     "admin-remove-user": "yarn run:example admin-remove-user.ts"
   },
   "version": "0.0.0",
