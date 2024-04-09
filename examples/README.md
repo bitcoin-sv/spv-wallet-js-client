@@ -15,7 +15,7 @@ In this directory you can find examples of how to use the `spv-wallet-js-client`
   - If in your current `spv-wallet` instance you have a different `adminKey`, you should replace the one in `example-keys` with the one you have.
 - The `exampleXPub` and `exampleXPriv` are just placeholders, which won't work.
   - You should replace them by newly generated ones using `yarn generate-keys`,
-  - ... or use your actual keys if you have them (in this case please skip the examples that add or remove keys).
+  - ... or use your actual keys if you have them (don't use the keys which are already added to another wallet).
 
 > Additionally, to make it work properly, you should adjust the `examplePaymail` to align with your `domains` configuration in the `spv-wallet` instance.
 
