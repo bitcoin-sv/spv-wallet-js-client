@@ -6,7 +6,11 @@
     "build": "tsc",
     "build:client": "cd .. && yarn build",
     "run:example": "yarn build:client && node --loader ts-node/esm",
-    "list-transactions": "yarn run:example list-transactions.ts"
+    "generate-keys": "yarn run:example generate-keys.ts",
+    "admin-add-user": "yarn run:example admin-add-user.ts",
+    "create-transaction": "yarn run:example create-transaction.ts",
+    "list-transactions": "yarn run:example list-transactions.ts",
+    "admin-remove-user": "yarn run:example admin-remove-user.ts"
   },
   "version": "0.0.0",
   "devDependencies": {
