@@ -34,7 +34,7 @@ In this directory you can find examples of how to use the `spv-wallet-js-client`
 
 In addition to the above, there are additional examples showing how to use the client from a developer perspective:
 
-- `handle-exception` - presents how to "catch" exceptions which the client can throw
+- `handle-exceptions` - presents how to "catch" exceptions which the client can throw
 - `custom-logger` - shows different ways you can configure (or disable) internal logger
 
 ## How to run an example
