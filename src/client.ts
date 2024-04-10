@@ -62,7 +62,7 @@ export class SpvWalletClient {
 
   private makeRequester(options: ClientOptions, serverUrl: string): HttpClient {
     if (options.adminKey) {
-      this.logger.info('Using adminKey to sign admin requests.');
+      this.logger.info('Using adminKey to sign admin requests');
     }
 
     if ('xPub' in options) {
