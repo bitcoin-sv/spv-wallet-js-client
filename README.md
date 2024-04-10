@@ -2,7 +2,7 @@
 
 # [SPV Wallet: JS Client](https://www.npmjs.com/package/@bsv/spv-wallet-js-client)
 
-[![last commit](https://img.shields.io/github/last-commit/bitcoin-sv/spv-wallet-js-client.svg?style=flat&v=2)](https://github.com/bitcoin-sv/spv-wallet-js-client/commits/master)
+[![last commit](https://img.shields.io/github/last-commit/bitcoin-sv/spv-wallet-js-client.svg?style=flat&v=2)](https://github.com/bitcoin-sv/spv-wallet-js-client/commits/main)
 [![version](https://img.shields.io/github/release-pre/bitcoin-sv/spv-wallet-js-client.svg?style=flat&v=2)](https://github.com/bitcoin-sv/spv-wallet-js-client/releases)
 [![Npm](https://img.shields.io/npm/v/@bsv/spv-wallet-js-client?style=flat&v=2)](https://www.npmjs.com/package/@bsv/spv-wallet-js-client)
 [![license](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat&v=2)](/LICENSE)
