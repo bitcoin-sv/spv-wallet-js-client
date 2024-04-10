@@ -1,0 +1,22 @@
+{
+  "name": "example",
+  "type": "module",
+  "scripts": {
+    "preinstall": "cd ../ && yarn install && yarn build",
+    "build": "tsc",
+    "build:client": "cd .. && yarn build",
+    "run:example": "yarn build:client && node --loader ts-node/esm",
+    "generate-keys": "yarn run:example generate-keys.ts",
+    "admin-add-user": "yarn run:example admin-add-user.ts",
+    "get-balance": "yarn run:example get-balance.ts",
+    "create-transaction": "yarn run:example create-transaction.ts",
+    "list-transactions": "yarn run:example list-transactions.ts",
+    "send-op-return": "yarn run:example send-op-return.ts",
+    "admin-remove-user": "yarn run:example admin-remove-user.ts"
+  },
+  "version": "0.0.0",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.4"
+  }
+}
