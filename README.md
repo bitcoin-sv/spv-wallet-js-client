@@ -128,6 +128,10 @@ const client = new SpvWalletClient(spvWalletServerUrl, {
 The **third optional argument** is responsible for a logger configuration.
 You can either configure log level (default `info`) or provide your own logger which implements `Logger interface` (see [./src/logger.ts](./src/logger.ts))
 
+Unless you provide your own logger, the standard `console` will be used.
+
+> To disable logging, you can set the log level to `disabled`.
+
 Check the example presenting how to define [custom-logger](./examples/custom-logger.ts).
 
 ## Development

@@ -12,7 +12,6 @@ const clientWithCustomLogLevel = new SpvWalletClient(
   },
   {
     //default level is 'info'
-    //the 'console' will be utilized
     level: 'debug', //available levels: 'debug' | 'info' | 'warn' | 'error' | 'disabled'
   },
 );
