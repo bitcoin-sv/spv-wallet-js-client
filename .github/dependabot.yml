@@ -3,7 +3,7 @@
 version: 2
 updates:
   - package-ecosystem: 'npm'
-    target-branch: 'master'
+    target-branch: 'main'
     directory: '/'
     schedule:
       interval: 'daily'
@@ -22,7 +22,7 @@ updates:
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
-    target-branch: "master"
+    target-branch: "main"
     directory: "/"
     schedule:
       interval: "weekly"

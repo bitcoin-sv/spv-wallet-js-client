@@ -32,6 +32,11 @@ In this directory you can find examples of how to use the `spv-wallet-js-client`
 6. `send-op-return` - sends an OP_RETURN transaction
 7. `admin-remove-user` - removes the user
 
+In addition to the above, there are additional examples showing how to use the client from a developer perspective:
+
+- `handle-exceptions` - presents how to "catch" exceptions which the client can throw
+- `custom-logger` - shows different ways you can configure (or disable) internal logger
+
 ## How to run an example
 
 The examples are written in TypeScript and can be run by:
