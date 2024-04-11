@@ -26,6 +26,8 @@
 **SPV Wallet: JS Client** is a TypeScript package which acts as a http client to [SPV Wallet](https://github.com/bitcoin-sv/spv-wallet).
 Using this library, you can build your own solutions that utilize this non-custodial wallet.
 
+For comprehensive information and guidance on the [SPV Wallet Documentation](https://bsvblockchain.gitbook.io/docs).
+
 ### Key features
 
 - Sending transactions (standard and OP_RETURN);
