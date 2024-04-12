@@ -8,7 +8,6 @@
 [![license](https://img.shields.io/badge/license-Open%20BSV-brightgreen.svg?style=flat&v=2)](/LICENSE)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/bitcoin-sv/spv-wallet-js-client&style=flat&v=2)](https://mergify.io)
 <br/>
-
 </div>
 
 ## Table of Contents
@@ -26,6 +25,8 @@
 
 **SPV Wallet: JS Client** is a TypeScript package which acts as a http client to [SPV Wallet](https://github.com/bitcoin-sv/spv-wallet).
 Using this library, you can build your own solutions that utilize this non-custodial wallet.
+
+For comprehensive information and guidance, please refer to the [SPV Wallet Documentation](https://bsvblockchain.gitbook.io/docs).
 
 ### Key features
 
