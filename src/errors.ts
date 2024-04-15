@@ -1,6 +1,6 @@
 import bsv from 'bsv';
 import { Logger } from './logger';
-import { ClientOptions, DraftTransaction, TransactionInput } from './types';
+import { ClientOptions, TransactionInput } from './types';
 
 export class SpvWalletError extends Error {
   constructor(message: string) {
