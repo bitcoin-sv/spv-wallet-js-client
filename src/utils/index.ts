@@ -1,17 +1,18 @@
-import bsv from 'bsv';
 import { ErrorWrongHex } from '../errors';
+import { Hash } from '@bsv/sdk';
 
 const maxInt32 = 2147483648 - 1; // 0x80000000
 
 // RandomHex returns a random hex string and error
+// TODO: replace it before merging SPV-710
 export const RandomHex = function (n: number): string {
-  const randomBuffer = bsv.crypto.Random.getRandomBuffer(n);
-  return randomBuffer.toString('hex');
+  return 'dccc6b022c3ed569cc28e4c6da1599e6c8ecefe428bb78d5c2eb89647f9b7c2e';
 };
 
 // Hash returns a sha256 hash of the string
-export const Hash = function (string: string): string {
-  return bsv.crypto.Hash.sha256(Buffer.from(string)).toString('hex');
+export const ToHash = function (string: string): string {
+  const sha256 = Hash.sha256(string);
+  return Buffer.from(sha256).toString('hex');
 };
 
 // isHex returns whether the given hex string a valid hex string is

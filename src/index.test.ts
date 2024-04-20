@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
 import { SpvWalletClient } from './index';
-import { ClientOptions, DraftTransaction, Recipients, TransactionConfigInput } from './types';
+import { ClientOptions, DraftTx, Recipients, TransactionConfigInput } from './types';
 import { ErrorDraftFullySign } from './errors';
 
 const xPrivString =
@@ -140,7 +140,7 @@ describe('Finalize transaction', () => {
       xPriv: xPrivString,
     });
 
-    const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON);
+    const draftTransaction: DraftTx = JSON.parse(draftTxJSON);
     const transaction = spvWalletClient.SignTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
@@ -150,7 +150,7 @@ describe('Finalize transaction', () => {
       xPriv: xPrivString,
     });
 
-    const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
+    const draftTransaction: DraftTx = JSON.parse(draftTxJSON2);
     const transaction = spvWalletClient.SignTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
@@ -160,7 +160,7 @@ describe('Finalize transaction', () => {
       xPriv: xPrivString,
     });
 
-    const draftTransaction: DraftTransaction = JSON.parse(draftTxJSON2);
+    const draftTransaction: DraftTx = JSON.parse(draftTxJSON2);
     const input = draftTransaction.configuration.inputs?.[0];
     input!.destination!.num = 12333;
     expect(() => {

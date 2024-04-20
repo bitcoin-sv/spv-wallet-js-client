@@ -70,6 +70,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
+    "@bsv/sdk": "^1.0.17",
     "@types/rollup-plugin-node-builtins": "^2.1.5",
     "cross-fetch": "^4.0.0"
   },

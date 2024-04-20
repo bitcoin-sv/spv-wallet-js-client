@@ -1,45 +1,26 @@
-import bsv from 'bsv';
-import Mnemonic from 'bsv/mnemonic';
 import { getChildNumsFromHex } from './index';
-
 import { Key, KeyWithMnemonic } from '../types';
+import { HD, Mnemonic } from '@bsv/sdk';
 
 // deriveChildKeyFromHex derive the child extended key from the hex string
 export const deriveChildKeyFromHex = function (
-  hdKey: bsv.HDPrivateKey | bsv.HDPublicKey,
+  hdKey: HD,
   hexHash: string,
-): bsv.HDPrivateKey | bsv.HDPublicKey {
-  if (hdKey instanceof bsv.HDPrivateKey) {
-    return deriveHDPrivateChildKeyFromHex(hdKey as bsv.HDPrivateKey, hexHash);
-  } else {
-    return deriveHDPublicChildKeyFromHex(hdKey, hexHash);
-  }
+): HD{
+  return deriveHDChildKeyFromHex(hdKey, hexHash);
 };
 
-export const deriveHDPrivateChildKeyFromHex = function (hdKey: bsv.HDPrivateKey, hexHash: string): bsv.HDPrivateKey {
-  let childKey: bsv.HDPrivateKey = hdKey;
+export const deriveHDChildKeyFromHex = function (hdKey: HD, hexHash: string): HD {
+  let childKey: HD = hdKey;
   const childNums = getChildNumsFromHex(hexHash);
-
   childNums.forEach((childNum) => {
-    childKey = childKey.deriveChild(childNum, false);
-  });
-
-  return childKey;
-};
-
-export const deriveHDPublicChildKeyFromHex = function (hdKey: bsv.HDPublicKey, hexHash: string): bsv.HDPublicKey {
-  let childKey: bsv.HDPublicKey = hdKey;
-  const childNums = getChildNumsFromHex(hexHash);
-
-  childNums.forEach((childNum) => {
-    childKey = childKey.deriveChild(childNum, false);
+    childKey = childKey.deriveChild(childNum);
   });
 
   return childKey;
 };
 
 export const generateKeys = function (): KeyWithMnemonic {
-  bsv.HDPrivateKey.fromRandom();
   const mnemonic = Mnemonic.fromRandom();
   return getKeysFromMnemonic(mnemonic.toString());
 };
@@ -47,27 +28,27 @@ export const generateKeys = function (): KeyWithMnemonic {
 export const getKeysFromMnemonic = function (mnemonicStr: string): KeyWithMnemonic {
   const mnemonic = Mnemonic.fromString(mnemonicStr);
   const seed = mnemonic.toSeed();
-  const hdPrivateKey = bsv.HDPrivateKey.fromSeed(seed, bsv.Networks.mainnet);
+  const hdWallet = new HD().fromSeed(seed);
 
   return {
-    xPriv: () => hdPrivateKey.toString(),
+    xPriv: () => hdWallet.privKey.toString(),
     mnemonic: mnemonic.toString(),
     xPub: {
       toString() {
-        return hdPrivateKey.hdPublicKey.toString();
+        return hdWallet.toPublic().toString();
       },
     },
   };
 };
 
 export const getKeysFromString = function (privateKey: string): Key {
-  let hdPrivateKey = bsv.HDPrivateKey.fromString(privateKey);
+  let hdWallet = new HD().fromString(privateKey);
 
   return {
-    xPriv: () => hdPrivateKey.toString(),
+    xPriv: () => hdWallet.privKey.toString(),
     xPub: {
       toString() {
-        return hdPrivateKey.hdPublicKey.toString();
+        return hdWallet.toPublic().toString();
       },
     },
   };

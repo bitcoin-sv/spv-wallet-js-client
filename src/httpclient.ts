@@ -1,4 +1,5 @@
-import bsv from 'bsv';
+import * as bsv from 'bsv';
+import { HD, PrivateKey } from '@bsv/sdk';
 import { AuthHeader, setSignature } from './authentication';
 import { Logger } from './logger';
 import { ErrorNoAdminKey, ErrorResponse } from './errors';
@@ -7,12 +8,12 @@ import { HttpMethod } from './types';
 export class HttpClient {
   private logger: Logger;
 
-  private adminKey?: bsv.HDPrivateKey;
-  private signingKey?: bsv.HDPrivateKey | bsv.PrivateKey;
+  private adminKey?: HD;
+  private signingKey?: HD | PrivateKey;
   private xPubString?: string;
   private baseUrl: string;
 
-  constructor(logger: Logger, url: string, key?: string | bsv.HDPrivateKey | bsv.PrivateKey, adminKey?: string) {
+  constructor(logger: Logger, url: string, key?: string | HD | PrivateKey, adminKey?: string) {
     if (key != null) {
       if (typeof key === 'string') {
         //only xPub can be a string
@@ -22,7 +23,7 @@ export class HttpClient {
       }
     }
     if (adminKey) {
-      this.adminKey = bsv.HDPrivateKey.fromString(adminKey);
+      this.adminKey = new HD().fromString(adminKey);
     }
     this.logger = logger;
     this.baseUrl = url.endsWith('/') ? url : url + '/'; //make sure the url ends with a '/'
@@ -45,7 +46,7 @@ export class HttpClient {
     path: string,
     method: HttpMethod,
     payload: any,
-    currentSigningKey?: bsv.HDPrivateKey | bsv.PrivateKey,
+    currentSigningKey?: HD | PrivateKey,
   ): Promise<any> {
     const json = payload ? JSON.stringify(payload) : null;
     let headers: Record<string, string> = { 'content-type': 'application/json' };

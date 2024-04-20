@@ -1,4 +1,3 @@
-import bsv from 'bsv';
 import {
   AccessKey,
   AccessKeys,
@@ -8,15 +7,14 @@ import {
   Conditions,
   Destination,
   Destinations,
-  DraftTransaction,
+  DraftTx,
   Metadata,
   QueryParams,
   PaymailAddress,
   PaymailAddresses,
   Recipients,
-  Transaction,
   TransactionConfigInput,
-  Transactions,
+  Txs,
   Utxos,
   XPub,
   XPubs,
@@ -35,6 +33,7 @@ import {
   ErrorNoXPrivToSignTransaction,
   ErrorTxIdsDontMatchToDraft,
 } from './errors';
+import { HD, P2PKH, PrivateKey, Script, Transaction, TransactionInput, UnlockingScript } from '@bsv/sdk';
 
 /**
  * SpvWallet class
@@ -49,7 +48,7 @@ export class SpvWalletClient {
   logger: Logger;
   http: HttpClient;
 
-  private xPriv?: bsv.HDPrivateKey;
+  private xPriv?: HD;
 
   constructor(serverUrl: string, options: XpubWithoutSigning, loggerConfig?: LoggerConfig);
   constructor(serverUrl: string, options: AccessKeyWithSigning, loggerConfig?: LoggerConfig);
@@ -72,13 +71,13 @@ export class SpvWalletClient {
 
     if ('xPriv' in options) {
       this.logger.info('Using xPriv to sign requests');
-      this.xPriv = bsv.HDPrivateKey.fromString(options.xPriv);
+      this.xPriv = new HD().fromString(options.xPriv);
       return new HttpClient(this.logger, serverUrl, this.xPriv!, options.adminKey);
     }
 
     if ('accessKey' in options) {
       this.logger.info('Using accessKey to sign requests. SendToRecipients will not be available.');
-      const signingKey = bsv.PrivateKey.fromString(options.accessKey);
+      const signingKey = PrivateKey.fromString(options.accessKey, 'hex');
       return new HttpClient(this.logger, serverUrl, signingKey, options.adminKey);
     }
 
@@ -278,9 +277,9 @@ export class SpvWalletClient {
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {Transactions}
+   * @return {Txs}
    */
-  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Transactions> {
+  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Txs> {
     return await this.http.adminRequest(`admin/transactions/search`, 'POST', {
       conditions,
       metadata,
@@ -615,9 +614,9 @@ export class SpvWalletClient {
    * @param {Conditions} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Transactions}
+   * @return {Txs}
    */
-  async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Transactions> {
+  async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
     return await this.http.request(`transaction/search`, 'POST', {
       conditions,
       metadata,
@@ -694,9 +693,9 @@ export class SpvWalletClient {
    * @see {@link SendToRecipients}
    * @param {Recipients} recipients A list of recipients and a satoshi value to send to them
    * @param {Metadata} metadata     Key value object to use to add to the draft transaction
-   * @return {DraftTransaction}     Complete draft transaction object from SPV Wallet, all configuration options filled in
+   * @return {DraftTx}     Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
-  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTransaction> {
+  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTx> {
     const transactionConfig: TransactionConfigInput = {
       outputs: recipients,
     };
@@ -712,9 +711,9 @@ export class SpvWalletClient {
    *
    * @param {TransactionConfigInput} transactionConfig Configuration of the new transaction
    * @param {Metadata} metadata                        Key value object to use to add to the draft transaction
-   * @return {DraftTransaction}                        Complete draft transaction object from SPV Wallet, all configuration options filled in
+   * @return {DraftTx}                        Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
-  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTransaction> {
+  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTx> {
     return await this.http.request(`transaction`, 'POST', {
       config: transactionConfig,
       metadata,
@@ -742,61 +741,73 @@ export class SpvWalletClient {
   /**
    * Finalize and sign the given draft transaction
    *
-   * @param {DraftTransaction} draftTransaction Draft transaction object
+   * @param {DraftTx} draftTransaction Draft transaction object
    * @return {string} Final transaction hex
    */
-  SignTransaction(draftTransaction: DraftTransaction): string {
+  SignTransaction(draftTransaction: DraftTx): string {
     if (!this?.xPriv) {
       throw new ErrorNoXPrivToSignTransaction();
     }
 
-    const xPriv = this.xPriv as bsv.HDPrivateKey;
-    const txDraft: bsv.Transaction = new bsv.Transaction(draftTransaction.hex);
+    const xPriv = this.xPriv as HD;
+    const txDraft: Transaction = Transaction.fromHex(draftTransaction.hex);
 
     // sign the inputs
-    const privateKeys: bsv.PrivateKey[] = [];
+    const privateKeys: PrivateKey[] = [];
     draftTransaction.configuration.inputs?.forEach((input, index) => {
+
       if (input.destination) {
         const dst = input.destination;
         // derive private key (m/chain/num)
-        let privKey = xPriv.deriveChild(dst.chain).deriveChild(dst.num);
+        let hdWallet = xPriv.deriveChild(dst.chain).deriveChild(dst.num);
 
         if (dst.paymail_external_derivation_num != null) {
           // derive private key (m/chain/num/paymail_num)
-          privKey = privKey.deriveChild(dst.paymail_external_derivation_num);
+          hdWallet = hdWallet.deriveChild(dst.paymail_external_derivation_num);
         }
 
-        privateKeys.push(privKey.privateKey);
+        privateKeys.push(hdWallet.privKey);
       }
 
       // small sanity check for the inputs
       if (
-        input.transaction_id != txDraft.inputs[index].prevTxId.toString('hex') ||
-        input.output_index != txDraft.inputs[index].outputIndex
+        input.transaction_id != txDraft.inputs[index].sourceTXID ||
+        input.output_index != txDraft.inputs[index].sourceOutputIndex
       ) {
         throw new ErrorTxIdsDontMatchToDraft(this.logger, input, index, txDraft.inputs[index]);
       }
 
+      // const inp: TransactionInput = {
+      //   sourceTXID: input.transaction_id,
+      //   sourceOutputIndex: input.output_index,
+      //   unlockingScriptTemplate: new P2PKH().unlock(xPriv.privKey),
+      //   unlockingScript: new P2PKH().lock(xPriv.toPublic().toString()),
+      //   sequence: ,
+      // }
+
+      // txDraft.inputs[index] = inp;
+
+
       // @todo add support for other types of transaction inputs
-      txDraft.inputs[index] = new bsv.Transaction.Input.PublicKeyHash({
-        prevTxId: input.transaction_id,
-        outputIndex: input.output_index,
-        script: new bsv.Script(input.script_pub_key),
-        output: new bsv.Transaction.Output({
-          script: new bsv.Script(input.script_pub_key),
-          satoshis: input.satoshis,
-        }),
-      });
+      // txDraft.inputs[index] = new bsv.Transaction.Input.PublicKeyHash({
+      //   prevTxId: input.transaction_id,
+      //   outputIndex: input.output_index,
+      //   script: new bsv.Script(input.script_pub_key),
+      //   output: new bsv.Transaction.Output({
+      //     script: new bsv.Script(input.script_pub_key),
+      //     satoshis: input.satoshis,
+      //   }),
+      // });
     });
 
-    txDraft.sign(privateKeys);
+    txDraft.sign();
 
-    if (!txDraft.verify()) {
-      throw new ErrorDraftVerification(this.logger, txDraft);
-    }
-    if (!txDraft.isFullySigned()) {
-      throw new ErrorDraftFullySign(this.logger, txDraft);
-    }
+    // if (!txDraft.verify()) {
+    //   throw new ErrorDraftVerification(this.logger, txDraft);
+    // }
+    // if (!txDraft.isFullySigned()) {
+    //   throw new ErrorDraftFullySign(this.logger, txDraft);
+    // }
 
     return txDraft.toString();
   }

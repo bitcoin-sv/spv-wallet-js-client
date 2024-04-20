@@ -1,6 +1,7 @@
 import bsv from 'bsv';
 import { describe, test } from '@jest/globals';
 import { deriveChildKeyFromHex } from './keys';
+import { HD } from '@bsv/sdk';
 
 const testHash = '8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414';
 const testXpriv =
@@ -14,22 +15,22 @@ const derivedXpub =
 
 describe('deriveChildKeyFromHex', () => {
   test('xpriv', () => {
-    const key = bsv.HDPrivateKey.fromString(testXpriv);
+    const key = new HD().fromString(testXpriv);
     const childKey = deriveChildKeyFromHex(key, testHash);
     expect(childKey.toString()).toEqual(derivedXpriv);
   });
 
   test('xpub', () => {
-    const key = bsv.HDPublicKey.fromString(testXpub);
+    const key = new HD().fromString(testXpub);
     const childKey = deriveChildKeyFromHex(key, testHash);
     expect(childKey.toString()).toEqual(derivedXpub);
   });
 
   test('xpriv => xpub', () => {
-    const key = bsv.HDPrivateKey.fromString(testXpriv);
+    const key = new HD().fromString(testXpriv);
     const childKey = deriveChildKeyFromHex(key, testHash);
 
-    const pubKey = bsv.HDPublicKey.fromHDPrivateKey(childKey).toString();
+    const pubKey = new HD().fromString(childKey.toString()).toPublic().toString();
     expect(pubKey).toEqual(derivedXpub);
   });
 });
