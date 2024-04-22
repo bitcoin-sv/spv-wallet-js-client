@@ -34,6 +34,7 @@ import {
   ErrorTxIdsDontMatchToDraft,
 } from './errors';
 import { HD, P2PKH, PrivateKey, Script, Transaction, TransactionInput, UnlockingScript } from '@bsv/sdk';
+import bsv from 'bsv';
 
 /**
  * SpvWallet class
@@ -729,12 +730,12 @@ export class SpvWalletClient {
    * @example
    * // This function is a shorthand for:
    * const draft = await spvWalletClient.DraftToRecipients(recipients, metadata);
-   * const finalized = spvWalletClient.SignTransaction(draft);
+   * const finalized = await spvWalletClient.SignTransaction(draft);
    * const tx = await spvWalletClient.RecordTransaction(finalized, draft.id, metadata)
    */
   async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Transaction> {
     const draft = await this.DraftToRecipients(recipients, metadata);
-    const finalized = this.SignTransaction(draft);
+    const finalized = await this.SignTransaction(draft);
     return this.RecordTransaction(finalized, draft.id, metadata);
   }
 
@@ -743,8 +744,7 @@ export class SpvWalletClient {
    *
    * @param {DraftTx} draftTransaction Draft transaction object
    * @return {string} Final transaction hex
-   */
-  SignTransaction(draftTransaction: DraftTx): string {
+   */  async SignTransaction(draftTransaction: DraftTx): Promise<string> {
     if (!this?.xPriv) {
       throw new ErrorNoXPrivToSignTransaction();
     }
@@ -752,21 +752,17 @@ export class SpvWalletClient {
     const xPriv = this.xPriv as HD;
     const txDraft: Transaction = Transaction.fromHex(draftTransaction.hex);
 
-    // sign the inputs
-    const privateKeys: PrivateKey[] = [];
     draftTransaction.configuration.inputs?.forEach((input, index) => {
-
+      let hdWallet: HD | undefined;
       if (input.destination) {
         const dst = input.destination;
         // derive private key (m/chain/num)
-        let hdWallet = xPriv.deriveChild(dst.chain).deriveChild(dst.num);
+        hdWallet = xPriv.deriveChild(dst.chain).deriveChild(dst.num);
 
         if (dst.paymail_external_derivation_num != null) {
           // derive private key (m/chain/num/paymail_num)
           hdWallet = hdWallet.deriveChild(dst.paymail_external_derivation_num);
         }
-
-        privateKeys.push(hdWallet.privKey);
       }
 
       // small sanity check for the inputs
@@ -777,40 +773,18 @@ export class SpvWalletClient {
         throw new ErrorTxIdsDontMatchToDraft(this.logger, input, index, txDraft.inputs[index]);
       }
 
-      // const inp: TransactionInput = {
-      //   sourceTXID: input.transaction_id,
-      //   sourceOutputIndex: input.output_index,
-      //   unlockingScriptTemplate: new P2PKH().unlock(xPriv.privKey),
-      //   unlockingScript: new P2PKH().lock(xPriv.toPublic().toString()),
-      //   sequence: ,
-      // }
-
-      // txDraft.inputs[index] = inp;
-
-
-      // @todo add support for other types of transaction inputs
-      // txDraft.inputs[index] = new bsv.Transaction.Input.PublicKeyHash({
-      //   prevTxId: input.transaction_id,
-      //   outputIndex: input.output_index,
-      //   script: new bsv.Script(input.script_pub_key),
-      //   output: new bsv.Transaction.Output({
-      //     script: new bsv.Script(input.script_pub_key),
-      //     satoshis: input.satoshis,
-      //   }),
-      // });
+      if (hdWallet !== undefined) {
+        txDraft.inputs[index].unlockingScriptTemplate = new P2PKH().unlock(hdWallet.privKey, "all", false, input.satoshis, new P2PKH().lock(hdWallet.privKey.toAddress()));
+      }
+      txDraft.inputs[index].sourceOutputIndex = input.output_index;
+      txDraft.inputs[index].sourceTXID = input.transaction_id;
     });
 
-    txDraft.sign();
-
-    // if (!txDraft.verify()) {
-    //   throw new ErrorDraftVerification(this.logger, txDraft);
-    // }
-    // if (!txDraft.isFullySigned()) {
-    //   throw new ErrorDraftFullySign(this.logger, txDraft);
-    // }
+    await txDraft.sign();
 
     return txDraft.toString();
   }
+
 
   /**
    * Record a Bitcoin transaction (in hex) into SPV Wallet
