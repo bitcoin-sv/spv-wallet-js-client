@@ -5105,9 +5105,9 @@ rollup-plugin-node-builtins@^2.1.2:
     process-es6 "^0.11.2"
 
 rollup-plugin-node-externals@^7.0.0:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-node-externals/-/rollup-plugin-node-externals-7.0.1.tgz#941054e2b1c000a4ae9f9a49098f13b4f5023a8a"
-  integrity sha512-NIGBhcuhyKn8slRsIt2mCHmxj5zRjXfkYjJ5FPjmg1Q3/rHvvMhOzj07kg0qVX/X6SEP2iubswIc0sL+CbXruA==
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-node-externals/-/rollup-plugin-node-externals-7.1.1.tgz#2a61e362a842fe15406fff86823392d2f5c79599"
+  integrity sha512-rnIUt0zYdV05muRetoxOiFiKxrrfiyXuM/CgI+akv6NExBTaIiPkH2rCSE9JUCsjta1MXzQVAldpe5tJEszlwQ==
 
 rollup-plugin-polyfill-node@^0.13.0:
   version "0.13.0"
