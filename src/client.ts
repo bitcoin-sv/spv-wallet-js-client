@@ -774,7 +774,7 @@ export class SpvWalletClient {
       }
 
       if (hdWallet !== undefined) {
-        txDraft.inputs[index].unlockingScriptTemplate = new P2PKH().unlock(hdWallet.privKey, "all", false, input.satoshis, new P2PKH().lock(hdWallet.privKey.toAddress()));
+        txDraft.inputs[index].unlockingScriptTemplate = new P2PKH().unlock(hdWallet.privKey, "single", false, input.satoshis, new P2PKH().lock(input.destination?.address as string));
       }
       txDraft.inputs[index].sourceOutputIndex = input.output_index;
       txDraft.inputs[index].sourceTXID = input.transaction_id;
@@ -782,7 +782,7 @@ export class SpvWalletClient {
 
     await txDraft.sign();
 
-    return txDraft.toString();
+    return txDraft.toHex();
   }
 
 
