@@ -1,5 +1,5 @@
 import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
-import { exampleXPriv } from './example-keys';
+import { exampleXPriv } from './example-keys.js';
 
 const server = 'http://localhost:3003/v1';
 
