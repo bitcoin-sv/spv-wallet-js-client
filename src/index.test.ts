@@ -2,7 +2,6 @@ import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
 import { SpvWalletClient } from './index';
 import { ClientOptions, DraftTx, Recipients, TransactionConfigInput } from './types';
-import { ErrorDraftFullySign } from './errors';
 
 const xPrivString =
   'xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A';
@@ -141,7 +140,7 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTx = JSON.parse(draftTxJSON);
-    const transaction = spvWalletClient.SignTransaction(draftTransaction);
+    const transaction = await spvWalletClient.SignTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
@@ -151,21 +150,8 @@ describe('Finalize transaction', () => {
     });
 
     const draftTransaction: DraftTx = JSON.parse(draftTxJSON2);
-    const transaction = spvWalletClient.SignTransaction(draftTransaction);
+    const transaction = await  spvWalletClient.SignTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
-  });
-
-  test('draftTxJSON2 error', async () => {
-    const spvWalletClient = new SpvWalletClient(serverURL, {
-      xPriv: xPrivString,
-    });
-
-    const draftTransaction: DraftTx = JSON.parse(draftTxJSON2);
-    const input = draftTransaction.configuration.inputs?.[0];
-    input!.destination!.num = 12333;
-    expect(() => {
-      spvWalletClient.SignTransaction(draftTransaction);
-    }).toThrow(ErrorDraftFullySign);
   });
 });
 

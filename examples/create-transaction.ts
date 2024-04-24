@@ -1,30 +1,22 @@
-import { SpvWalletClient, getKeysFromMnemonic } from '../dist/typescript-npm-package.cjs.js';
+import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPriv } from './example-keys';
 
 const server = 'http://localhost:3003/v1';
-const xpriv = 'xprv9s21ZrQH143K27yEYnxfCk5sfD6hdCVvPuKQZRS4rK2zGjK71ufwRGYeMSPLVAMFsxXXiESUCj2SJrJ8r4DwmSbcHsqk5mNrZZrWFfZJKuf';
-const mnemonic = "ice dinosaur sister eager cereal erode rather relief wheat catch little flip typical salad dad";
-
-const keys = getKeysFromMnemonic(mnemonic);
 
 const client = new SpvWalletClient(server, {
-  xPriv: xpriv,
+  xPriv: exampleXPriv,
 });
 
-const tx = await client.SendToRecipients(
+const newTransaction = await client.SendToRecipients(
   [
     {
-      to: 'test-tssdk@wojtek.4chain.space',
+      to: 'receiver@example.com',
       satoshis: 1,
     },
   ],
   { some_metadata: 'example' },
 );
-// const finalized = await client.SignTransaction(draft);
+console.log('SendToRecipients response:', newTransaction);
 
-console.log(tx.id() as string);
-
-// const newTransaction = await client.SendToRecipients
-// console.log('SendToRecipients response:', newTransaction);
-//
-// const tx = await client.GetTransaction(newTransaction.id);
-// console.log('GetTransaction response:', tx);
+const tx = await client.GetTransaction(newTransaction.id() as string);
+console.log('GetTransaction response:', tx);

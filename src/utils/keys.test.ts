@@ -1,4 +1,3 @@
-import bsv from 'bsv';
 import { describe, test } from '@jest/globals';
 import { deriveChildKeyFromHex } from './keys';
 import { HD } from '@bsv/sdk';

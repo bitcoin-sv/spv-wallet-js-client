@@ -1,4 +1,3 @@
-import * as bsv from 'bsv';
 import { HD, PrivateKey } from '@bsv/sdk';
 import { AuthHeader, setSignature } from './authentication';
 import { Logger } from './logger';

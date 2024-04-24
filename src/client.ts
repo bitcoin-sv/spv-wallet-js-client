@@ -27,14 +27,11 @@ import {
 import { Logger, LoggerConfig, makeLogger, defaultLogger } from './logger';
 import { HttpClient } from './httpclient';
 import {
-  ErrorDraftFullySign,
-  ErrorDraftVerification,
   ErrorInvalidOptions,
   ErrorNoXPrivToSignTransaction,
   ErrorTxIdsDontMatchToDraft,
 } from './errors';
 import { HD, P2PKH, PrivateKey, Script, Transaction, TransactionInput, UnlockingScript } from '@bsv/sdk';
-import bsv from 'bsv';
 
 /**
  * SpvWallet class

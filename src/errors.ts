@@ -37,26 +37,6 @@ export class ErrorTxIdsDontMatchToDraft extends SpvWalletError {
   }
 }
 
-export class ErrorDraftVerification extends SpvWalletError {
-  draft: Transaction;
-  constructor(logger: Logger, draft: Transaction) {
-    super('transaction verification failed');
-    logger.debug('The draft transaction:', draft);
-
-    this.draft = draft;
-  }
-}
-
-export class ErrorDraftFullySign extends SpvWalletError {
-  draft: Transaction;
-  constructor(logger: Logger, draft: Transaction) {
-    super('Transaction could not be fully signed');
-    logger.debug('The draft transaction:', draft);
-
-    this.draft = draft;
-  }
-}
-
 export class ErrorNoAdminKey extends SpvWalletError {
   constructor() {
     super('Admin key has not been set. Cannot do admin queries.');
