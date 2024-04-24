@@ -28,7 +28,7 @@ export const generateKeys = function (): KeyWithMnemonic {
 export const getKeysFromMnemonic = function (mnemonicStr: string): KeyWithMnemonic {
   const mnemonic = Mnemonic.fromString(mnemonicStr);
   const seed = mnemonic.toSeed();
-  const hdWallet = new HD().fromSeed(seed, );
+  const hdWallet = new HD().fromSeed(seed);
 
   return {
     xPriv: () => hdWallet.privKey.toString(),
