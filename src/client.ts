@@ -6,6 +6,8 @@ import {
   BlockHeaders,
   ClientOptions,
   Conditions,
+  Contact,
+  Contacts,
   Destination,
   Destinations,
   DraftTransaction,
@@ -166,6 +168,64 @@ export class SpvWalletClient {
       conditions,
       metadata,
     });
+  }
+
+  /**
+   * Admin only: Get a list of all contacts in the system, filtered by conditions, metadata and queryParams
+   *
+   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
+   * @return {Contacts}
+   */
+  async AdminGetContacts(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Contacts> {
+    return await this.http.adminRequest(`admin/contact/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    });
+  }
+
+  /**
+   * Admin only: Update contact fullName and metadata
+   *
+   * @param {string} id              Contact ID to update
+   * @param {string} fullName        New full name of the contact
+   * @param {Metadata} metadata      Key value object to use to filter the documents by the metadata
+   * @constructor
+   */
+  async AdminUpdateContact(id: string, fullName: string, metadata: Metadata): Promise<Contact> {
+    return await this.http.adminRequest(`admin/contact/${id}`, 'PATCH', { fullName, metadata });
+  }
+
+  /**
+   * Admin only: Delete a contact
+   *
+   * @param {string} id Contact ID to delete
+   * @return void
+   */
+  async AdminDeleteContact(id: string): Promise<void> {
+    await this.http.adminRequest(`admin/contact/${id}`, 'DELETE', { });
+  }
+
+  /**
+   * Admin only: Accept a contact request
+   *
+   * @param {string} id Contact ID to accept
+   * @return {Contact}
+   */
+  async AdminAcceptContact(id: string): Promise<Contact> {
+    return await this.http.adminRequest(`admin/contact/accepted/${id}`, 'PATCH', { });
+  }
+
+  /**
+   * Admin only: Reject a contact request
+   *
+   * @param {string} id Contact ID to reject
+   * @return {Contact}
+   */
+  async AdminRejectContact(id: string): Promise<Contact> {
+    return await this.http.adminRequest(`admin/contact/rejected/${id}`, 'PATCH', { });
   }
 
   /**
@@ -597,6 +657,73 @@ export class SpvWalletClient {
       address,
       metadata,
     });
+  }
+
+  /**
+   * Get a list of all contacts for the current user, filtered by conditions, metadata and queryParams
+   *
+   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @return {Contacts}
+   */
+  async GetContacts(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Contacts> {
+    return await this.http.request(`contact/search`, 'POST', {
+      conditions,
+      metadata,
+      page: queryParams?.page || 0,
+      page_size: queryParams?.page_size || 0,
+      order_by_field: queryParams?.order_by_field || '',
+      sort_direction: queryParams?.sort_direction || '',
+    });
+  }
+
+  /**
+   * Upsert will add a new contact or modify an existing one.
+   *
+   * @param {string} paymail            Contact paymail to add or modify
+   * @param {string} fullName           Full name of the contact which could be shown instead of whole paymail address.
+   * @param {string} requesterPaymail   Paymail of the requester
+   * @param {Metadata} metadata         Key value object to use to filter the documents by the metadata
+   * @return {Contact}
+   */
+  async UpsertContact(paymail: string, fullName: string, requesterPaymail:string, metadata: Metadata): Promise<Contact> {
+    let payload = { fullName, requesterPaymail, metadata }
+    if (requesterPaymail !== "") {
+      payload["requesterPaymail"] = requesterPaymail
+    }
+    return await this.http.request(`contact/${paymail}`, 'PUT', payload);
+  }
+
+  /**
+   * Accept a contact request
+   *
+   * @param {string} paymail Contact paymail to modify
+   * @return {void}
+   */
+  async AcceptContact(paymail: string): Promise<void> {
+    return await this.http.request(`contact/accepted/${paymail}`, 'PATCH');
+  }
+
+  /**
+   * Reject a contact request
+   *
+   * @param {string} paymail Contact paymail to modify
+   * @return {void}
+   */
+  async RejectContact(paymail: string): Promise<void> {
+    return await this.http.request(`contact/rejected/${paymail}`, 'PATCH');
+
+  }
+
+  /**
+   * Confirm a contact request
+   *
+   * @param {string} paymail Contact paymail to modify
+   * @return {void}
+   */
+  async ConfirmContact(paymail: string): Promise<void> {
+    return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
   }
 
   /**
