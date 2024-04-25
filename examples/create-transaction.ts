@@ -1,9 +1,10 @@
 import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPriv } from './example-keys.js';
 
 const server = 'http://localhost:3003/v1';
 
 const client = new SpvWalletClient(server, {
-  xPriv: 'xprv9s21ZrQH143K2LpsdRco6N9RvxvxwaWoBK9i4dk2hVwJ9tBPr1qQY6Bxo7dfK2QpevbCFaCFGekAoSPxjLxwvYyUhHXkL5RUct2m7dpf3ZX',
+  xPriv: exampleXPriv,
 });
 
 const newTransaction = await client.SendToRecipients(
