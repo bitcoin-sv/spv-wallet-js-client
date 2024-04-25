@@ -1,6 +1,8 @@
 import {
   AccessKey,
   AccessKeys,
+  AccessKeyWithSigning,
+  AdminKey,
   AdminStats,
   BlockHeaders,
   ClientOptions,
@@ -9,29 +11,23 @@ import {
   Destinations,
   DraftTx,
   Metadata,
-  QueryParams,
   PaymailAddress,
   PaymailAddresses,
+  QueryParams,
   Recipients,
   TransactionConfigInput,
   Txs,
+  Utxo,
   Utxos,
+  XprivWithSigning,
   XPub,
   XPubs,
-  Utxo,
   XpubWithoutSigning,
-  AccessKeyWithSigning,
-  XprivWithSigning,
-  AdminKey,
 } from './types';
-import { Logger, LoggerConfig, makeLogger, defaultLogger } from './logger';
+import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
-import {
-  ErrorInvalidOptions,
-  ErrorNoXPrivToSignTransaction,
-  ErrorTxIdsDontMatchToDraft,
-} from './errors';
-import { HD, P2PKH, PrivateKey, Script, Transaction, TransactionInput, UnlockingScript } from '@bsv/sdk';
+import { ErrorInvalidOptions, ErrorNoXPrivToSignTransaction, ErrorTxIdsDontMatchToDraft } from './errors';
+import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
 
 /**
  * SpvWallet class
@@ -741,7 +737,7 @@ export class SpvWalletClient {
    *
    * @param {DraftTx} draftTransaction Draft transaction object
    * @return {string} Final transaction hex
-   */  async SignTransaction(draftTransaction: DraftTx): Promise<string> {
+   */ async SignTransaction(draftTransaction: DraftTx): Promise<string> {
     if (!this?.xPriv) {
       throw new ErrorNoXPrivToSignTransaction();
     }
@@ -750,16 +746,17 @@ export class SpvWalletClient {
     const txDraft: Transaction = Transaction.fromHex(draftTransaction.hex);
 
     draftTransaction.configuration.inputs?.forEach((input, index) => {
-      let hdWallet: HD | undefined;
-      if (input.destination) {
-        const dst = input.destination;
-        // derive private key (m/chain/num)
-        hdWallet = xPriv.deriveChild(dst.chain).deriveChild(dst.num);
+      const { destination } = input;
+      if (destination == null) {
+        throw new Error('Unexpected input that does not contain destination which is required for signing');
+      }
 
-        if (dst.paymail_external_derivation_num != null) {
-          // derive private key (m/chain/num/paymail_num)
-          hdWallet = hdWallet.deriveChild(dst.paymail_external_derivation_num);
-        }
+      // derive private key (m/chain/num)
+      let hdWallet = xPriv.deriveChild(destination.chain).deriveChild(destination.num);
+
+      if (destination.paymail_external_derivation_num != null) {
+        // derive private key (m/chain/num/paymail_num)
+        hdWallet = hdWallet.deriveChild(destination.paymail_external_derivation_num);
       }
 
       // small sanity check for the inputs
@@ -770,9 +767,14 @@ export class SpvWalletClient {
         throw new ErrorTxIdsDontMatchToDraft(this.logger, input, index, txDraft.inputs[index]);
       }
 
-      if (hdWallet !== undefined) {
-        txDraft.inputs[index].unlockingScriptTemplate = new P2PKH().unlock(hdWallet.privKey, "single", false, input.satoshis, new P2PKH().lock(input.destination?.address as string));
-      }
+      txDraft.inputs[index].unlockingScriptTemplate = new P2PKH().unlock(
+        hdWallet.privKey,
+        'single',
+        false,
+        input.satoshis,
+        new P2PKH().lock(destination.address),
+      );
+
       txDraft.inputs[index].sourceOutputIndex = input.output_index;
       txDraft.inputs[index].sourceTXID = input.transaction_id;
     });
@@ -781,7 +783,6 @@ export class SpvWalletClient {
 
     return txDraft.toHex();
   }
-
 
   /**
    * Record a Bitcoin transaction (in hex) into SPV Wallet
