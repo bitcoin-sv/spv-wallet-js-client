@@ -52,6 +52,11 @@ describe('SPVWalletClient routing', () => {
     ${'GetAccessKeysCount'}                       | ${'post'}   | ${'access-key/count'}            | ${() => spvWalletClient.GetAccessKeysCount({}, {})}
     ${'CreateAccessKey'}                          | ${'post'}   | ${'access-key'}                  | ${() => spvWalletClient.CreateAccessKey({})}
     ${'RevokeAccessKey'}                          | ${'delete'} | ${'access-key?id='}              | ${() => spvWalletClient.RevokeAccessKey('')}
+    ${'GetContacts'}                              | ${'post'}   | ${'contact/search'}              | ${() => spvWalletClient.GetContacts({},{}, {})}
+    ${'UpsertContact'}                            | ${'post'}   | ${'contact/test'}                | ${() => spvWalletClient.UpsertContact('test', '','', {})}
+    ${'AcceptContact'}                            | ${'patch'}  | ${'contact/accepted/test'}       | ${() => spvWalletClient.AcceptContact('test')}
+    ${'RejectContact'}                            | ${'patch'}  | ${'contact/rejected/test'}       | ${() => spvWalletClient.RejectContact('test')}
+    ${'ConfirmContact'}                            | ${'patch'}  | ${'contact/confirmed/test'}       | ${() => spvWalletClient.ConfirmContact('test')}
     ${'GetDestinationByID'}                       | ${'get'}    | ${'destination?id='}             | ${() => spvWalletClient.GetDestinationByID('')}
     ${'GetDestinationByLockingScript'}            | ${'get'}    | ${'destination?locking_script='} | ${() => spvWalletClient.GetDestinationByLockingScript('')}
     ${'GetDestinationByAddress'}                  | ${'get'}    | ${'destination?address='}        | ${() => spvWalletClient.GetDestinationByAddress('')}
@@ -103,6 +108,11 @@ describe('SPVWalletClient admin routing', () => {
     ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}    | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
     ${'AdminGetBlockHeaders'}      | ${'post'}   | ${'admin/block-headers/search'} | ${() => adminSPVWalletClient.AdminGetBlockHeaders({}, {}, {})}
     ${'AdminGetBlockHeadersCount'} | ${'post'}   | ${'admin/block-headers/count'}  | ${() => adminSPVWalletClient.AdminGetBlockHeadersCount({}, {})}
+    ${'AdminGetContacts'}          | ${'post'}   | ${'admin/contact/search'}       | ${() => adminSPVWalletClient.AdminGetContacts({},{}, {})}
+    ${'AdminUpdateContact'}        | ${'patch'}  | ${'admin/contact/1'}            | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
+    ${'AdminDeleteContact'}        | ${'delete'}  | ${'admin/contact/1'}           | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
+    ${'AdminAcceptContact'}        | ${'patch'}  | ${'admin/contact/accepted/1'}   | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
+    ${'AdminRejectContact'}        | ${'patch'}  | ${'admin/contact/rejected/1'}   | ${() => adminSPVWalletClient.AdminRejectContact('1')}
     ${'AdminGetDestinations'}      | ${'post'}   | ${'admin/destinations/search'}  | ${() => adminSPVWalletClient.AdminGetDestinations({}, {}, {})}
     ${'AdminGetDestinationsCount'} | ${'post'}   | ${'admin/destinations/count'}   | ${() => adminSPVWalletClient.AdminGetDestinationsCount({}, {})}
     ${'AdminGetPaymail'}           | ${'post'}   | ${'admin/paymail/get'}          | ${() => adminSPVWalletClient.AdminGetPaymail('')}
