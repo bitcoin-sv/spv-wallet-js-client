@@ -144,6 +144,51 @@ export interface AccessKey {
  */
 export interface AccessKeys extends Array<AccessKey> {}
 
+export interface Contact {
+  /**
+   * ID of the contact
+   */
+  id: string;
+  /**
+   * Full name is name which could be shown instead of whole paymail address.
+   */
+  fullName: string;
+  /**
+   * Paymail related to contact
+   */
+  paymail: string;
+  /**
+   * Public key is a public key related to contact (receiver)
+   */
+  pubKey: string;
+  /**
+   * Status is a contact's current status.
+   */
+  status: string;
+  /**
+   * Date when this object was created
+   */
+  created_at: Date;
+  /**
+   * Date when this object was last updated
+   */
+  updated_at?: Date;
+  /**
+   * If this object has been deleted, this date will be set
+   */
+  deleted_at?: Date;
+  /**
+   * Metadata object
+   */
+  metadata?: Metadata;
+}
+
+/**
+ * Array of contacts
+ * @see {@link Contact}
+ */
+export interface Contacts extends Array<Contact> {}
+
 /**
  * Destination interface
  */
