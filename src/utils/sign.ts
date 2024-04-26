@@ -1,22 +1,10 @@
-import bsv from 'bsv';
+import { BSM, BigNumber, ECDSA, PrivateKey, Utils } from '@bsv/sdk';
 
-// all take from the bsv/message lib
-
-const MAGIC_BYTES = Buffer.from('Bitcoin Signed Message:\n');
-
-const magicHash = function magicHash(message: string) {
-  const messageBuffer = Buffer.from(message);
-
-  const prefix1 = bsv.encoding.BufferWriter.varintBufNum(MAGIC_BYTES.length);
-  const prefix2 = bsv.encoding.BufferWriter.varintBufNum(messageBuffer.length);
-  const buf = Buffer.concat([prefix1, MAGIC_BYTES, prefix2, messageBuffer]);
-
-  return bsv.crypto.Hash.sha256sha256(buf);
-};
-
-export const signMessage = function (message: string, privateKey: bsv.PrivateKey): string {
-  const hash = magicHash(message);
-  const signature = bsv.crypto.ECDSA.signWithCalcI(hash, privateKey);
-
-  return signature.toCompact().toString('base64');
+export const signMessage = function (message: string, privateKey: PrivateKey): string {
+  const messageBuf = Utils.toArray(message);
+  const hash = BSM.magicHash(messageBuf);
+  const bnh = new BigNumber(hash);
+  const signature = ECDSA.sign(bnh, privateKey, true);
+  const recovery = signature.CalculateRecoveryFactor(privateKey.toPublicKey(), bnh);
+  return signature.toCompact(recovery, true, 'base64') as string;
 };

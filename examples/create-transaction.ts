@@ -18,5 +18,5 @@ const newTransaction = await client.SendToRecipients(
 );
 console.log('SendToRecipients response:', newTransaction);
 
-const tx = await client.GetTransaction(newTransaction.id);
+const tx = await client.GetTransaction(newTransaction.id('hex') as string);
 console.log('GetTransaction response:', tx);

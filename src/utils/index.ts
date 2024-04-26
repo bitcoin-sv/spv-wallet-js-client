@@ -1,17 +1,17 @@
-import bsv from 'bsv';
 import { ErrorWrongHex } from '../errors';
+import { Hash, Random, Utils } from '@bsv/sdk';
 
 const maxInt32 = 2147483648 - 1; // 0x80000000
 
 // RandomHex returns a random hex string and error
 export const RandomHex = function (n: number): string {
-  const randomBuffer = bsv.crypto.Random.getRandomBuffer(n);
-  return randomBuffer.toString('hex');
+  return Utils.toHex(Random(n));
 };
 
-// Hash returns a sha256 hash of the string
-export const Hash = function (string: string): string {
-  return bsv.crypto.Hash.sha256(Buffer.from(string)).toString('hex');
+// ToHash returns a sha256 hash of the string
+export const ToHash = function (string: string): string {
+  const sha256 = Hash.sha256(string);
+  return Utils.toHex(sha256);
 };
 
 // isHex returns whether the given hex string a valid hex string is

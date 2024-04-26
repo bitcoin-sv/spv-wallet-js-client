@@ -1,4 +1,3 @@
-import bsv from 'bsv';
 
 export interface Client {
   server_url: string;
@@ -279,9 +278,9 @@ export interface BlockHeader {
 export interface BlockHeaders extends Array<BlockHeader> {}
 
 /**
- * Transaction
+ * Tx
  */
-export interface Transaction {
+export interface Tx {
   id: string;
   hex: string;
   block_hash: string;
@@ -300,9 +299,9 @@ export interface Transaction {
 
 /**
  * Array of transactions
- * @see {@link Transaction}
+ * @see {@link Tx}
  */
-export interface Transactions extends Array<Transaction> {}
+export interface Txs extends Array<Tx> {}
 
 /**
  * MAP protocol definition
@@ -391,7 +390,7 @@ export interface UtxoPointer {
 /**
  * Transaction used as an input in a draft transaction
  */
-export interface TransactionInput {
+export interface TxInput {
   created_at?: Date;
   updated_at?: Date;
   metadata?: Metadata;
@@ -457,7 +456,7 @@ export interface ScriptOutput {
 /**
  * Transaction output record in a draft transaction
  */
-export interface TransactionOutput {
+export interface TxOutput {
   paymail_p4?: PaymailP4;
   satoshis?: number;
   script?: string;
@@ -479,7 +478,7 @@ export interface SyncConfig {
 /**
  * Configuration for a new transaction
  */
-export interface TransactionConfig {
+export interface TxConfig {
   change_destinations?: Destination[];
   change_destinations_strategy?: ChangeStrategy;
   change_minimum_satoshis?: number;
@@ -490,9 +489,9 @@ export interface TransactionConfig {
   fee_unit?: FeeUnit;
   from_utxos?: UtxoPointer[];
   include_utxos?: UtxoPointer[];
-  inputs?: TransactionInput[];
+  inputs?: TxInput[];
   miner?: string;
-  outputs: TransactionOutput[];
+  outputs: TxOutput[];
   send_all_to?: string;
   sync?: SyncConfig;
 }
@@ -511,7 +510,7 @@ export interface TransactionConfigInput {
   fee_unit?: FeeUnit;
   from_utxos?: UtxoPointer[];
   miner?: string;
-  outputs: TransactionOutput[];
+  outputs: TxOutput[];
   send_all_to?: string;
   sync?: SyncConfig;
 }
@@ -528,13 +527,13 @@ export type DraftStatus = 'draft' | 'canceled' | 'expired' | 'complete';
 /**
  * Draft transaction interface
  */
-export interface DraftTransaction {
+export interface DraftTx {
   id: string;
   hex: string;
   metadata?: Metadata;
   xpub_id: string;
   expires_at: Date;
-  configuration: TransactionConfig;
+  configuration: TxConfig;
   status: DraftStatus;
   final_tx_id?: string;
   created_at: Date;
@@ -554,7 +553,7 @@ export interface Utxo {
   draft_id?: string;
   reserved_at?: Date;
   spending_tx_id?: string;
-  transaction?: Transaction;
+  transaction?: Tx;
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;

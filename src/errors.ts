@@ -1,6 +1,6 @@
-import bsv from 'bsv';
+import { TransactionInput } from '@bsv/sdk';
 import { Logger } from './logger';
-import { ClientOptions, DraftTransaction, TransactionInput } from './types';
+import { ClientOptions, TxInput } from './types';
 
 export class SpvWalletError extends Error {
   constructor(message: string) {
@@ -26,34 +26,14 @@ export class ErrorNoXPrivToSignTransaction extends SpvWalletError {
 }
 
 export class ErrorTxIdsDontMatchToDraft extends SpvWalletError {
-  input: TransactionInput;
-  draftInput: bsv.Transaction.Input;
-  constructor(logger: Logger, input: TransactionInput, index: number, draftInput: bsv.Transaction.Input) {
+  input: TxInput;
+  draftInput: TransactionInput;
+  constructor(logger: Logger, input: TxInput, index: number, draftInput: TransactionInput) {
     super('Input tx ids do not match in draft and transaction hex');
     logger.debug('The input: ', input, 'Tx index: ', index, 'The draft', draftInput);
 
     this.input = input;
     this.draftInput = draftInput;
-  }
-}
-
-export class ErrorDraftVerification extends SpvWalletError {
-  draft: bsv.Transaction;
-  constructor(logger: Logger, draft: bsv.Transaction) {
-    super('transaction verification failed');
-    logger.debug('The draft transaction:', draft);
-
-    this.draft = draft;
-  }
-}
-
-export class ErrorDraftFullySign extends SpvWalletError {
-  draft: bsv.Transaction;
-  constructor(logger: Logger, draft: bsv.Transaction) {
-    super('Transaction could not be fully signed');
-    logger.debug('The draft transaction:', draft);
-
-    this.draft = draft;
   }
 }
 

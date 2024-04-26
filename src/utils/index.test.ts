@@ -1,7 +1,8 @@
 import { describe, expect, test } from '@jest/globals';
-import { getChildNumsFromHex } from './index';
+import { getChildNumsFromHex, ToHash } from './index';
 import { ErrorWrongHex } from '../errors';
 
+const messageToHash: string = '{"conditions":{},"metadata":{},"params":{}}';
 const testHash = '8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414';
 
 describe('getChildNumsFromHex', () => {
@@ -34,4 +35,11 @@ describe('getChildNumsFromHex', () => {
       2003694612, // 776df414
     ]);
   });
+});
+
+describe('ToHash', () => {
+  test('proper hash operation', () => {
+    const hash = ToHash(messageToHash);
+    expect(hash).toBe("aa655e1817379f75800937db8980faa3ee3514056e424d22b60283e4ef284ca3");
+  })
 });

@@ -51,7 +51,6 @@
     "babel-jest": "^29.0.0",
     "babel-plugin-import": "^1.13.3",
     "better-docs": "^2.7.2",
-    "bsv": "^1.5.6",
     "eslint": "^9.0.0",
     "jest": "^29.0.0",
     "jest-fetch-mock": "^3.0.3",
@@ -70,10 +69,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
+    "@bsv/sdk": "^1.0.17",
     "@types/rollup-plugin-node-builtins": "^2.1.5",
     "cross-fetch": "^4.0.0"
-  },
-  "peerDependencies": {
-    "bsv": "^1.5.6"
   }
 }
