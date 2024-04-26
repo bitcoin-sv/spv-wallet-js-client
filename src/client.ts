@@ -66,7 +66,7 @@ export class SpvWalletClient {
     if ('xPriv' in options) {
       this.logger.info('Using xPriv to sign requests');
       this.xPriv = new HD().fromString(options.xPriv);
-      return new HttpClient(this.logger, serverUrl, this.xPriv!, options.adminKey);
+      return new HttpClient(this.logger, serverUrl, this.xPriv, options.adminKey);
     }
 
     if ('accessKey' in options) {
@@ -738,11 +738,11 @@ export class SpvWalletClient {
    * @param {DraftTx} draftTransaction Draft transaction object
    * @return {string} Final transaction hex
    */ async SignTransaction(draftTransaction: DraftTx): Promise<string> {
-    if (!this?.xPriv) {
+    if (!this.xPriv) {
       throw new ErrorNoXPrivToSignTransaction();
     }
 
-    const xPriv = this.xPriv as HD;
+    const xPriv = this.xPriv;
     const txDraft: Transaction = Transaction.fromHex(draftTransaction.hex);
 
     draftTransaction.configuration.inputs?.forEach((input, index) => {

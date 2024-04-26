@@ -130,7 +130,6 @@ export const getSigningMessage = function (xPub: string, auth: AuthPayload): str
   return `${xPub}${auth.AuthHash}${auth.AuthNonce}${auth.AuthTime}`;
 };
 
-
 const isHDWallet = (key: HD | PrivateKey): key is HD => {
   return key != null && key instanceof HD;
 }

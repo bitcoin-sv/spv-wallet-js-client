@@ -1,4 +1,4 @@
-import { Transaction, TransactionInput } from '@bsv/sdk';
+import { TransactionInput } from '@bsv/sdk';
 import { Logger } from './logger';
 import { ClientOptions, TxInput } from './types';
 
