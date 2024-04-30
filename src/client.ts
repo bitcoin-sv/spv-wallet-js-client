@@ -30,6 +30,15 @@ import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
 import { ErrorInvalidOptions, ErrorNoXPrivToSignTransaction, ErrorTxIdsDontMatchToDraft } from './errors';
 import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
+import {
+  AccessKeyFilter,
+  ContactFilter,
+  DestinationFilter,
+  PaymailFilter,
+  TransactionFilter,
+  UtxoFilter,
+  XpubFilter,
+} from './filters';
 
 /**
  * SpvWallet class
@@ -106,12 +115,12 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a list of all access keys in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {AccessKeys}
    */
-  async AdminGetAccessKeys(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
+  async AdminGetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, params: QueryParams): Promise<AccessKeys> {
     return await this.http.adminRequest(`admin/access-keys/search`, 'POST', {
       conditions,
       metadata,
@@ -122,11 +131,11 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a count of all access keys in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async AdminGetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async AdminGetAccessKeysCount(conditions: AccessKeyFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/access-keys/count`, 'POST', {
       conditions,
       metadata,
@@ -166,12 +175,12 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a list of all contacts in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {Contacts}
    */
-  async AdminGetContacts(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Contacts> {
+  async AdminGetContacts(conditions: ContactFilter, metadata: Metadata, params: QueryParams): Promise<Contacts> {
     return await this.http.adminRequest(`admin/contact/search`, 'POST', {
       conditions,
       metadata,
@@ -198,7 +207,7 @@ export class SpvWalletClient {
    * @return void
    */
   async AdminDeleteContact(id: string): Promise<void> {
-    await this.http.adminRequest(`admin/contact/${id}`, 'DELETE', { });
+    await this.http.adminRequest(`admin/contact/${id}`, 'DELETE', {});
   }
 
   /**
@@ -208,7 +217,7 @@ export class SpvWalletClient {
    * @return {Contact}
    */
   async AdminAcceptContact(id: string): Promise<Contact> {
-    return await this.http.adminRequest(`admin/contact/accepted/${id}`, 'PATCH', { });
+    return await this.http.adminRequest(`admin/contact/accepted/${id}`, 'PATCH', {});
   }
 
   /**
@@ -218,18 +227,22 @@ export class SpvWalletClient {
    * @return {Contact}
    */
   async AdminRejectContact(id: string): Promise<Contact> {
-    return await this.http.adminRequest(`admin/contact/rejected/${id}`, 'PATCH', { });
+    return await this.http.adminRequest(`admin/contact/rejected/${id}`, 'PATCH', {});
   }
 
   /**
    * Admin only: Get a list of all destinations in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {Destinations}
    */
-  async AdminGetDestinations(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Destinations> {
+  async AdminGetDestinations(
+    conditions: DestinationFilter,
+    metadata: Metadata,
+    params: QueryParams,
+  ): Promise<Destinations> {
     return await this.http.adminRequest(`admin/destinations/search`, 'POST', {
       conditions,
       metadata,
@@ -240,11 +253,11 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a count of all destinations in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async AdminGetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async AdminGetDestinationsCount(conditions: DestinationFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/destinations/count`, 'POST', {
       conditions,
       metadata,
@@ -264,12 +277,16 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a list of all paymails in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {PaymailFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {PaymailAddresses}
    */
-  async AdminGetPaymails(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<PaymailAddresses> {
+  async AdminGetPaymails(
+    conditions: PaymailFilter,
+    metadata: Metadata,
+    params: QueryParams,
+  ): Promise<PaymailAddresses> {
     return await this.http.adminRequest(`admin/paymails/search`, 'POST', {
       conditions,
       metadata,
@@ -281,11 +298,11 @@ export class SpvWalletClient {
    * Admin only: Get a count of all paymails in the system, filtered by conditions, metadata and queryParams
    * To get a count of not-deleted paymails, use the condition: { deleted_at: null }
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {PaymailFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async AdminGetPaymailsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async AdminGetPaymailsCount(conditions: PaymailFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/paymails/count`, 'POST', {
       conditions,
       metadata,
@@ -328,12 +345,12 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a list of all transactions in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {Txs}
    */
-  async AdminGetTransactions(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Txs> {
+  async AdminGetTransactions(conditions: TransactionFilter, metadata: Metadata, params: QueryParams): Promise<Txs> {
     return await this.http.adminRequest(`admin/transactions/search`, 'POST', {
       conditions,
       metadata,
@@ -344,11 +361,11 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a count of all transactions in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async AdminGetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async AdminGetTransactionsCount(conditions: TransactionFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/transactions/count`, 'POST', {
       conditions,
       metadata,
@@ -358,12 +375,12 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a list of all utxos in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {UtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {Utxos}
    */
-  async AdminGetUtxos(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<Utxos> {
+  async AdminGetUtxos(conditions: UtxoFilter, metadata: Metadata, params: QueryParams): Promise<Utxos> {
     return await this.http.adminRequest(`admin/utxos/search`, 'POST', {
       conditions,
       metadata,
@@ -374,11 +391,11 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a count of all utxos in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {UtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async AdminGetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async AdminGetUtxosCount(conditions: UtxoFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/utxos/count`, 'POST', {
       conditions,
       metadata,
@@ -388,12 +405,12 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a list of all xpubs in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {XpubFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
    * @return {XPubs}
    */
-  async AdminGetXPubs(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<XPubs> {
+  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: QueryParams): Promise<XPubs> {
     return await this.http.adminRequest(`admin/xpubs/search`, 'POST', {
       conditions,
       metadata,
@@ -404,11 +421,11 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a count of all xpubs in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {XpubFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async AdminGetXPubsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async AdminGetXPubsCount(conditions: XpubFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/xpubs/count`, 'POST', {
       conditions,
       metadata,
@@ -473,12 +490,12 @@ export class SpvWalletClient {
   /**
    * Get a list of all access keys for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {AccessKeys}
    */
-  async GetAccessKeys(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
+  async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
     return await this.http.request(`access-key/search`, 'POST', {
       conditions,
       metadata,
@@ -492,11 +509,11 @@ export class SpvWalletClient {
   /**
    * Get a count of all access keys for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async GetAccessKeysCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async GetAccessKeysCount(conditions: AccessKeyFilter, metadata: Metadata): Promise<number> {
     return await this.http.request(`access-key/count`, 'POST', {
       conditions,
       metadata,
@@ -560,12 +577,16 @@ export class SpvWalletClient {
   /**
    * Get a list of all destinations for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {Destinations}
    */
-  async GetDestinations(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Destinations> {
+  async GetDestinations(
+    conditions: DestinationFilter,
+    metadata: Metadata,
+    queryParams: QueryParams,
+  ): Promise<Destinations> {
     return await this.http.request(`destination/search`, 'POST', {
       conditions,
       metadata,
@@ -579,11 +600,11 @@ export class SpvWalletClient {
   /**
    * Get a count of all destinations for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async GetDestinationsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async GetDestinationsCount(conditions: DestinationFilter, metadata: Metadata): Promise<number> {
     return await this.http.request(`destination/count`, 'POST', {
       conditions,
       metadata,
@@ -655,12 +676,12 @@ export class SpvWalletClient {
   /**
    * Get a list of all contacts for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {Contacts}
    */
-  async GetContacts(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Contacts> {
+  async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<Contacts> {
     return await this.http.request(`contact/search`, 'POST', {
       conditions,
       metadata,
@@ -680,10 +701,15 @@ export class SpvWalletClient {
    * @param {Metadata} metadata         Key value object to use to filter the documents by the metadata
    * @return {Contact}
    */
-  async UpsertContact(paymail: string, fullName: string, requesterPaymail:string, metadata: Metadata): Promise<Contact> {
-    let payload = { fullName, requesterPaymail, metadata }
-    if (requesterPaymail !== "") {
-      payload["requesterPaymail"] = requesterPaymail
+  async UpsertContact(
+    paymail: string,
+    fullName: string,
+    requesterPaymail: string,
+    metadata: Metadata,
+  ): Promise<Contact> {
+    let payload = { fullName, requesterPaymail, metadata };
+    if (requesterPaymail !== '') {
+      payload['requesterPaymail'] = requesterPaymail;
     }
     return await this.http.request(`contact/${paymail}`, 'PUT', payload);
   }
@@ -706,7 +732,6 @@ export class SpvWalletClient {
    */
   async RejectContact(paymail: string): Promise<void> {
     return await this.http.request(`contact/rejected/${paymail}`, 'PATCH');
-
   }
 
   /**
@@ -732,12 +757,12 @@ export class SpvWalletClient {
   /**
    * Get a list of all transactions for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {Txs}
    */
-  async GetTransactions(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
+  async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
     return await this.http.request(`transaction/search`, 'POST', {
       conditions,
       metadata,
@@ -751,11 +776,11 @@ export class SpvWalletClient {
   /**
    * Get a count of all transactions for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async GetTransactionsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async GetTransactionsCount(conditions: TransactionFilter, metadata: Metadata): Promise<number> {
     return await this.http.request(`transaction/count`, 'POST', {
       conditions,
       metadata,
@@ -776,12 +801,12 @@ export class SpvWalletClient {
   /**
    * Get a list of all utxos for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {UtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {Utxos}
    */
-  async GetUtxos(conditions: Conditions, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
+  async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
     return await this.http.request(`utxo/search`, 'POST', {
       conditions,
       metadata,
@@ -795,11 +820,11 @@ export class SpvWalletClient {
   /**
    * Get a count of all utxos for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {UtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async GetUtxosCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async GetUtxosCount(conditions: UtxoFilter, metadata: Metadata): Promise<number> {
     return await this.http.request(`utxo/count`, 'POST', {
       conditions,
       metadata,
