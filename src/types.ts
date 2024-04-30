@@ -1,22 +1,5 @@
-
 export interface Client {
   server_url: string;
-}
-
-/**
- * Database query key value conditions to filter data on
- *
- * @example
- * const conditions = {
- *   xpub_id: "701fc247df75a8dd1572e888387b68d634366dbfb2a8555fb5cb9e7ea6975fca",
- *   address: "1nLj5puSYwWWm3DhHfgXXCY4XbmX9gZEk"
- * }
- */
-export interface Conditions {
-  /**
-   * Key value element
-   */
-  [key: string]: any;
 }
 
 /**
@@ -252,30 +235,6 @@ export interface Destination {
  * @see {@link Destination}
  */
 export interface Destinations extends Array<Destination> {}
-
-/**
- * Block header
- */
-export interface BlockHeader {
-  id: string;
-  height: number;
-  time: number;
-  nonce: number;
-  version: number;
-  hash_previous_block: string;
-  hash_merkle_root: string;
-  bits: string;
-  synced: string | null;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
-}
-
-/**
- * Array og block headers
- * @see {@link BlockHeader}
- */
-export interface BlockHeaders extends Array<BlockHeader> {}
 
 /**
  * Tx

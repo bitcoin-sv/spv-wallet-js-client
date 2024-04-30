@@ -4,9 +4,7 @@ import {
   AccessKeyWithSigning,
   AdminKey,
   AdminStats,
-  BlockHeaders,
   ClientOptions,
-  Conditions,
   Contact,
   Contacts,
   Destination,
@@ -137,36 +135,6 @@ export class SpvWalletClient {
    */
   async AdminGetAccessKeysCount(conditions: AccessKeyFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/access-keys/count`, 'POST', {
-      conditions,
-      metadata,
-    });
-  }
-
-  /**
-   * Admin only: Get a list of all block headers in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {BlockHeaders}
-   */
-  async AdminGetBlockHeaders(conditions: Conditions, metadata: Metadata, params: QueryParams): Promise<BlockHeaders> {
-    return await this.http.adminRequest(`admin/block-headers/search`, 'POST', {
-      conditions,
-      metadata,
-      params,
-    });
-  }
-
-  /**
-   * Admin only: Get a count of all block headers in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetBlockHeadersCount(conditions: Conditions, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/block-headers/count`, 'POST', {
       conditions,
       metadata,
     });
