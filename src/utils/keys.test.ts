@@ -1,5 +1,5 @@
 import { describe, test } from '@jest/globals';
-import { deriveChildKeyFromHex } from './keys';
+import { deriveChildKeyFromHex, generateKeys } from './keys';
 import { HD } from '@bsv/sdk';
 
 const testHash = '8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414';
@@ -31,5 +31,13 @@ describe('deriveChildKeyFromHex', () => {
 
     const pubKey = new HD().fromString(childKey.toString()).toPublic().toString();
     expect(pubKey).toEqual(derivedXpub);
+  });
+});
+
+describe('generateKeys', () => {
+  test('keys are base58', () => {
+    const keys = generateKeys();
+    expect(keys.xPriv()).toMatch(/^xprv/);
+    expect(keys.xPub.toString()).toMatch(/^xpub/);
   });
 });
