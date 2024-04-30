@@ -16,6 +16,7 @@ import {
   QueryParams,
   Recipients,
   TransactionConfigInput,
+  Tx,
   Txs,
   Utxo,
   Utxos,
@@ -418,9 +419,9 @@ export class SpvWalletClient {
    * Admin only: Record a transaction without any of the normal checks
    *
    * @param {string} hex  Hex string of the transaction
-   * @return {Transaction}
+   * @return {Tx}
    */
-  async AdminRecordTransaction(hex: string): Promise<Transaction> {
+  async AdminRecordTransaction(hex: string): Promise<Tx> {
     return await this.http.adminRequest(`admin/transactions/record`, 'POST', { hex });
   }
 
@@ -716,9 +717,9 @@ export class SpvWalletClient {
    * Get all details of the transaction by the given ID
    *
    * @param {string} txID Transaction ID
-   * @return {Transaction}
+   * @return {Tx}
    */
-  async GetTransaction(txID: string): Promise<Transaction> {
+  async GetTransaction(txID: string): Promise<Tx> {
     return await this.http.request(`transaction?id=${txID}`, 'GET');
   }
 
@@ -839,14 +840,14 @@ export class SpvWalletClient {
    *
    * @param {Recipients} recipients A list of recipients and a satoshi value to send to them
    * @param {Metadata} metadata     Key value object to use to add to the (draft) transaction
-   * @return {Transaction}          The final transaction object, including the hex of the Bitcoin transaction
+   * @return {Tx}          The final transaction object, including the hex of the Bitcoin transaction
    * @example
    * // This function is a shorthand for:
    * const draft = await spvWalletClient.DraftToRecipients(recipients, metadata);
    * const finalized = await spvWalletClient.SignTransaction(draft);
    * const tx = await spvWalletClient.RecordTransaction(finalized, draft.id, metadata)
    */
-  async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Transaction> {
+  async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Tx> {
     const draft = await this.DraftToRecipients(recipients, metadata);
     const finalized = await this.SignTransaction(draft);
     return this.RecordTransaction(finalized, draft.id, metadata);
@@ -857,7 +858,8 @@ export class SpvWalletClient {
    *
    * @param {DraftTx} draftTransaction Draft transaction object
    * @return {string} Final transaction hex
-   */ async SignTransaction(draftTransaction: DraftTx): Promise<string> {
+   */
+  async SignTransaction(draftTransaction: DraftTx): Promise<string> {
     if (!this.xPriv) {
       throw new ErrorNoXPrivToSignTransaction();
     }
@@ -913,9 +915,9 @@ export class SpvWalletClient {
    * @param {string} hex         Hex string of the Bitcoin transaction
    * @param {string} referenceID Optional reference ID (draft transaction ID)
    * @param {Metadata} metadata  Key value object to use to add to the transaction
-   * @return {Transaction}       The SPV Wallet transaction object
+   * @return {Tx}       The SPV Wallet transaction object
    */
-  async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Transaction> {
+  async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Tx> {
     return await this.http.request(`transaction/record`, 'POST', {
       hex,
       reference_id: referenceID,
@@ -930,9 +932,9 @@ export class SpvWalletClient {
    *
    * @param {string} txID       The ID of the transaction
    * @param {Metadata} metadata Key value object to use to add to the transaction
-   * @return {Transaction}      The complete transaction object, with the new changes
+   * @return {Tx}      The complete SPV Wallet transaction object, with the new changes
    */
-  async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Transaction> {
+  async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Tx> {
     return await this.http.request(`transaction`, 'PATCH', {
       id: txID,
       metadata,

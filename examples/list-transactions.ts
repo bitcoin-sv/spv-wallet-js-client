@@ -12,7 +12,7 @@ console.log('GetTransactions response:', txs);
 
 const txsFiltered = await client.GetTransactions(
   {
-    block_height: 839228,
+    blockHeight: 839228,
   },
   {},
   {
