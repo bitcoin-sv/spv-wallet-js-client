@@ -164,6 +164,20 @@ export class SpvWalletClient {
   }
 
   /**
+   * Admin only: Get a count of all contacts in the system, filtered by conditions, metadata and queryParams
+   *
+   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @return {number}
+   */
+  async AdminGetContactsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.http.adminRequest(`admin/contact/count`, 'POST', {
+      conditions,
+      metadata,
+    });
+  }
+
+  /**
    * Admin only: Update contact fullName and metadata
    *
    * @param {string} id              Contact ID to update
@@ -203,6 +217,16 @@ export class SpvWalletClient {
    */
   async AdminRejectContact(id: string): Promise<Contact> {
     return await this.http.adminRequest(`admin/contact/rejected/${id}`, 'PATCH', {});
+  }
+
+  /**
+   * Admin only: Confirm a contact request
+   *
+   * @param {string} id Contact ID to confirm
+   * @return {Contact}
+   */
+  async AdminConfirmContact(id: string): Promise<Contact> {
+    return await this.http.adminRequest(`admin/contact/confirmed/${id}`, 'PATCH', { });
   }
 
   /**
@@ -664,6 +688,20 @@ export class SpvWalletClient {
       page_size: queryParams?.page_size || 0,
       order_by_field: queryParams?.order_by_field || '',
       sort_direction: queryParams?.sort_direction || '',
+    });
+  }
+
+  /**
+   * Get a count of all contacts for the current user, filtered by conditions, metadata and queryParams
+   *
+   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @return {number}
+   */
+  async GetContactsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+    return await this.http.request(`contact/count`, 'POST', {
+      conditions,
+      metadata,
     });
   }
 
