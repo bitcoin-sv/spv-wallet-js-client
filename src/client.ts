@@ -226,7 +226,7 @@ export class SpvWalletClient {
    * @return {Contact}
    */
   async AdminConfirmContact(id: string): Promise<Contact> {
-    return await this.http.adminRequest(`admin/contact/confirmed/${id}`, 'PATCH', { });
+    return await this.http.adminRequest(`admin/contact/confirmed/${id}`, 'PATCH', {});
   }
 
   /**

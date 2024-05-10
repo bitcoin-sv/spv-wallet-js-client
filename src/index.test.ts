@@ -51,9 +51,9 @@ describe('SPVWalletClient routing', () => {
     ${'GetAccessKeysCount'}                       | ${'post'}   | ${'access-key/count'}            | ${() => spvWalletClient.GetAccessKeysCount({}, {})}
     ${'CreateAccessKey'}                          | ${'post'}   | ${'access-key'}                  | ${() => spvWalletClient.CreateAccessKey({})}
     ${'RevokeAccessKey'}                          | ${'delete'} | ${'access-key?id='}              | ${() => spvWalletClient.RevokeAccessKey('')}
-    ${'GetContacts'}                              | ${'post'}   | ${'contact/search'}              | ${() => spvWalletClient.GetContacts({},{}, {})}
-    ${'GetContactsCount'}                         | ${'post'}   | ${'contact/count'}               | ${() => spvWalletClient.GetContactsCount({},{})}
-    ${'UpsertContact'}                            | ${'post'}   | ${'contact/test'}                | ${() => spvWalletClient.UpsertContact('test', '','', {})}
+    ${'GetContacts'}                              | ${'post'}   | ${'contact/search'}              | ${() => spvWalletClient.GetContacts({}, {}, {})}
+    ${'GetContactsCount'}                         | ${'post'}   | ${'contact/count'}               | ${() => spvWalletClient.GetContactsCount({}, {})}
+    ${'UpsertContact'}                            | ${'post'}   | ${'contact/test'}                | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
     ${'AcceptContact'}                            | ${'patch'}  | ${'contact/accepted/test'}       | ${() => spvWalletClient.AcceptContact('test')}
     ${'RejectContact'}                            | ${'patch'}  | ${'contact/rejected/test'}       | ${() => spvWalletClient.RejectContact('test')}
     ${'ConfirmContact'}                           | ${'patch'}  | ${'contact/confirmed/test'}      | ${() => spvWalletClient.ConfirmContact('test')}
