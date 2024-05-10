@@ -166,11 +166,11 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a count of all contacts in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async AdminGetContactsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async AdminGetContactsCount(conditions: ContactFilter, metadata: Metadata): Promise<number> {
     return await this.http.adminRequest(`admin/contact/count`, 'POST', {
       conditions,
       metadata,
@@ -217,16 +217,6 @@ export class SpvWalletClient {
    */
   async AdminRejectContact(id: string): Promise<Contact> {
     return await this.http.adminRequest(`admin/contact/rejected/${id}`, 'PATCH', {});
-  }
-
-  /**
-   * Admin only: Confirm a contact request
-   *
-   * @param {string} id Contact ID to confirm
-   * @return {Contact}
-   */
-  async AdminConfirmContact(id: string): Promise<Contact> {
-    return await this.http.adminRequest(`admin/contact/confirmed/${id}`, 'PATCH', {});
   }
 
   /**
@@ -694,11 +684,11 @@ export class SpvWalletClient {
   /**
    * Get a count of all contacts for the current user, filtered by conditions, metadata and queryParams
    *
-   * @param {Conditions} conditions   Key value object to use to filter the documents
+   * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @return {number}
    */
-  async GetContactsCount(conditions: Conditions, metadata: Metadata): Promise<number> {
+  async GetContactsCount(conditions: ContactFilter, metadata: Metadata): Promise<number> {
     return await this.http.request(`contact/count`, 'POST', {
       conditions,
       metadata,
