@@ -3,10 +3,7 @@ import { Key, KeyWithMnemonic } from '../types';
 import { HD, Mnemonic } from '@bsv/sdk';
 
 // deriveChildKeyFromHex derive the child extended key from the hex string
-export const deriveChildKeyFromHex = function (
-  hdKey: HD,
-  hexHash: string,
-): HD{
+export const deriveChildKeyFromHex = function (hdKey: HD, hexHash: string): HD {
   return deriveHDChildKeyFromHex(hdKey, hexHash);
 };
 
@@ -31,7 +28,7 @@ export const getKeysFromMnemonic = function (mnemonicStr: string): KeyWithMnemon
   const hdWallet = new HD().fromSeed(seed);
 
   return {
-    xPriv: () => hdWallet.privKey.toString(),
+    xPriv: () => hdWallet.toString(),
     mnemonic: mnemonic.toString(),
     xPub: {
       toString() {
