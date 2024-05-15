@@ -1,22 +1,22 @@
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import typescript from "@rollup/plugin-typescript";
-import json from "@rollup/plugin-json";
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
+import json from '@rollup/plugin-json';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
-import externals from "rollup-plugin-node-externals";
+import externals from 'rollup-plugin-node-externals';
 import dts from 'rollup-plugin-dts';
 import builtins from 'rollup-plugin-node-builtins';
-import pkg from  "./package.json" assert { type: "json" };
+import pkg from './package.json' assert { type: 'json' };
 import type { RollupOptions } from 'rollup';
 
 const config: RollupOptions[] = [
   // browser-friendly UMD build
   {
-    input: "src/index.ts",
+    input: 'src/index.ts',
     output: {
-      name: "typescriptNpmPackage",
+      name: 'typescriptNpmPackage',
       file: pkg.browser,
-      format: "umd",
+      format: 'umd',
       sourcemap: true,
     },
     external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
@@ -24,15 +24,14 @@ const config: RollupOptions[] = [
       // @ts-ignore
       builtins(),
       resolve({
-      // @ts-ignore
+        // @ts-ignore
         skip: ['bsv'],
         browser: true,
         preferBuiltins: true,
       }),
       commonjs(),
       json(),
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
-      nodePolyfills(),
+      typescript({ tsconfig: './tsconfig.json', sourceMap: false }),
       externals({
         devDeps: true,
         peerDeps: true,
@@ -47,16 +46,16 @@ const config: RollupOptions[] = [
   // an array for the `output` option, where we can specify
   // `file` and `format` for each target)
   {
-    input: "src/index.ts",
+    input: 'src/index.ts',
     output: [
-      { file: pkg.main, format: "cjs", sourcemap: true },
-      { file: pkg.module, format: "es", sourcemap: true },
+      { file: pkg.main, format: 'cjs', sourcemap: true },
+      { file: pkg.module, format: 'es', sourcemap: true },
     ],
     external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
     plugins: [
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
+      typescript({ tsconfig: './tsconfig.json', sourceMap: false }),
       resolve({
-      // @ts-ignore
+        // @ts-ignore
         skip: ['bsv'],
       }),
       externals({
@@ -72,9 +71,9 @@ const config: RollupOptions[] = [
     output: [
       { file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es' },
       { file: 'dist/typescript-npm-package.esm.d.ts', format: 'es' },
-      { file: 'dist/typescript-npm-package.umd.d.ts', format: 'es' }
+      { file: 'dist/typescript-npm-package.umd.d.ts', format: 'es' },
     ],
     plugins: [dts()],
   },
-]
+];
 export default config;
