@@ -52,7 +52,6 @@ describe('SPVWalletClient routing', () => {
     ${'CreateAccessKey'}                          | ${'post'}   | ${'access-key'}                  | ${() => spvWalletClient.CreateAccessKey({})}
     ${'RevokeAccessKey'}                          | ${'delete'} | ${'access-key?id='}              | ${() => spvWalletClient.RevokeAccessKey('')}
     ${'GetContacts'}                              | ${'post'}   | ${'contact/search'}              | ${() => spvWalletClient.GetContacts({}, {}, {})}
-    ${'GetContactsCount'}                         | ${'post'}   | ${'contact/count'}               | ${() => spvWalletClient.GetContactsCount({}, {})}
     ${'UpsertContact'}                            | ${'post'}   | ${'contact/test'}                | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
     ${'AcceptContact'}                            | ${'patch'}  | ${'contact/accepted/test'}       | ${() => spvWalletClient.AcceptContact('test')}
     ${'RejectContact'}                            | ${'patch'}  | ${'contact/rejected/test'}       | ${() => spvWalletClient.RejectContact('test')}
@@ -107,7 +106,6 @@ describe('SPVWalletClient admin routing', () => {
     ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}  | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
     ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}   | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
     ${'AdminGetContacts'}          | ${'post'}   | ${'admin/contact/search'}      | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
-    ${'AdminGetContactsCount'}     | ${'post'}   | ${'admin/contact/count'}        | ${() => adminSPVWalletClient.AdminGetContactsCount({},{})}
     ${'AdminUpdateContact'}        | ${'patch'}  | ${'admin/contact/1'}           | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
     ${'AdminDeleteContact'}        | ${'delete'} | ${'admin/contact/1'}           | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
     ${'AdminAcceptContact'}        | ${'patch'}  | ${'admin/contact/accepted/1'}  | ${() => adminSPVWalletClient.AdminAcceptContact('1')}

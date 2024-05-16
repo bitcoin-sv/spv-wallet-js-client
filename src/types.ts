@@ -2,6 +2,20 @@ export interface Client {
   server_url: string;
 }
 
+export interface Page {
+  number: number;
+  size: number;
+  totalPages: number;
+  totalElements: number;
+  sortDirection: string;
+  orderByField: string;
+}
+
+export interface PagedResponse<T> {
+  content: Array<T>;
+  page: Page;
+}
+
 /**
  * Database key value conditions to filter on the metadata object
  *
@@ -170,7 +184,7 @@ export interface Contact {
  * Array of contacts
  * @see {@link Contact}
  */
-export interface Contacts extends Array<Contact> {}
+export interface Contacts extends PagedResponse<Contact> {}
 
 /**
  * Destination interface
