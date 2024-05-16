@@ -2,6 +2,11 @@ export interface Client {
   server_url: string;
 }
 
+/**
+ * Page interface
+ *
+ * Holds information about the pagination state
+ */
 export interface Page {
   number: number;
   size: number;
@@ -11,6 +16,11 @@ export interface Page {
   orderByField: string;
 }
 
+/**
+ * Paged response interface
+ *
+ * Holds the content and page information
+ */
 export interface PagedResponse<T> {
   content: Array<T>;
   page: Page;
