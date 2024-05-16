@@ -25,6 +25,12 @@ export class ErrorNoXPrivToSignTransaction extends SpvWalletError {
   }
 }
 
+export class ErrorClientInitNoXpriv extends SpvWalletError {
+  constructor() {
+    super('Init client with xPriv first');
+  }
+}
+
 export class ErrorTxIdsDontMatchToDraft extends SpvWalletError {
   input: TxInput;
   draftInput: TransactionInput;

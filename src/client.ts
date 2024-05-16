@@ -30,6 +30,7 @@ import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
 import { ErrorInvalidOptions, ErrorNoXPrivToSignTransaction, ErrorTxIdsDontMatchToDraft } from './errors';
 import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
+import { ValidateTotpForContact } from './utils/totp';
 
 /**
  * SpvWallet class
@@ -53,6 +54,10 @@ export class SpvWalletClient {
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
     this.logger = makeLogger(loggerConfig);
     this.http = this.makeRequester(options, serverUrl);
+  }
+
+  get xPrivKey(): HD | undefined {
+    return this.xPriv;
   }
 
   private makeRequester(options: ClientOptions, serverUrl: string): HttpClient {
@@ -712,11 +717,27 @@ export class SpvWalletClient {
   /**
    * Confirm a contact request
    *
-   * @param {string} paymail Contact paymail to modify
-   * @return {void}
+   * @param {string} passcode - The passcode for the contact
+   * @param contact
+   * @param {string} paymail Contact paymail
+   * @param {number} period - The period for the TOTP
+   * @param {number} digits - The number of digits for the TOTP
+   * @returns {Promise<void>}
+   * @throws {Error} If the TOTP is invalid
    */
-  async ConfirmContact(paymail: string): Promise<void> {
-    return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
+  async ConfirmContact(passcode: string, contact: Contact, paymail: string, period: number, digits: number): Promise<void> {
+    try {
+      const isTotpValid = ValidateTotpForContact(this, contact, passcode, paymail, period, digits);
+      if (!isTotpValid) {
+        throw new Error("TOTP is invalid")
+      }
+
+      return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
+
+    } catch (error) {
+      throw new Error("TOTP validation failed", {cause: error})
+    }
+
   }
 
   /**
