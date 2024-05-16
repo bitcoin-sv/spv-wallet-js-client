@@ -1,8 +1,7 @@
 import { SpvWalletClient } from '../client';
 import { ClientOptions, Contact } from '../types';
 import { GenerateTotpForContact, ValidateTotpForContact } from './totp';
-import { totp } from 'otplib';
-import { serverURL, xPrivString } from '../index.test';
+import { serverURL } from '../index.test';
 import { HD } from '@bsv/sdk';
 
 
@@ -45,7 +44,7 @@ const mockBobContact: Contact = {
 
 describe('GenerateTotpForContact', () => {
   const options: ClientOptions = {
-    xPriv: xPrivString,
+    xPriv: httpTestClient.xPrivString,
   };
   const mockClient = new SpvWalletClient('https://spv-wallet.org/v1', options);
 
@@ -55,11 +54,6 @@ describe('GenerateTotpForContact', () => {
     pubKey: makeMockPKI(BobXPub)
   };
 
-  beforeEach(() => {
-    jest.spyOn(totp, 'generate').mockReturnValue('123456');
-    jest.spyOn(totp, 'check').mockReturnValue(true);
-  });
-
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -68,7 +62,6 @@ describe('GenerateTotpForContact', () => {
   it('should generate a TOTP with custom period and digits', () => {
     const result = GenerateTotpForContact(mockClient, mockBobContact, 60, 2);
     expect(result.length).toBe(2);
-    expect(totp.generate).toHaveBeenCalledWith(expect.any(String));
   });
 
 });

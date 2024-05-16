@@ -25,7 +25,7 @@ export const GenerateTotpForContact = (
 ): string => {
   const sharedSecret: string = makeSharedSecret(contact, client);
 
-  setTotpOpts(period, digits);
+  totp.options = {digits: digits, step: period, epoch: Date.now()}
 
   let secret = directedSecret(sharedSecret, contact.paymail);
   return totp.generate(secret);
@@ -52,7 +52,7 @@ export const ValidateTotpForContact = (
 ) => {
   const sharedSecret: string = makeSharedSecret( contact, client);
 
-  setTotpOpts(period, digits);
+  totp.options = {digits: digits, step: period, epoch: Date.now()}
 
   const secret = directedSecret(sharedSecret, requesterPaymail);
   return totp.check(passcode, secret);
@@ -79,24 +79,6 @@ export const makeSharedSecret = (contact: Contact, client: SpvWalletClient) => {
   const ss = privKey.deriveSharedSecret(pubKey);
   return ss.getX().toHex(32)
 }
-
-/**
- * Sets the options for the TOTP generator
- *
- * @param period - The TOTP period
- * @param digits - The number of TOTP digits
- */
-const setTotpOpts = (period: number, digits: number) => {
-  if (period === 0) {
-    period = DEFAULT_TOTP_PERIOD;
-  }
-  if (digits === 0) {
-    digits = DEFAULT_TOTP_DIGITS;
-  }
-
-  totp.options = {digits: digits, step: period, epoch: Date.now()}
-
-};
 
 /**
  * Creates a directed secret for a shared secret and paymail
