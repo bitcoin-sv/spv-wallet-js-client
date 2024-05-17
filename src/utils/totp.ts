@@ -1,7 +1,7 @@
 import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
 import { SpvWalletClient } from '../client';
-import * as base32 from 'hi-base32';
+import { base32 } from "@scure/base"
 
 import { totp } from 'otplib';
 
