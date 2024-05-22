@@ -3,6 +3,30 @@ export interface Client {
 }
 
 /**
+ * Page interface
+ *
+ * Holds information about the pagination state
+ */
+export interface Page {
+  number: number;
+  size: number;
+  totalPages: number;
+  totalElements: number;
+  sortDirection: string;
+  orderByField: string;
+}
+
+/**
+ * Paged response interface
+ *
+ * Holds the content and page information
+ */
+export interface PagedResponse<T> {
+  content: Array<T>;
+  page: Page;
+}
+
+/**
  * Database key value conditions to filter on the metadata object
  *
  * @example
@@ -170,7 +194,7 @@ export interface Contact {
  * Array of contacts
  * @see {@link Contact}
  */
-export interface Contacts extends Array<Contact> {}
+export interface Contacts extends PagedResponse<Contact> {}
 
 /**
  * Destination interface
