@@ -14,7 +14,7 @@ import {
   PaymailAddress,
   PaymailAddresses,
   QueryParams,
-  Recipients,
+  Recipients, SharedConfig,
   TransactionConfigInput,
   Tx,
   Txs,
@@ -945,5 +945,13 @@ export class SpvWalletClient {
       id: txID,
       metadata,
     });
+  }
+
+  /**
+   * Retrieves the shared configuration from the server.
+   * @returns {SharedConfig} A promise that resolves to the shared configuration.
+   */
+  async GetSharedConfig(): Promise<SharedConfig> {
+    return await this.http.request(`shared-config`, 'GET');
   }
 }
