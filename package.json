@@ -39,9 +39,9 @@
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
-    "@microsoft/api-extractor": "^7.43.7",
+    "@microsoft/api-extractor": "^7.43.8",
     "@rollup/plugin-babel": "^6.0.0",
-    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-typescript": "^11.0.0",
@@ -68,7 +68,7 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "@bsv/sdk": "^1.0.33",
+    "@bsv/sdk": "^1.0.36",
     "@types/rollup-plugin-node-builtins": "^2.1.5",
     "cross-fetch": "^4.0.0"
   }
