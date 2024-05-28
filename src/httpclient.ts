@@ -29,7 +29,7 @@ export class HttpClient {
   }
 
   async adminRequest(path: string, method: HttpMethod = 'GET', payload: any = null): Promise<any> {
-    if (!this.adminKey) {
+    if (!this.hasAdminKey()) {
       throw new ErrorNoAdminKey();
     }
     this.logger.debug('Making request as admin on', method, path);
@@ -39,6 +39,10 @@ export class HttpClient {
   async request(path: string, method: HttpMethod = 'GET', payload: any = null): Promise<any> {
     this.logger.debug('Making request on', method, path);
     return this.makeRequest(path, method, payload, this.signingKey);
+  }
+
+  hasAdminKey() {
+    return this.adminKey != null;
   }
 
   private async makeRequest(

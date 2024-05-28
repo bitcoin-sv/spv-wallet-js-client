@@ -15,6 +15,7 @@ import {
   PaymailAddresses,
   QueryParams,
   Recipients,
+  SharedConfig,
   TransactionConfigInput,
   Tx,
   Txs,
@@ -27,7 +28,12 @@ import {
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
-import { ErrorInvalidOptions, ErrorNoXPrivToSignTransaction, ErrorTxIdsDontMatchToDraft } from './errors';
+import {
+  ErrorInvalidOptions,
+  ErrorNoAdminKey,
+  ErrorNoXPrivToSignTransaction,
+  ErrorTxIdsDontMatchToDraft,
+} from './errors';
 import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
 import {
   AccessKeyFilter,
@@ -945,5 +951,16 @@ export class SpvWalletClient {
       id: txID,
       metadata,
     });
+  }
+
+  /**
+   * Retrieves the shared configuration from the server.
+   * @returns {SharedConfig} A promise that resolves to the shared configuration.
+   */
+  async GetSharedConfig(): Promise<SharedConfig> {
+    if (this.http.hasAdminKey()) {
+      return await this.http.adminRequest(`shared-config`, 'GET');
+    }
+    return await this.http.request(`shared-config`, 'GET');
   }
 }
