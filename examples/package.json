@@ -14,11 +14,16 @@
     "handle-exceptions": "yarn run:example handle-exceptions.ts",
     "custom-logger": "yarn run:example custom-logger.ts",
     "send-op-return": "yarn run:example send-op-return.ts",
-    "admin-remove-user": "yarn run:example admin-remove-user.ts"
+    "admin-remove-user": "yarn run:example admin-remove-user.ts",
+    "tutorial": "yarn run:example tutorial.ts"
   },
   "version": "0.0.0",
   "devDependencies": {
+    "@types/inquirer": "^9.0.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4"
+  },
+  "dependencies": {
+    "inquirer": "^9.2.23"
   }
 }
