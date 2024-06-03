@@ -36,10 +36,10 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.5",
-    "@babel/preset-env": "^7.16.11",
-    "@babel/preset-typescript": "^7.16.7",
-    "@microsoft/api-extractor": "^7.19.4",
+    "@babel/core": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
+    "@microsoft/api-extractor": "^7.46.2",
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",
@@ -47,7 +47,7 @@
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/bsv": "github:chainbow/bsv-types",
     "@types/jest": "^29.0.0",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.14.0",
     "babel-jest": "^29.0.0",
     "babel-plugin-import": "^1.13.3",
     "better-docs": "^2.7.2",
