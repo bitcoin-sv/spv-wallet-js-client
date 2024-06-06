@@ -70,6 +70,8 @@
   "dependencies": {
     "@bsv/sdk": "^1.0.37",
     "@types/rollup-plugin-node-builtins": "^2.1.5",
-    "cross-fetch": "^4.0.0"
+    "cross-fetch": "^4.0.0",
+    "pug": "3.0.3",
+    "pug-code-gen": "3.0.3"
   }
 }
