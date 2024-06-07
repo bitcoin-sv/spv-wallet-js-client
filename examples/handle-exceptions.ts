@@ -3,14 +3,20 @@ import {
   ErrorResponse,
   SpvWalletClient,
   SpvWalletError,
-  generateKeys,
 } from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPub } from './example-keys';
+import { errMessage } from './utils';
 
 const server = 'http://localhost:3003/v1';
 
+if (!exampleXPub) {
+  console.log(errMessage('xPub'))
+  process.exit(1);
+}
+
 try {
   const client = new SpvWalletClient(server, {
-    xPub: generateKeys().xPub.toString(),
+    xPub: exampleXPub,
   });
 
   //we're trying to make an admin request without adminKey
