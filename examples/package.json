@@ -20,11 +20,7 @@
   },
   "version": "0.0.0",
   "devDependencies": {
-    "@types/inquirer": "^9.0.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4"
-  },
-  "dependencies": {
-    "inquirer": "^9.2.23"
   }
 }
