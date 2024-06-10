@@ -1,7 +1,7 @@
 import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
 import { SpvWalletClient } from '../client';
-import { base32 } from "@scure/base"
+import { base32 } from '@scure/base';
 
 import { totp } from 'otplib';
 
@@ -25,10 +25,13 @@ export const GenerateTotpForContact = (
 ): string => {
   const sharedSecret: string = makeSharedSecret(contact, client);
 
-  totp.options = {digits: digits, step: period, epoch: Date.now()}
+  totp.options = { digits: digits, step: period, epoch: Date.now() };
 
   let secret = directedSecret(sharedSecret, contact.paymail);
-  return totp.generate(secret);
+
+  const totpInstance = totp.clone();
+  totpInstance.options = { digits: digits, step: period };
+  return totpInstance.generate(secret);
 };
 
 /**
@@ -50,9 +53,9 @@ export const ValidateTotpForContact = (
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
 ) => {
-  const sharedSecret: string = makeSharedSecret( contact, client);
+  const sharedSecret: string = makeSharedSecret(contact, client);
 
-  totp.options = {digits: digits, step: period, epoch: Date.now()}
+  totp.options = { digits: digits, step: period, epoch: Date.now() };
 
   const secret = directedSecret(sharedSecret, requesterPaymail);
   return totp.check(passcode, secret);
@@ -70,15 +73,15 @@ export const makeSharedSecret = (contact: Contact, client: SpvWalletClient) => {
     throw new Error("Client's xPrivKey is not defined");
   }
 
-  const xprivKey = new HD().fromString(client.xPrivKey?.toString())
+  const xprivKey = new HD().fromString(client.xPrivKey?.toString());
 
-  const pubKey = PublicKey.fromString(contact.pubKey)
+  const pubKey = PublicKey.fromString(contact.pubKey);
 
-  let hd = xprivKey.derive("m/0/0/0");
+  let hd = xprivKey.derive('m/0/0/0');
   let privKey = hd.privKey;
   const ss = privKey.deriveSharedSecret(pubKey);
-  return ss.getX().toHex(32)
-}
+  return ss.getX().toHex(32);
+};
 
 /**
  * Creates a directed secret for a shared secret and paymail
@@ -88,13 +91,12 @@ export const makeSharedSecret = (contact: Contact, client: SpvWalletClient) => {
  * @returns The directed secret as a string
  */
 export const directedSecret = (sharedSecret: string, paymail: string): string => {
-  let paymailBuffer = Buffer.from(paymail, "utf-8");
-  let paymailHex = paymailBuffer.toString("hex");
-  let data = new TextEncoder().encode(paymailHex)
+  let paymailBuffer = Buffer.from(paymail, 'utf-8');
+  let paymailHex = paymailBuffer.toString('hex');
+  let data = new TextEncoder().encode(paymailHex);
   const concatenated = Buffer.concat([Buffer.from(sharedSecret), data]);
 
   const byteArray = Buffer.from(concatenated.toString(), 'hex');
 
   return base32.encode(byteArray);
-}
-
+};

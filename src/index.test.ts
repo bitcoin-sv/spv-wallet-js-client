@@ -74,6 +74,7 @@ describe('SPVWalletClient routing', () => {
     ${'GetUtxo'}                                  | ${'get'}    | ${'utxo?tx_id=&output_index=0'}  | ${() => spvWalletClient.GetUtxo('', 0)}
     ${'GetUtxos'}                                 | ${'post'}   | ${'utxo/search'}                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
     ${'GetUtxosCount'}                            | ${'post'}   | ${'utxo/count'}                  | ${() => spvWalletClient.GetUtxosCount({}, {})}
+    ${'GetSharedConfig'}                          | ${'get'}    | ${'shared-config'}               | ${() => spvWalletClient.GetSharedConfig()}
   `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
     setupHttpMock(httpMethod, path);
@@ -172,5 +173,5 @@ describe('Finalize transaction', () => {
 
 function setupHttpMock(httpVerb: string, routing: string) {
   routing = serverURL + '/' + routing;
-  fetchMock.doMockIf(routing, (res) => new Promise((r) => r('{}')));
+  fetchMock.doMockIf(routing, () => new Promise((r) => r('{}')));
 }
