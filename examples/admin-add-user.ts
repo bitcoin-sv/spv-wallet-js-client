@@ -1,11 +1,11 @@
 import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
-import { exampleAdminKey, exampleXPub, examplePaymail, exampleXPriv } from './example-keys.js';
-import { errMessage } from './utils';
+import { exampleAdminKey, exampleXPub, examplePaymail } from './example-keys.js';
+import { errMessage } from './utils.js';
 
 const server = 'http://localhost:3003/v1';
 
 if (!exampleAdminKey) {
-  console.log(errMessage('adminKey'))
+  console.log(errMessage('adminKey'));
   process.exit(1);
 }
 
