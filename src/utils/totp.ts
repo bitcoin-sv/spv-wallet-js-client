@@ -91,12 +91,16 @@ export const makeSharedSecret = (contact: Contact, client: SpvWalletClient) => {
  * @returns The directed secret as a string
  */
 export const directedSecret = (sharedSecret: string, paymail: string): string => {
-  let paymailBuffer = Buffer.from(paymail, 'utf-8');
-  let paymailHex = paymailBuffer.toString('hex');
-  let data = new TextEncoder().encode(paymailHex);
-  const concatenated = Buffer.concat([Buffer.from(sharedSecret), data]);
+  // Encode paymail to a Uint8Array in UTF-8
+  const paymailEncoded = new TextEncoder().encode(paymail);
 
-  const byteArray = Buffer.from(concatenated.toString(), 'hex');
+  // Encode sharedSecret to a Uint8Array
+  const sharedSecretEncoded = new TextEncoder().encode(sharedSecret);
 
-  return base32.encode(byteArray);
+  // Concatenate sharedSecretEncoded and paymailEncoded
+  const concatenated = new Uint8Array(sharedSecretEncoded.length + paymailEncoded.length);
+  concatenated.set(sharedSecretEncoded, 0);
+  concatenated.set(paymailEncoded, sharedSecretEncoded.length);
+
+  return base32.encode(concatenated);
 };
