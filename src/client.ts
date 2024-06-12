@@ -30,8 +30,9 @@ import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
 import {
   ErrorInvalidOptions,
-  ErrorNoAdminKey,
+  ErrorNoXPrivToGenerateTOTP,
   ErrorNoXPrivToSignTransaction,
+  ErrorNoXPrivToValidateTOTP,
   ErrorTxIdsDontMatchToDraft,
 } from './errors';
 import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
@@ -46,7 +47,7 @@ import {
   AdminUtxoFilter,
   AdminAccessKeyFilter,
 } from './filters';
-import { ValidateTotpForContact } from './utils/totp';
+import { validateTotpForContact, generateTotpForContact, DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD } from './utils/totp';
 
 /**
  * SpvWallet class
@@ -731,19 +732,23 @@ export class SpvWalletClient {
    * @returns {Promise<void>}
    * @throws {Error} If the TOTP is invalid
    */
-  async ConfirmContact(passcode: string, contact: Contact, paymail: string, period: number, digits: number): Promise<void> {
+  async ConfirmContact(
+    passcode: string,
+    contact: Contact,
+    paymail: string,
+    period: number,
+    digits: number,
+  ): Promise<void> {
     try {
-      const isTotpValid = ValidateTotpForContact(this, contact, passcode, paymail, period, digits);
+      const isTotpValid = this.ValidateTotpForContact(contact, passcode, paymail, period, digits);
       if (!isTotpValid) {
-        throw new Error("TOTP is invalid")
+        throw new Error('TOTP is invalid');
       }
 
       return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
-
     } catch (error) {
-      throw new Error("TOTP validation failed", {cause: error})
+      throw new Error('TOTP validation failed', { cause: error });
     }
-
   }
 
   /**
@@ -983,5 +988,46 @@ export class SpvWalletClient {
       return await this.http.adminRequest(`shared-config`, 'GET');
     }
     return await this.http.request(`shared-config`, 'GET');
+  }
+
+  /**
+   * Generates a TOTP for a given contact
+   *
+   * @param contact - The Contact
+   * @param period - The TOTP period (default: 30)
+   * @param digits - The number of TOTP digits (default: 2)
+   * @returns The generated TOTP as a string
+   */
+  GenerateTotpForContact(
+    contact: Contact,
+    period: number = DEFAULT_TOTP_PERIOD,
+    digits: number = DEFAULT_TOTP_DIGITS,
+  ): string {
+    if (!this.xPrivKey) {
+      throw new ErrorNoXPrivToGenerateTOTP();
+    }
+    return generateTotpForContact(this.xPrivKey, contact, period, digits);
+  }
+
+  /**
+   * Validates a TOTP for a given contact
+   *
+   * @param passcode - The TOTP passcode to validate
+   * @param requesterPaymail - The paymail of the requester
+   * @param period - The TOTP period (default: 30)
+   * @param digits - The number of TOTP digits (default: 2)
+   * @returns A boolean indicating whether the TOTP is valid
+   */
+  ValidateTotpForContact(
+    contact: Contact,
+    passcode: string,
+    requesterPaymail: string,
+    period: number = DEFAULT_TOTP_PERIOD,
+    digits: number = DEFAULT_TOTP_DIGITS,
+  ) {
+    if (!this.xPrivKey) {
+      throw new ErrorNoXPrivToValidateTOTP();
+    }
+    return validateTotpForContact(this.xPrivKey, contact, passcode, requesterPaymail, period, digits);
   }
 }

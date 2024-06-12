@@ -1,6 +1,5 @@
 import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
-import { SpvWalletClient } from '../client';
 import { base32 } from '@scure/base';
 
 import { totp } from 'otplib';
@@ -8,24 +7,31 @@ import { totp } from 'otplib';
 export const DEFAULT_TOTP_PERIOD = 30;
 export const DEFAULT_TOTP_DIGITS = 2;
 
+/*
+Basic flow:
+Alice generates passcodeForBob with (sharedSecret+(contact.Paymail as bobPaymail))
+Alice sends passcodeForBob to Bob (e.g. via email)
+Bob validates passcodeForBob with (sharedSecret+(requesterPaymail as bobPaymail))
+The (sharedSecret+paymail) is a "directedSecret". This ensures that passcodeForBob-from-Alice != passcodeForAlice-from-Bob.
+The flow looks the same for Bob generating passcodeForAlice.
+*/
+
 /**
  * Generates a TOTP for a given contact
  *
- * @param client - The SpvWalletClient
+ * @param clientXPriv - The client xpriv
  * @param contact - The Contact
  * @param period - The TOTP period (default: 30)
  * @param digits - The number of TOTP digits (default: 2)
  * @returns The generated TOTP as a string
  */
-export const GenerateTotpForContact = (
-  client: SpvWalletClient,
+export const generateTotpForContact = (
+  clientXPriv: HD,
   contact: Contact,
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
 ): string => {
-  const sharedSecret: string = makeSharedSecret(contact, client);
-
-  totp.options = { digits: digits, step: period, epoch: Date.now() };
+  const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
 
   let secret = directedSecret(sharedSecret, contact.paymail);
 
@@ -37,7 +43,7 @@ export const GenerateTotpForContact = (
 /**
  * Validates a TOTP for a given contact
  *
- * @param client - The SpvWalletClient
+ * @param clientXPriv - The client xpriv
  * @param contact - The Contact
  * @param passcode - The TOTP passcode to validate
  * @param requesterPaymail - The paymail of the requester
@@ -45,15 +51,15 @@ export const GenerateTotpForContact = (
  * @param digits - The number of TOTP digits (default: 2)
  * @returns A boolean indicating whether the TOTP is valid
  */
-export const ValidateTotpForContact = (
-  client: SpvWalletClient,
+export const validateTotpForContact = (
+  clientXPriv: HD,
   contact: Contact,
   passcode: string,
   requesterPaymail: string,
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
 ) => {
-  const sharedSecret: string = makeSharedSecret(contact, client);
+  const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
 
   totp.options = { digits: digits, step: period, epoch: Date.now() };
 
@@ -65,15 +71,11 @@ export const ValidateTotpForContact = (
  * Creates a shared secret for a contact and client
  *
  * @param contact - The Contact
- * @param client - The SpvWalletClient
+ * @param clientXPriv - The client xpriv
  * @returns The shared secret as a string
  */
-export const makeSharedSecret = (contact: Contact, client: SpvWalletClient) => {
-  if (!client.xPrivKey) {
-    throw new Error("Client's xPrivKey is not defined");
-  }
-
-  const xprivKey = new HD().fromString(client.xPrivKey?.toString());
+export const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
+  const xprivKey = new HD().fromString(clientXPriv.toString());
 
   const pubKey = PublicKey.fromString(contact.pubKey);
 
@@ -91,10 +93,7 @@ export const makeSharedSecret = (contact: Contact, client: SpvWalletClient) => {
  * @returns The directed secret as a string
  */
 export const directedSecret = (sharedSecret: string, paymail: string): string => {
-  // Encode paymail to a Uint8Array in UTF-8
   const paymailEncoded = new TextEncoder().encode(paymail);
-
-  // Encode sharedSecret to a Uint8Array
   const sharedSecretEncoded = new TextEncoder().encode(sharedSecret);
 
   // Concatenate sharedSecretEncoded and paymailEncoded

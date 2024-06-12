@@ -68,3 +68,14 @@ export class ErrorWrongHex extends SpvWalletError {
     this.value = wrongHex;
   }
 }
+export class ErrorNoXPrivToGenerateTOTP extends SpvWalletError {
+  constructor() {
+    super('Cannot generate TOTP without an xPrivKey set');
+  }
+}
+
+export class ErrorNoXPrivToValidateTOTP extends SpvWalletError {
+  constructor() {
+    super('Cannot validate TOTP without an xPrivKey set');
+  }
+}
