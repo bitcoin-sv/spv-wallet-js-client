@@ -2,7 +2,7 @@ import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
 import { base32 } from '@scure/base';
 
-import { totp } from 'otplib';
+import { makeTOTP } from './otp';
 
 export const DEFAULT_TOTP_PERIOD = 30;
 export const DEFAULT_TOTP_DIGITS = 2;
@@ -32,12 +32,9 @@ export const generateTotpForContact = (
   digits: number = DEFAULT_TOTP_DIGITS,
 ): string => {
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
-
   let secret = directedSecret(sharedSecret, contact.paymail);
 
-  const totpInstance = totp.clone();
-  totpInstance.options = { digits: digits, step: period };
-  return totpInstance.generate(secret);
+  return makeTOTP({ digits, step: period }).generate(secret);
 };
 
 /**
@@ -61,10 +58,8 @@ export const validateTotpForContact = (
 ) => {
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
 
-  totp.options = { digits: digits, step: period, epoch: Date.now() };
-
   const secret = directedSecret(sharedSecret, requesterPaymail);
-  return totp.check(passcode, secret);
+  return makeTOTP({ digits, step: period }).check(passcode, secret);
 };
 
 /**
