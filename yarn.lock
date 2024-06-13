@@ -1212,10 +1212,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bsv/sdk@^1.0.37":
-  version "1.0.37"
-  resolved "https://registry.yarnpkg.com/@bsv/sdk/-/sdk-1.0.37.tgz#1c6980c5dd8ab7c7814d249abb513eacf2d70036"
-  integrity sha512-taNgfSMr1tQ0sDJqlADT5h/CZnPPE3jG0Ae4LfjJMaCwlvdnEzAtX1jwyXbAn/kI+MEnhXZhAfedjqDzjKmwig==
+"@bsv/sdk@^1.1.6":
+  version "1.1.6"
+  resolved "https://registry.npmjs.org/@bsv/sdk/-/sdk-1.1.6.tgz#b1f19dd51d3537fb905f12eeacbb60f1d0974043"
+  integrity sha512-M08xzkMO0yz/X2MvrphEMEG4MOcJLk015wh1KMU/vur0upZqWWnsHHv94zwTL6O6tQHTnxMMLcIbvgSAed9r4w==
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
