@@ -1,3 +1,5 @@
+import { SHA1HMAC } from './sha1hmac';
+
 export type TOTPAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 export type TOTPEncoding = 'hex' | 'ascii';
 
@@ -64,20 +66,18 @@ export class TOTP {
   }
 
   private static async generateHOTP(key: string, counter: number, options: Required<TOTPOptions>): Promise<string> {
-    const timeHex = this.dec2hex(counter).padStart(16, '0');
+    if (options.encoding === 'ascii') {
+      throw new Error('ASCII encoding is not supported');
+    }
 
     const keyBuffer = options.encoding === 'hex' ? this.base32ToBuffer(key) : this.asciiToBuffer(key);
+    const keyArray = Array.from(new Uint8Array(keyBuffer));
 
-    const hmacKey = await this.crypto.importKey(
-      'raw',
-      keyBuffer,
-      { name: 'HMAC', hash: { name: options.algorithm } },
-      false,
-      ['sign'],
-    );
-    const signature = await this.crypto.sign('HMAC', hmacKey, this.hex2buf(timeHex));
+    const timeHex = this.dec2hex(counter).padStart(16, '0');
+    const hmac = new SHA1HMAC(keyArray).update(timeHex, 'hex');
 
-    const signatureHex = this.buf2hex(signature);
+    const signatureHex = hmac.digestHex();
+
     const offset = this.hex2dec(signatureHex.slice(-1)) * 2;
     const masked = this.hex2dec(signatureHex.slice(offset, offset + 8)) & 0x7fffffff;
     const otp = masked.toString().slice(-options.digits);
@@ -191,13 +191,6 @@ export class TOTP {
   private static buf2hex(buffer: ArrayBuffer): string {
     return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
   }
-
-  /**
-   * The cryptographic interface used for HMAC operations.
-   * Chooses the Web Crypto API if available, otherwise falls back to Node's crypto module.
-   * @type {SubtleCrypto}
-   */
-  private static readonly crypto: SubtleCrypto = (globalThis.crypto || require('crypto').webcrypto).subtle;
 
   /**
    * A precalculated mapping from base32 character codes to their corresponding index values for performance optimization.
