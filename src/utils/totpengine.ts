@@ -1,6 +1,7 @@
 import { SHA1HMAC } from './sha1hmac';
+import { Hash } from '@bsv/sdk';
 
-export type TOTPAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
+export type TOTPAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-512';
 export type TOTPEncoding = 'hex' | 'ascii';
 
 /**
@@ -31,14 +32,13 @@ export class TOTP {
    * @param {TOTPOptions} options - Optional parameters for TOTP.
    * @returns {Promise<{otp: string, expires: number}>} A promise that resolves to an object containing the OTP and its expiry time.
    */
-  static async generate(key: string, options?: TOTPOptions): Promise<{ otp: string; expires: number }> {
+  static async generate(key: string, options?: TOTPOptions): Promise<string> {
     const _options = this.withDefaultOptions(options);
 
     const counter = this.getCounter(_options.timestamp, _options.period);
     const period = _options.period * 1000;
-    const expires = Math.ceil((_options.timestamp + 1) / period) * period;
     const otp = await this.generateHOTP(key, counter, _options);
-    return { otp, expires };
+    return otp;
   }
 
   static async validate(key: string, passcode: string, options?: TOTPValidateOptions): Promise<boolean> {
@@ -74,7 +74,7 @@ export class TOTP {
     const keyArray = Array.from(new Uint8Array(keyBuffer));
 
     const timeHex = this.dec2hex(counter).padStart(16, '0');
-    const hmac = new SHA1HMAC(keyArray).update(timeHex, 'hex');
+    const hmac = this.calcHMAC(keyArray, timeHex, options.algorithm);
 
     const signatureHex = hmac.digestHex();
 
@@ -82,6 +82,19 @@ export class TOTP {
     const masked = this.hex2dec(signatureHex.slice(offset, offset + 8)) & 0x7fffffff;
     const otp = masked.toString().slice(-options.digits);
     return otp;
+  }
+
+  private static calcHMAC(keyArray: number[], timeHex: string, algorithm: TOTPAlgorithm) {
+    switch (algorithm) {
+      case 'SHA-1':
+        return new SHA1HMAC(keyArray).update(timeHex, 'hex');
+      case 'SHA-256':
+        return new Hash.SHA256HMAC(keyArray).update(timeHex, 'hex');
+      case 'SHA-512':
+        return new Hash.SHA512HMAC(keyArray).update(timeHex, 'hex');
+      default:
+        throw new Error('unsupported HMAC algorithm');
+    }
   }
 
   private static withDefaultOptions(options?: TOTPOptions): Required<TOTPOptions> {
@@ -96,15 +109,7 @@ export class TOTP {
   }
 
   private static withDefaultValidateOptions(options?: TOTPValidateOptions): Required<TOTPValidateOptions> {
-    return {
-      digits: 6,
-      algorithm: 'SHA-1',
-      encoding: 'hex',
-      period: 30,
-      timestamp: Date.now(),
-      skew: 1,
-      ...options,
-    };
+    return { skew: 1, ...this.withDefaultOptions(options) };
   }
 
   private static getCounter(timestamp: number, period: number): number {

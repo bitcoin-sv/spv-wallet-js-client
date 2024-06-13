@@ -33,8 +33,7 @@ export const generateTotpForContact = async (
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   let secret = directedSecret(sharedSecret, contact.paymail);
 
-  const { otp } = await TOTP.generate(secret, getTotpOps(period, digits));
-  return otp;
+  return await TOTP.generate(secret, getTotpOps(period, digits));
 };
 
 /**
@@ -62,7 +61,12 @@ export const validateTotpForContact = async (
   return await TOTP.validate(secret, passcode, getTotpOps(period, digits));
 };
 
-const getTotpOps = (period: number, digits: number): TOTPOptions => ({ digits, period, encoding: 'hex' });
+const getTotpOps = (period: number, digits: number): TOTPOptions => ({
+  digits,
+  period,
+  encoding: 'hex',
+  algorithm: 'SHA-1',
+});
 
 const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
   const xprivKey = new HD().fromString(clientXPriv.toString());
