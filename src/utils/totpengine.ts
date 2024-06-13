@@ -31,28 +31,26 @@ export type TOTPValidateOptions = TOTPOptions & {
 export class TOTP {
   /**
    * Generates a Time-based One-Time Password (TOTP).
-   * @async
    * @param {string} key - The secret key for TOTP.
    * @param {TOTPOptions} options - Optional parameters for TOTP.
-   * @returns {Promise<{otp: string, expires: number}>} A promise that resolves to an object containing the OTP and its expiry time.
+   * @returns {string} The generated TOTP.
    */
-  static async generate(key: string, options?: TOTPOptions): Promise<string> {
+  static generate(key: string, options?: TOTPOptions): string {
     const _options = this.withDefaultOptions(options);
 
     const counter = this.getCounter(_options.timestamp, _options.period);
-    const otp = await this.generateHOTP(key, counter, _options);
+    const otp = this.generateHOTP(key, counter, _options);
     return otp;
   }
 
   /**
    * Validates a Time-based One-Time Password (TOTP).
-   * @async
    * @param {string} key - The secret key for TOTP.
    * @param {string} passcode - The passcode to validate.
    * @param {TOTPValidateOptions} options - Optional parameters for TOTP validation.
-   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the passcode is valid.
+   * @returns {boolean} A boolean indicating whether the passcode is valid.
    */
-  static async validate(key: string, passcode: string, options?: TOTPValidateOptions): Promise<boolean> {
+  static validate(key: string, passcode: string, options?: TOTPValidateOptions): boolean {
     const _options = this.withDefaultValidateOptions(options);
     passcode = passcode.trim();
     if (passcode.length != _options.digits) {
@@ -68,7 +66,7 @@ export class TOTP {
     }
 
     for (let c of counters) {
-      if (passcode === (await this.generateHOTP(key, c, _options))) {
+      if (passcode === this.generateHOTP(key, c, _options)) {
         return true;
       }
     }
@@ -78,13 +76,12 @@ export class TOTP {
 
   /**
    * Generates a HMAC-based One-Time Password (HOTP).
-   * @async
    * @param {string} key - The secret key for HOTP.
    * @param {number} counter - The counter value for HOTP.
    * @param {TOTPOptions} options - Optional parameters for HOTP.
-   * @returns {Promise<string>} A promise that resolves to the HOTP.
+   * @returns {string} The generated HOTP.
    */
-  private static async generateHOTP(key: string, counter: number, options: Required<TOTPOptions>): Promise<string> {
+  private static generateHOTP(key: string, counter: number, options: Required<TOTPOptions>): string {
     if (options.encoding === 'ascii') {
       throw new Error('ASCII encoding is not supported');
     }

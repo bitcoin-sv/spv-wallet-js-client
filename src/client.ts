@@ -998,15 +998,15 @@ export class SpvWalletClient {
    * @param digits - The number of TOTP digits (default: 2)
    * @returns The generated TOTP as a string
    */
-  async GenerateTotpForContact(
+  GenerateTotpForContact(
     contact: Contact,
     period: number = DEFAULT_TOTP_PERIOD,
     digits: number = DEFAULT_TOTP_DIGITS,
-  ): Promise<string> {
+  ): string {
     if (!this.xPrivKey) {
       throw new ErrorNoXPrivToGenerateTOTP();
     }
-    return await generateTotpForContact(this.xPrivKey, contact, period, digits);
+    return generateTotpForContact(this.xPrivKey, contact, period, digits);
   }
 
   /**
@@ -1018,16 +1018,16 @@ export class SpvWalletClient {
    * @param digits - The number of TOTP digits (default: 2)
    * @returns A boolean indicating whether the TOTP is valid
    */
-  async ValidateTotpForContact(
+  ValidateTotpForContact(
     contact: Contact,
     passcode: string,
     requesterPaymail: string,
     period: number = DEFAULT_TOTP_PERIOD,
     digits: number = DEFAULT_TOTP_DIGITS,
-  ): Promise<boolean> {
+  ): boolean {
     if (!this.xPrivKey) {
       throw new ErrorNoXPrivToValidateTOTP();
     }
-    return await validateTotpForContact(this.xPrivKey, contact, passcode, requesterPaymail, period, digits);
+    return validateTotpForContact(this.xPrivKey, contact, passcode, requesterPaymail, period, digits);
   }
 }

@@ -24,16 +24,16 @@ The flow looks the same for Bob generating passcodeForAlice.
  * @param digits - The number of TOTP digits (default: 2)
  * @returns The generated TOTP as a string
  */
-export const generateTotpForContact = async (
+export const generateTotpForContact = (
   clientXPriv: HD,
   contact: Contact,
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
-): Promise<string> => {
+): string => {
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   let secret = directedSecret(sharedSecret, contact.paymail);
 
-  return await TOTP.generate(secret, getTotpOps(period, digits));
+  return TOTP.generate(secret, getTotpOps(period, digits));
 };
 
 /**
@@ -47,18 +47,18 @@ export const generateTotpForContact = async (
  * @param digits - The number of TOTP digits (default: 2)
  * @returns A boolean indicating whether the TOTP is valid
  */
-export const validateTotpForContact = async (
+export const validateTotpForContact = (
   clientXPriv: HD,
   contact: Contact,
   passcode: string,
   requesterPaymail: string,
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
-): Promise<boolean> => {
+): boolean => {
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   const secret = directedSecret(sharedSecret, requesterPaymail);
 
-  return await TOTP.validate(secret, passcode, getTotpOps(period, digits));
+  return TOTP.validate(secret, passcode, getTotpOps(period, digits));
 };
 
 const getTotpOps = (period: number, digits: number): TOTPOptions => ({
