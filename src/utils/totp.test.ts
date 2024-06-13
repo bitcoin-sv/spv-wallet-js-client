@@ -1,10 +1,5 @@
 import { Contact } from '../types';
-import {
-  generateTotpForContact,
-  generateTotpForContact2,
-  validateTotpForContact,
-  validateTotpForContact2,
-} from './totp';
+import { generateTotpForContact, validateTotpForContact } from './totp';
 import { HD } from '@bsv/sdk';
 
 export const makeMockPKI = (xpub: string): string => {
@@ -43,8 +38,8 @@ describe('GenerateTotpForContact', () => {
     jest.restoreAllMocks();
   });
 
-  it('should generate a TOTP with custom period and digits', () => {
-    const result = generateTotpForContact(AliceXPrivHD, mockBobContact, 60, 2);
+  it('should generate a TOTP with custom period and digits', async () => {
+    const result = await generateTotpForContact(AliceXPrivHD, mockBobContact, 60, 2);
     expect(result.length).toBe(2);
   });
 });
@@ -54,68 +49,26 @@ describe('ValidateTotpForContact', () => {
     jest.restoreAllMocks();
   });
 
-  it('should validate a TOTP for the given contact', () => {
-    const passcode = generateTotpForContact(AliceXPrivHD, mockBobContact);
-    const result = validateTotpForContact(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail);
-    expect(result).toBe(true);
-  });
-
-  it('should validate a TOTP with custom period and digits', () => {
-    const passcode = generateTotpForContact(AliceXPrivHD, mockBobContact, 60, 2);
-
-    const result = validateTotpForContact(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail, 60, 2);
-    expect(result).toBe(true);
-  });
-
-  it('should return false for an invalid TOTP', () => {
-    const result = validateTotpForContact(AliceXPrivHD, mockBobContact, '24', mockBobContact.paymail);
-    expect(result).toBe(false);
-  });
-
-  it('should return false for an invalid TOTP', () => {
-    const result = validateTotpForContact(AliceXPrivHD, mockBobContact, 'avg', mockBobContact.paymail);
-    expect(result).toBe(false);
-  });
-});
-
-describe('old and new version of totp checking', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it('should validate a TOTP for the given contact', async () => {
-    const passcode = await generateTotpForContact2(AliceXPrivHD, mockBobContact);
-    const result = validateTotpForContact(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail);
-    expect(result).toBe(true);
-  });
-
-  it('should validate a TOTP for the given contact 2', async () => {
-    const passcode = generateTotpForContact(AliceXPrivHD, mockBobContact);
-    const result = await validateTotpForContact2(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail);
+    const passcode = await generateTotpForContact(AliceXPrivHD, mockBobContact);
+    const result = await validateTotpForContact(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail);
     expect(result).toBe(true);
   });
 
   it('should validate a TOTP with custom period and digits', async () => {
-    const passcode = await generateTotpForContact2(AliceXPrivHD, mockBobContact, 60, 2);
+    const passcode = await generateTotpForContact(AliceXPrivHD, mockBobContact, 60, 2);
 
-    const result = validateTotpForContact(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail, 60, 2);
-    expect(result).toBe(true);
-  });
-
-  it('should validate a TOTP with custom period and digits 2', async () => {
-    const passcode = generateTotpForContact(AliceXPrivHD, mockBobContact, 60, 2);
-
-    const result = await validateTotpForContact2(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail, 60, 2);
+    const result = await validateTotpForContact(AliceXPrivHD, mockBobContact, passcode, mockBobContact.paymail, 60, 2);
     expect(result).toBe(true);
   });
 
   it('should return false for an invalid TOTP', async () => {
-    const result = await validateTotpForContact2(AliceXPrivHD, mockBobContact, '24', mockBobContact.paymail);
+    const result = await validateTotpForContact(AliceXPrivHD, mockBobContact, '24', mockBobContact.paymail);
     expect(result).toBe(false);
   });
 
   it('should return false for an invalid TOTP', async () => {
-    const result = await validateTotpForContact2(AliceXPrivHD, mockBobContact, 'avg', mockBobContact.paymail);
+    const result = await validateTotpForContact(AliceXPrivHD, mockBobContact, 'avg', mockBobContact.paymail);
     expect(result).toBe(false);
   });
 });

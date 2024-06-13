@@ -3,8 +3,6 @@ import { Contact } from '../types';
 import { base32 } from '@scure/base';
 import { TOTP } from './totpengine';
 
-import { makeTOTP } from './otp';
-
 export const DEFAULT_TOTP_PERIOD = 30;
 export const DEFAULT_TOTP_DIGITS = 2;
 
@@ -26,16 +24,17 @@ The flow looks the same for Bob generating passcodeForAlice.
  * @param digits - The number of TOTP digits (default: 2)
  * @returns The generated TOTP as a string
  */
-export const generateTotpForContact = (
+export const generateTotpForContact = async (
   clientXPriv: HD,
   contact: Contact,
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
-): string => {
+): Promise<string> => {
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   let secret = directedSecret(sharedSecret, contact.paymail);
 
-  return makeTOTP({ digits, step: period }).generate(secret);
+  const { otp } = await TOTP.generate(secret, { digits, period, encoding: 'ascii' });
+  return otp;
 };
 
 /**
@@ -49,34 +48,7 @@ export const generateTotpForContact = (
  * @param digits - The number of TOTP digits (default: 2)
  * @returns A boolean indicating whether the TOTP is valid
  */
-export const validateTotpForContact = (
-  clientXPriv: HD,
-  contact: Contact,
-  passcode: string,
-  requesterPaymail: string,
-  period: number = DEFAULT_TOTP_PERIOD,
-  digits: number = DEFAULT_TOTP_DIGITS,
-) => {
-  const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
-
-  const secret = directedSecret(sharedSecret, requesterPaymail);
-  return makeTOTP({ digits, step: period }).check(passcode, secret);
-};
-
-export const generateTotpForContact2 = async (
-  clientXPriv: HD,
-  contact: Contact,
-  period: number = DEFAULT_TOTP_PERIOD,
-  digits: number = DEFAULT_TOTP_DIGITS,
-): Promise<string> => {
-  const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
-  let secret = directedSecret(sharedSecret, contact.paymail);
-
-  const { otp } = await TOTP.generate(secret, { digits, period, encoding: 'ascii' });
-  return otp;
-};
-
-export const validateTotpForContact2 = async (
+export const validateTotpForContact = async (
   clientXPriv: HD,
   contact: Contact,
   passcode: string,
