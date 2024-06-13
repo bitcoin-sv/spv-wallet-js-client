@@ -17,6 +17,10 @@ export type TOTPOptions = {
   timestamp?: number;
 };
 
+export type TOTPValidateOptions = TOTPOptions & {
+  skew?: number;
+};
+
 export class TOTP {
   /**
    * Generates a Time-based One-Time Password (TOTP).
@@ -26,23 +30,48 @@ export class TOTP {
    * @returns {Promise<{otp: string, expires: number}>} A promise that resolves to an object containing the OTP and its expiry time.
    */
   static async generate(key: string, options?: TOTPOptions): Promise<{ otp: string; expires: number }> {
-    const _options: Required<TOTPOptions> = {
-      digits: 6,
-      algorithm: 'SHA-1',
-      encoding: 'hex',
-      period: 30,
-      timestamp: Date.now(),
-      ...options,
-    };
-    const epochSeconds = Math.floor(_options.timestamp / 1000);
-    const timeHex = this.dec2hex(Math.floor(epochSeconds / _options.period)).padStart(16, '0');
+    const _options = this.withDefaultOptions(options);
 
-    const keyBuffer = _options.encoding === 'hex' ? this.base32ToBuffer(key) : this.asciiToBuffer(key);
+    const counter = this.getCounter(_options.timestamp, _options.period);
+    const period = _options.period * 1000;
+    const expires = Math.ceil((_options.timestamp + 1) / period) * period;
+    const otp = await this.generateHOTP(key, counter, _options);
+    return { otp, expires };
+  }
+
+  static async validate(key: string, passcode: string, options?: TOTPValidateOptions): Promise<boolean> {
+    const _options = this.withDefaultValidateOptions(options);
+    passcode = passcode.trim();
+    if (passcode.length != _options.digits) {
+      return false;
+    }
+
+    const counter = this.getCounter(_options.timestamp, _options.period);
+
+    const counters = [counter];
+    for (let i = 1; i <= _options.skew; i++) {
+      counters.push(counter + i);
+      counters.push(counter - i);
+    }
+
+    for (let c of counters) {
+      if (passcode === (await this.generateHOTP(key, c, _options))) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static async generateHOTP(key: string, counter: number, options: Required<TOTPOptions>): Promise<string> {
+    const timeHex = this.dec2hex(counter).padStart(16, '0');
+
+    const keyBuffer = options.encoding === 'hex' ? this.base32ToBuffer(key) : this.asciiToBuffer(key);
 
     const hmacKey = await this.crypto.importKey(
       'raw',
       keyBuffer,
-      { name: 'HMAC', hash: { name: _options.algorithm } },
+      { name: 'HMAC', hash: { name: options.algorithm } },
       false,
       ['sign'],
     );
@@ -51,12 +80,37 @@ export class TOTP {
     const signatureHex = this.buf2hex(signature);
     const offset = this.hex2dec(signatureHex.slice(-1)) * 2;
     const masked = this.hex2dec(signatureHex.slice(offset, offset + 8)) & 0x7fffffff;
-    const otp = masked.toString().slice(-_options.digits);
+    const otp = masked.toString().slice(-options.digits);
+    return otp;
+  }
 
-    const period = _options.period * 1000;
-    const expires = Math.ceil((_options.timestamp + 1) / period) * period;
+  private static withDefaultOptions(options?: TOTPOptions): Required<TOTPOptions> {
+    return {
+      digits: 6,
+      algorithm: 'SHA-1',
+      encoding: 'hex',
+      period: 30,
+      timestamp: Date.now(),
+      ...options,
+    };
+  }
 
-    return { otp, expires };
+  private static withDefaultValidateOptions(options?: TOTPValidateOptions): Required<TOTPValidateOptions> {
+    return {
+      digits: 6,
+      algorithm: 'SHA-1',
+      encoding: 'hex',
+      period: 30,
+      timestamp: Date.now(),
+      skew: 1,
+      ...options,
+    };
+  }
+
+  private static getCounter(timestamp: number, period: number): number {
+    const epochSeconds = Math.floor(timestamp / 1000);
+    const counter = Math.floor(epochSeconds / period);
+    return counter;
   }
 
   /**

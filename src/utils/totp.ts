@@ -59,8 +59,7 @@ export const validateTotpForContact = async (
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   const secret = directedSecret(sharedSecret, requesterPaymail);
 
-  const { otp } = await TOTP.generate(secret, getTotpOps(period, digits));
-  return otp === passcode; //TODO: check if it can be done like this
+  return await TOTP.validate(secret, passcode, getTotpOps(period, digits));
 };
 
 const getTotpOps = (period: number, digits: number): TOTPOptions => ({ digits, period, encoding: 'hex' });
