@@ -60,7 +60,7 @@ export class HttpClient {
       headers[AuthHeader] = this.xPubString;
     }
 
-    const res = await global.fetch(this.prepareUrl(path), {
+    const res = await globalThis.fetch(this.prepareUrl(path), {
       method,
       headers,
       body: json,
