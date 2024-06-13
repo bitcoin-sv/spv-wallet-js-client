@@ -20,6 +20,10 @@ export type TOTPOptions = {
   timestamp?: number;
 };
 
+/**
+ * Options for TOTP validation.
+ * @param {number} [skew=1] - The number of time periods to check before and after the current time period.
+ */
 export type TOTPValidateOptions = TOTPOptions & {
   skew?: number;
 };
@@ -36,11 +40,18 @@ export class TOTP {
     const _options = this.withDefaultOptions(options);
 
     const counter = this.getCounter(_options.timestamp, _options.period);
-    const period = _options.period * 1000;
     const otp = await this.generateHOTP(key, counter, _options);
     return otp;
   }
 
+  /**
+   * Validates a Time-based One-Time Password (TOTP).
+   * @async
+   * @param {string} key - The secret key for TOTP.
+   * @param {string} passcode - The passcode to validate.
+   * @param {TOTPValidateOptions} options - Optional parameters for TOTP validation.
+   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the passcode is valid.
+   */
   static async validate(key: string, passcode: string, options?: TOTPValidateOptions): Promise<boolean> {
     const _options = this.withDefaultValidateOptions(options);
     passcode = passcode.trim();
@@ -65,6 +76,14 @@ export class TOTP {
     return false;
   }
 
+  /**
+   * Generates a HMAC-based One-Time Password (HOTP).
+   * @async
+   * @param {string} key - The secret key for HOTP.
+   * @param {number} counter - The counter value for HOTP.
+   * @param {TOTPOptions} options - Optional parameters for HOTP.
+   * @returns {Promise<string>} A promise that resolves to the HOTP.
+   */
   private static async generateHOTP(key: string, counter: number, options: Required<TOTPOptions>): Promise<string> {
     if (options.encoding === 'ascii') {
       throw new Error('ASCII encoding is not supported');
@@ -84,6 +103,13 @@ export class TOTP {
     return otp;
   }
 
+  /**
+   * Calculates the HMAC for a given key and time.
+   * @param {number[]} keyArray - The key as an array of numbers.
+   * @param {string} timeHex - The time as a hexadecimal string.
+   * @param {TOTPAlgorithm} algorithm - The HMAC algorithm.
+   * @returns {Hash} The HMAC hash.
+   */
   private static calcHMAC(keyArray: number[], timeHex: string, algorithm: TOTPAlgorithm) {
     switch (algorithm) {
       case 'SHA-1':
@@ -97,6 +123,11 @@ export class TOTP {
     }
   }
 
+  /**
+   * Returns the default options for TOTP.
+   * @param {TOTPOptions} options - Optional parameters for TOTP.
+   * @returns {Required<TOTPOptions>} The default options for TOTP.
+   */
   private static withDefaultOptions(options?: TOTPOptions): Required<TOTPOptions> {
     return {
       digits: 6,
@@ -108,10 +139,21 @@ export class TOTP {
     };
   }
 
+  /**
+   * Returns the default options for TOTP validation.
+   * @param {TOTPValidateOptions} options - Optional parameters for TOTP validation.
+   * @returns {Required<TOTPValidateOptions>} The default options for TOTP validation.
+   */
   private static withDefaultValidateOptions(options?: TOTPValidateOptions): Required<TOTPValidateOptions> {
     return { skew: 1, ...this.withDefaultOptions(options) };
   }
 
+  /**
+   * Returns the counter value for a given timestamp and period.
+   * @param {number} timestamp - The timestamp.
+   * @param {number} period - The period.
+   * @returns {number} The counter value.
+   */
   private static getCounter(timestamp: number, period: number): number {
     const epochSeconds = Math.floor(timestamp / 1000);
     const counter = Math.floor(epochSeconds / period);

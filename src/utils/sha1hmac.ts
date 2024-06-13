@@ -1,5 +1,9 @@
 import { Hash } from '@bsv/sdk';
 
+/**
+ * SHA1HMAC is implemented based on SHA256HMAC from ts-sdk.
+ * TODO: Consider to move it to ts-sdk in the future.
+ */
 export class SHA1HMAC {
   inner: Hash.SHA1;
   outer: Hash.SHA1;
