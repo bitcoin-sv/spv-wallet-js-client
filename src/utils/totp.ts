@@ -1,7 +1,7 @@
 import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
 import { base32 } from '@scure/base';
-import { TOTP } from './totpengine';
+import { TOTP, TOTPOptions } from './totpengine';
 
 export const DEFAULT_TOTP_PERIOD = 30;
 export const DEFAULT_TOTP_DIGITS = 2;
@@ -33,7 +33,7 @@ export const generateTotpForContact = async (
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   let secret = directedSecret(sharedSecret, contact.paymail);
 
-  const { otp } = await TOTP.generate(secret, { digits, period, encoding: 'hex' });
+  const { otp } = await TOTP.generate(secret, getTotpOps(period, digits));
   return otp;
 };
 
@@ -59,9 +59,11 @@ export const validateTotpForContact = async (
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   const secret = directedSecret(sharedSecret, requesterPaymail);
 
-  const { otp } = await TOTP.generate(secret, { digits, period, encoding: 'ascii' });
+  const { otp } = await TOTP.generate(secret, getTotpOps(period, digits));
   return otp === passcode; //TODO: check if it can be done like this
 };
+
+const getTotpOps = (period: number, digits: number): TOTPOptions => ({ digits, period, encoding: 'hex' });
 
 const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
   const xprivKey = new HD().fromString(clientXPriv.toString());

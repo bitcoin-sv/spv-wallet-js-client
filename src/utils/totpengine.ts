@@ -9,7 +9,7 @@ export type TOTPEncoding = 'hex' | 'ascii';
  * @param {number} [period=30] - The time period for OTP validity in seconds.
  * @param {number} [timestamp=Date.now()] - The current timestamp.
  */
-type Options = {
+export type TOTPOptions = {
   digits?: number;
   algorithm?: TOTPAlgorithm;
   encoding?: TOTPEncoding;
@@ -22,11 +22,11 @@ export class TOTP {
    * Generates a Time-based One-Time Password (TOTP).
    * @async
    * @param {string} key - The secret key for TOTP.
-   * @param {Options} options - Optional parameters for TOTP.
+   * @param {TOTPOptions} options - Optional parameters for TOTP.
    * @returns {Promise<{otp: string, expires: number}>} A promise that resolves to an object containing the OTP and its expiry time.
    */
-  static async generate(key: string, options?: Options): Promise<{ otp: string; expires: number }> {
-    const _options: Required<Options> = {
+  static async generate(key: string, options?: TOTPOptions): Promise<{ otp: string; expires: number }> {
+    const _options: Required<TOTPOptions> = {
       digits: 6,
       algorithm: 'SHA-1',
       encoding: 'hex',
