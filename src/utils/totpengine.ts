@@ -82,10 +82,6 @@ export class TOTP {
    * @returns {string} The generated HOTP.
    */
   private static generateHOTP(key: string, counter: number, options: Required<TOTPOptions>): string {
-    if (options.encoding === 'ascii') {
-      throw new Error('ASCII encoding is not supported');
-    }
-
     const keyBuffer = options.encoding === 'hex' ? this.base32ToBuffer(key) : this.asciiToBuffer(key);
     const keyArray = Array.from(new Uint8Array(keyBuffer));
 
@@ -110,6 +106,8 @@ export class TOTP {
   private static calcHMAC(keyArray: number[], timeHex: string, algorithm: TOTPAlgorithm) {
     switch (algorithm) {
       case 'SHA-1':
+        // Because SHA1HMAC is missing in @bsv/sdk, we had to implement it (using SHA1 from @bsv/sdk)
+        // TODO: Consider adding SHA1HMAC to @bsv/sdk
         return new SHA1HMAC(keyArray).update(timeHex, 'hex');
       case 'SHA-256':
         return new Hash.SHA256HMAC(keyArray).update(timeHex, 'hex');
@@ -127,7 +125,7 @@ export class TOTP {
    */
   private static withDefaultOptions(options?: TOTPOptions): Required<TOTPOptions> {
     return {
-      digits: 6,
+      digits: 2,
       algorithm: 'SHA-1',
       encoding: 'hex',
       period: 30,
@@ -212,28 +210,6 @@ export class TOTP {
       buffer[i] = str.charCodeAt(i);
     }
     return buffer.buffer as ArrayBuffer;
-  }
-
-  /**
-   * Converts a hexadecimal string to an ArrayBuffer.
-   * @param {string} hex - The hexadecimal string to convert.
-   * @returns {ArrayBuffer} The ArrayBuffer representation of the hexadecimal string.
-   */
-  private static hex2buf(hex: string): ArrayBuffer {
-    const buffer = new Uint8Array(hex.length / 2);
-
-    for (let i = 0, j = 0; i < hex.length; i += 2, j++) buffer[j] = this.hex2dec(hex.slice(i, i + 2));
-
-    return buffer.buffer as ArrayBuffer;
-  }
-
-  /**
-   * Converts an ArrayBuffer to a hexadecimal string.
-   * @param {ArrayBuffer} buffer - The ArrayBuffer to convert.
-   * @returns {string} The hexadecimal string representation of the buffer.
-   */
-  private static buf2hex(buffer: ArrayBuffer): string {
-    return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
   }
 
   /**
