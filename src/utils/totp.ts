@@ -33,7 +33,7 @@ export const generateTotpForContact = async (
   const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
   let secret = directedSecret(sharedSecret, contact.paymail);
 
-  const { otp } = await TOTP.generate(secret, { digits, period, encoding: 'ascii' });
+  const { otp } = await TOTP.generate(secret, { digits, period, encoding: 'hex' });
   return otp;
 };
 
@@ -63,14 +63,7 @@ export const validateTotpForContact = async (
   return otp === passcode; //TODO: check if it can be done like this
 };
 
-/**
- * Creates a shared secret for a contact and client
- *
- * @param contact - The Contact
- * @param clientXPriv - The client xpriv
- * @returns The shared secret as a string
- */
-export const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
+const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
   const xprivKey = new HD().fromString(clientXPriv.toString());
 
   const pubKey = PublicKey.fromString(contact.pubKey);
@@ -81,16 +74,9 @@ export const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
   return ss.getX().toHex(32);
 };
 
-/**
- * Creates a directed secret for a shared secret and paymail
- *
- * @param sharedSecret - The shared secret
- * @param paymail - The paymail
- * @returns The directed secret as a string
- */
-export const directedSecret = (sharedSecret: string, paymail: string): string => {
+const directedSecret = (sharedSecret: string, paymail: string): string => {
   const paymailEncoded = new TextEncoder().encode(paymail);
-  const sharedSecretEncoded = new TextEncoder().encode(sharedSecret);
+  const sharedSecretEncoded = hexToUint8Array(sharedSecret);
 
   // Concatenate sharedSecretEncoded and paymailEncoded
   const concatenated = new Uint8Array(sharedSecretEncoded.length + paymailEncoded.length);
@@ -98,4 +84,13 @@ export const directedSecret = (sharedSecret: string, paymail: string): string =>
   concatenated.set(paymailEncoded, sharedSecretEncoded.length);
 
   return base32.encode(concatenated);
+};
+
+const hexToUint8Array = (hex: string): Uint8Array => {
+  const length = hex.length / 2;
+  const uintArray = new Uint8Array(length);
+  for (let i = 0; i < length; i++) {
+    uintArray[i] = parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+  }
+  return uintArray;
 };
