@@ -79,3 +79,9 @@ export class ErrorNoXPrivToValidateTOTP extends SpvWalletError {
     super('Cannot validate TOTP without an xPrivKey set');
   }
 }
+
+export class ErrorWrongTOTP extends SpvWalletError {
+  constructor() {
+    super('TOTP is invalid');
+  }
+}

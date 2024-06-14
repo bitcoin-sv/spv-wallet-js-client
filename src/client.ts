@@ -34,6 +34,7 @@ import {
   ErrorNoXPrivToSignTransaction,
   ErrorNoXPrivToValidateTOTP,
   ErrorTxIdsDontMatchToDraft,
+  ErrorWrongTOTP,
 } from './errors';
 import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
 import {
@@ -730,25 +731,22 @@ export class SpvWalletClient {
    * @param {number} period - The period for the TOTP
    * @param {number} digits - The number of digits for the TOTP
    * @returns {Promise<void>}
-   * @throws {Error} If the TOTP is invalid
+   * @throws {ErrorWrongTOTP} If the TOTP is invalid
+   * @throws {ErrorNoXPrivToValidateTOTP} If the xPriv is not set
    */
-  async ConfirmContact(
+  ConfirmContact(
     passcode: string,
     contact: Contact,
     paymail: string,
     period: number,
     digits: number,
-  ): Promise<void> {
-    try {
-      const isTotpValid = await this.ValidateTotpForContact(contact, passcode, paymail, period, digits);
-      if (!isTotpValid) {
-        throw new Error('TOTP is invalid');
-      }
-
-      return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
-    } catch (error) {
-      throw new Error('TOTP validation failed', { cause: error });
+  ): Promise<boolean> {
+    const isTotpValid = this.ValidateTotpForContact(contact, passcode, paymail, period, digits);
+    if (!isTotpValid) {
+      throw new ErrorWrongTOTP();
     }
+
+    return this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
   }
 
   /**
@@ -1017,6 +1015,7 @@ export class SpvWalletClient {
    * @param period - The TOTP period (default: 30)
    * @param digits - The number of TOTP digits (default: 2)
    * @returns A boolean indicating whether the TOTP is valid
+   * @throws {ErrorNoXPrivToValidateTOTP} If the xPrivKey is not set
    */
   ValidateTotpForContact(
     contact: Contact,
