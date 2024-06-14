@@ -1,6 +1,5 @@
 import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
-import { base32 } from '@scure/base';
 import { TOTP, TOTPOptions } from './totpengine';
 
 export const DEFAULT_TOTP_PERIOD = 30;
@@ -30,7 +29,7 @@ export const generateTotpForContact = (
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
 ): string => {
-  const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
+  const sharedSecret = makeSharedSecret(contact, clientXPriv);
   let secret = directedSecret(sharedSecret, contact.paymail);
 
   return TOTP.generate(secret, getTotpOps(period, digits));
@@ -55,7 +54,7 @@ export const validateTotpForContact = (
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
 ): boolean => {
-  const sharedSecret: string = makeSharedSecret(contact, clientXPriv);
+  const sharedSecret = makeSharedSecret(contact, clientXPriv);
   const secret = directedSecret(sharedSecret, requesterPaymail);
 
   return TOTP.validate(secret, passcode, getTotpOps(period, digits));
@@ -64,7 +63,6 @@ export const validateTotpForContact = (
 const getTotpOps = (period: number, digits: number): TOTPOptions => ({
   digits,
   period,
-  encoding: 'hex',
   algorithm: 'SHA-1',
 });
 
@@ -79,8 +77,8 @@ const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
   return ss.getX().toHex(32);
 };
 
-const directedSecret = (sharedSecret: string, paymail: string): string => {
-  const paymailEncoded = new TextEncoder().encode(paymail);
+const directedSecret = (sharedSecret: string, paymail: string): Uint8Array => {
+  const paymailEncoded = Uint8Array.from(paymail, (c) => c.charCodeAt(0));
   const sharedSecretEncoded = hexToUint8Array(sharedSecret);
 
   // Concatenate sharedSecretEncoded and paymailEncoded
@@ -88,7 +86,7 @@ const directedSecret = (sharedSecret: string, paymail: string): string => {
   concatenated.set(sharedSecretEncoded, 0);
   concatenated.set(paymailEncoded, sharedSecretEncoded.length);
 
-  return base32.encode(concatenated);
+  return concatenated;
 };
 
 const hexToUint8Array = (hex: string): Uint8Array => {
