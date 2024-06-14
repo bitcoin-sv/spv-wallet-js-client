@@ -1,5 +1,6 @@
 import { SHA1HMAC } from './sha1hmac';
 import { Hash } from '@bsv/sdk';
+import { dec2hex, hex2dec } from './converters';
 
 export type TOTPAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-512';
 
@@ -118,12 +119,4 @@ function calcHMAC(keyArray: number[], timeHex: string, algorithm: TOTPAlgorithm)
     default:
       throw new Error('unsupported HMAC algorithm');
   }
-}
-
-function hex2dec(hex: string): number {
-  return parseInt(hex, 16);
-}
-
-function dec2hex(dec: number): string {
-  return (dec < 15.5 ? '0' : '') + Math.round(dec).toString(16);
 }

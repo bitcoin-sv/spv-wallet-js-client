@@ -1,6 +1,7 @@
 import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
 import { TOTP, TOTPOptions } from './totp';
+import { hexToUint8Array } from './converters';
 
 export const DEFAULT_TOTP_PERIOD = 30;
 export const DEFAULT_TOTP_DIGITS = 2;
@@ -87,13 +88,4 @@ const directedSecret = (sharedSecret: string, paymail: string): Uint8Array => {
   concatenated.set(paymailEncoded, sharedSecretEncoded.length);
 
   return concatenated;
-};
-
-const hexToUint8Array = (hex: string): Uint8Array => {
-  const length = hex.length / 2;
-  const uintArray = new Uint8Array(length);
-  for (let i = 0; i < length; i++) {
-    uintArray[i] = parseInt(hex.substring(2 * i, 2 * i + 2), 16);
-  }
-  return uintArray;
 };
