@@ -47,7 +47,7 @@ import {
   AdminUtxoFilter,
   AdminAccessKeyFilter,
 } from './filters';
-import { validateTotpForContact, generateTotpForContact, DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD } from './utils/totp';
+import { validateTotpForContact, generateTotpForContact, DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD } from './totp';
 
 /**
  * SpvWallet class

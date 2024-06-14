@@ -36,7 +36,7 @@ export class TOTP {
     const _options = this.withDefaultOptions(options);
 
     const counter = this.getCounter(_options.timestamp, _options.period);
-    const otp = this.generateHOTP(rawKey, counter, _options);
+    const otp = generateHOTP(rawKey, counter, _options);
     return otp;
   }
 
@@ -63,7 +63,7 @@ export class TOTP {
     }
 
     for (let c of counters) {
-      if (passcode === this.generateHOTP(rawKey, c, _options)) {
+      if (passcode === generateHOTP(rawKey, c, _options)) {
         return true;
       }
     }
@@ -71,32 +71,10 @@ export class TOTP {
     return false;
   }
 
-  private static generateHOTP(rawKey: Uint8Array, counter: number, options: Required<TOTPOptions>): string {
-    const keyArray = Array.from(rawKey);
-    const timeHex = this.dec2hex(counter).padStart(16, '0');
-    const hmac = this.calcHMAC(keyArray, timeHex, options.algorithm);
-
-    const signatureHex = hmac.digestHex();
-
-    const offset = this.hex2dec(signatureHex.slice(-1)) * 2;
-    const masked = this.hex2dec(signatureHex.slice(offset, offset + 8)) & 0x7fffffff;
-    const otp = masked.toString().slice(-options.digits);
-    return otp;
-  }
-
-  private static calcHMAC(keyArray: number[], timeHex: string, algorithm: TOTPAlgorithm) {
-    switch (algorithm) {
-      case 'SHA-1':
-        // Because SHA1HMAC is missing in @bsv/sdk, we had to implement it (using SHA1 from @bsv/sdk)
-        // TODO: Consider adding SHA1HMAC to @bsv/sdk
-        return new SHA1HMAC(keyArray).update(timeHex, 'hex');
-      case 'SHA-256':
-        return new Hash.SHA256HMAC(keyArray).update(timeHex, 'hex');
-      case 'SHA-512':
-        return new Hash.SHA512HMAC(keyArray).update(timeHex, 'hex');
-      default:
-        throw new Error('unsupported HMAC algorithm');
-    }
+  private static getCounter(timestamp: number, period: number): number {
+    const epochSeconds = Math.floor(timestamp / 1000);
+    const counter = Math.floor(epochSeconds / period);
+    return counter;
   }
 
   private static withDefaultOptions(options?: TOTPOptions): Required<TOTPOptions> {
@@ -112,18 +90,40 @@ export class TOTP {
   private static withDefaultValidateOptions(options?: TOTPValidateOptions): Required<TOTPValidateOptions> {
     return { skew: 1, ...this.withDefaultOptions(options) };
   }
+}
 
-  private static getCounter(timestamp: number, period: number): number {
-    const epochSeconds = Math.floor(timestamp / 1000);
-    const counter = Math.floor(epochSeconds / period);
-    return counter;
-  }
+function generateHOTP(rawKey: Uint8Array, counter: number, options: Required<TOTPOptions>): string {
+  const keyArray = Array.from(rawKey);
+  const timeHex = dec2hex(counter).padStart(16, '0');
+  const hmac = calcHMAC(keyArray, timeHex, options.algorithm);
 
-  private static hex2dec(hex: string): number {
-    return parseInt(hex, 16);
-  }
+  const signatureHex = hmac.digestHex();
 
-  private static dec2hex(dec: number): string {
-    return (dec < 15.5 ? '0' : '') + Math.round(dec).toString(16);
+  const offset = hex2dec(signatureHex.slice(-1)) * 2;
+  const masked = hex2dec(signatureHex.slice(offset, offset + 8)) & 0x7fffffff;
+  const otp = masked.toString().slice(-options.digits);
+  return otp;
+}
+
+function calcHMAC(keyArray: number[], timeHex: string, algorithm: TOTPAlgorithm) {
+  switch (algorithm) {
+    case 'SHA-1':
+      // Because SHA1HMAC is missing in @bsv/sdk, we had to implement it (using SHA1 from @bsv/sdk)
+      // TODO: Consider adding SHA1HMAC to @bsv/sdk
+      return new SHA1HMAC(keyArray).update(timeHex, 'hex');
+    case 'SHA-256':
+      return new Hash.SHA256HMAC(keyArray).update(timeHex, 'hex');
+    case 'SHA-512':
+      return new Hash.SHA512HMAC(keyArray).update(timeHex, 'hex');
+    default:
+      throw new Error('unsupported HMAC algorithm');
   }
+}
+
+function hex2dec(hex: string): number {
+  return parseInt(hex, 16);
+}
+
+function dec2hex(dec: number): string {
+  return (dec < 15.5 ? '0' : '') + Math.round(dec).toString(16);
 }

@@ -1,5 +1,5 @@
 import { Contact } from '../types';
-import { generateTotpForContact, validateTotpForContact } from './totp';
+import { generateTotpForContact, validateTotpForContact } from './pike-totp';
 import { HD } from '@bsv/sdk';
 
 export const makeMockPKI = (xpub: string): string => {

@@ -1,6 +1,6 @@
 import { HD, PublicKey } from '@bsv/sdk';
 import { Contact } from '../types';
-import { TOTP, TOTPOptions } from './totpengine';
+import { TOTP, TOTPOptions } from './totp';
 
 export const DEFAULT_TOTP_PERIOD = 30;
 export const DEFAULT_TOTP_DIGITS = 2;
