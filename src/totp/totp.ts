@@ -100,8 +100,11 @@ function generateHOTP(rawKey: Uint8Array, counter: number, options: Required<TOT
 
   const signatureHex = hmac.digestHex();
 
-  const offset = hex2dec(signatureHex.slice(-1)) * 2;
-  const masked = hex2dec(signatureHex.slice(offset, offset + 8)) & 0x7fffffff;
+  //RFC 4226 https://datatracker.ietf.org/doc/html/rfc4226#section-5.4
+  const offset = hex2dec(signatureHex.slice(-1)) * 2; //offset should point to hex-pair in hex string - that's why "x2 multiplification"
+  const fourBytesRange = signatureHex.slice(offset, offset + 8); //starting from offset, get 4. pairs of hex. (Dynamic Truncation)
+  const mask = 0x7fffffff; //32-bit number with a leading 0 followed by 31 ones [0111 (...) 1111]
+  const masked = hex2dec(fourBytesRange) & mask;
   const otp = masked.toString().slice(-options.digits);
   return otp;
 }

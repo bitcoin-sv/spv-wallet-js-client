@@ -72,8 +72,10 @@ const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
 
   const pubKey = PublicKey.fromString(contact.pubKey);
 
-  let hd = xprivKey.derive('m/0/0/0');
-  let privKey = hd.privKey;
+  // PKI derivation path: m/0/0/0
+  // NOTICE: we currently do not support PKI rotation; however, adjustments will be made if and when we decide to implement it
+  const hd = xprivKey.derive('m/0/0/0');
+  const privKey = hd.privKey;
   const ss = privKey.deriveSharedSecret(pubKey);
   return ss.getX().toHex(32);
 };

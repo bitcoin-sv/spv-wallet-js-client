@@ -734,7 +734,7 @@ export class SpvWalletClient {
    * @throws {ErrorWrongTOTP} If the TOTP is invalid
    * @throws {ErrorNoXPrivToValidateTOTP} If the xPriv is not set
    */
-  ConfirmContact(
+  async ConfirmContact(
     passcode: string,
     contact: Contact,
     paymail: string,
@@ -746,7 +746,7 @@ export class SpvWalletClient {
       throw new ErrorWrongTOTP();
     }
 
-    return this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
+    return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
   }
 
   /**
