@@ -60,6 +60,9 @@ node_modules/
 .DS_Store
 todo.md
 
+# VSCode
+.vscode/
+
 # Deployment
 dist
 coverage
