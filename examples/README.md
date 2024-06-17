@@ -41,6 +41,7 @@ In addition to the above, there are additional examples showing how to use the c
 
 1. `xpriv-from-mnemonic` - allows you to generate/extract an xPriv key from a mnemonic phrase. To you use it you just need to replace the `mnemonic` variable with your own mnemonic phrase.
 2. `xpub-from-xpriv` - allows you to generate an xPub key from an xPriv key. To you use it you just need to replace the `xPriv` variable with your own xPriv key.
+3. `generate-totp` - allows you to generate and check validity of a TOTP code for client xPriv and a contact's PKI
 
 ## How to run an example
 
