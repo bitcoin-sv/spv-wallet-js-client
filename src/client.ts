@@ -30,9 +30,11 @@ import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
 import {
   ErrorInvalidOptions,
-  ErrorNoAdminKey,
+  ErrorNoXPrivToGenerateTOTP,
   ErrorNoXPrivToSignTransaction,
+  ErrorNoXPrivToValidateTOTP,
   ErrorTxIdsDontMatchToDraft,
+  ErrorWrongTOTP,
 } from './errors';
 import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
 import {
@@ -46,6 +48,7 @@ import {
   AdminUtxoFilter,
   AdminAccessKeyFilter,
 } from './filters';
+import { validateTotpForContact, generateTotpForContact, DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD } from './totp';
 
 /**
  * SpvWallet class
@@ -69,6 +72,10 @@ export class SpvWalletClient {
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
     this.logger = makeLogger(loggerConfig);
     this.http = this.makeRequester(options, serverUrl);
+  }
+
+  get xPrivKey(): HD | undefined {
+    return this.xPriv;
   }
 
   private makeRequester(options: ClientOptions, serverUrl: string): HttpClient {
@@ -718,10 +725,27 @@ export class SpvWalletClient {
   /**
    * Confirm a contact request
    *
-   * @param {string} paymail Contact paymail to modify
-   * @return {void}
+   * @param {string} passcode - The passcode for the contact
+   * @param contact
+   * @param {string} paymail Contact paymail
+   * @param {number} period - The period for the TOTP
+   * @param {number} digits - The number of digits for the TOTP
+   * @returns {Promise<void>}
+   * @throws {ErrorWrongTOTP} If the TOTP is invalid
+   * @throws {ErrorNoXPrivToValidateTOTP} If the xPriv is not set
    */
-  async ConfirmContact(paymail: string): Promise<void> {
+  async ConfirmContact(
+    passcode: string,
+    contact: Contact,
+    paymail: string,
+    period: number,
+    digits: number,
+  ): Promise<boolean> {
+    const isTotpValid = this.ValidateTotpForContact(contact, passcode, paymail, period, digits);
+    if (!isTotpValid) {
+      throw new ErrorWrongTOTP();
+    }
+
     return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
   }
 
@@ -962,5 +986,47 @@ export class SpvWalletClient {
       return await this.http.adminRequest(`shared-config`, 'GET');
     }
     return await this.http.request(`shared-config`, 'GET');
+  }
+
+  /**
+   * Generates a TOTP for a given contact
+   *
+   * @param contact - The Contact
+   * @param period - The TOTP period (default: 30)
+   * @param digits - The number of TOTP digits (default: 2)
+   * @returns The generated TOTP as a string
+   */
+  GenerateTotpForContact(
+    contact: Contact,
+    period: number = DEFAULT_TOTP_PERIOD,
+    digits: number = DEFAULT_TOTP_DIGITS,
+  ): string {
+    if (!this.xPrivKey) {
+      throw new ErrorNoXPrivToGenerateTOTP();
+    }
+    return generateTotpForContact(this.xPrivKey, contact, period, digits);
+  }
+
+  /**
+   * Validates a TOTP for a given contact
+   *
+   * @param passcode - The TOTP passcode to validate
+   * @param requesterPaymail - The paymail of the requester
+   * @param period - The TOTP period (default: 30)
+   * @param digits - The number of TOTP digits (default: 2)
+   * @returns A boolean indicating whether the TOTP is valid
+   * @throws {ErrorNoXPrivToValidateTOTP} If the xPrivKey is not set
+   */
+  ValidateTotpForContact(
+    contact: Contact,
+    passcode: string,
+    requesterPaymail: string,
+    period: number = DEFAULT_TOTP_PERIOD,
+    digits: number = DEFAULT_TOTP_DIGITS,
+  ): boolean {
+    if (!this.xPrivKey) {
+      throw new ErrorNoXPrivToValidateTOTP();
+    }
+    return validateTotpForContact(this.xPrivKey, contact, passcode, requesterPaymail, period, digits);
   }
 }

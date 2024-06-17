@@ -16,7 +16,8 @@
     "list-transactions": "yarn run:example list-transactions.ts",
     "send-op-return": "yarn run:example send-op-return.ts",
     "xpriv-from-mnemonic": "yarn run:example xpriv-from-mnemonic.ts",
-    "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts"
+    "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts",
+    "generate-totp": "yarn run:example generate-totp.ts"
   },
   "version": "0.0.0",
   "devDependencies": {

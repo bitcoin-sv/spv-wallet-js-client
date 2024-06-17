@@ -25,6 +25,12 @@ export class ErrorNoXPrivToSignTransaction extends SpvWalletError {
   }
 }
 
+export class ErrorClientInitNoXpriv extends SpvWalletError {
+  constructor() {
+    super('Init client with xPriv first');
+  }
+}
+
 export class ErrorTxIdsDontMatchToDraft extends SpvWalletError {
   input: TxInput;
   draftInput: TransactionInput;
@@ -60,5 +66,22 @@ export class ErrorWrongHex extends SpvWalletError {
   constructor(wrongHex: string) {
     super('Provided hexHash is not a valid hex string');
     this.value = wrongHex;
+  }
+}
+export class ErrorNoXPrivToGenerateTOTP extends SpvWalletError {
+  constructor() {
+    super('Cannot generate TOTP without an xPrivKey set');
+  }
+}
+
+export class ErrorNoXPrivToValidateTOTP extends SpvWalletError {
+  constructor() {
+    super('Cannot validate TOTP without an xPrivKey set');
+  }
+}
+
+export class ErrorWrongTOTP extends SpvWalletError {
+  constructor() {
+    super('TOTP is invalid');
   }
 }

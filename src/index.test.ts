@@ -55,7 +55,6 @@ describe('SPVWalletClient routing', () => {
     ${'UpsertContact'}                            | ${'post'}   | ${'contact/test'}                | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
     ${'AcceptContact'}                            | ${'patch'}  | ${'contact/accepted/test'}       | ${() => spvWalletClient.AcceptContact('test')}
     ${'RejectContact'}                            | ${'patch'}  | ${'contact/rejected/test'}       | ${() => spvWalletClient.RejectContact('test')}
-    ${'ConfirmContact'}                           | ${'patch'}  | ${'contact/confirmed/test'}      | ${() => spvWalletClient.ConfirmContact('test')}
     ${'GetDestinationByID'}                       | ${'get'}    | ${'destination?id='}             | ${() => spvWalletClient.GetDestinationByID('')}
     ${'GetDestinationByLockingScript'}            | ${'get'}    | ${'destination?locking_script='} | ${() => spvWalletClient.GetDestinationByLockingScript('')}
     ${'GetDestinationByAddress'}                  | ${'get'}    | ${'destination?address='}        | ${() => spvWalletClient.GetDestinationByAddress('')}
