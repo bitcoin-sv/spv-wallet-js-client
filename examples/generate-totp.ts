@@ -26,8 +26,8 @@ const mockBobContact = {
   paymail: 'test@paymail.com',
 };
 
-const passcode = client.GenerateTotpForContact(mockBobContact, period, digits);
-console.log('Passcode from Alice to Bob:', passcode);
+const totpCode = client.GenerateTotpForContact(mockBobContact, period, digits);
+console.log('TOTP code from Alice to Bob:', totpCode);
 
-const valid = client.ValidateTotpForContact(mockBobContact, passcode, mockBobContact.paymail, period, digits);
-console.log('Is passcode valid:', valid);
+const valid = client.ValidateTotpForContact(mockBobContact, totpCode, mockBobContact.paymail, period, digits);
+console.log('Is TOTP code valid:', valid);
