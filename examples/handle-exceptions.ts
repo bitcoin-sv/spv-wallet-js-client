@@ -1,16 +1,11 @@
-import {
-  ErrorNoAdminKey,
-  ErrorResponse,
-  SpvWalletClient,
-  SpvWalletError,
-} from '../dist/typescript-npm-package.cjs.js';
-import { exampleXPub } from './example-keys';
-import { errMessage } from './utils';
+import { ErrorNoAdminKey, ErrorResponse, SpvWalletClient, SpvWalletError } from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPub } from './example-keys.js';
+import { errMessage } from './utils.js';
 
 const server = 'http://localhost:3003/v1';
 
 if (!exampleXPub) {
-  console.log(errMessage('xPub'))
+  console.log(errMessage('xPub'));
   process.exit(1);
 }
 
