@@ -1,7 +1,5 @@
-import { HD, PublicKey } from '@bsv/sdk';
+import { HD, PublicKey, TOTP, TOTPOptions, Utils } from '@bsv/sdk';
 import { Contact } from '../types';
-import { TOTP, TOTPOptions } from './totp';
-import { hexToUint8Array } from './converters';
 
 export const DEFAULT_TOTP_PERIOD = 30;
 export const DEFAULT_TOTP_DIGITS = 2;
@@ -80,14 +78,9 @@ const makeSharedSecret = (contact: Contact, clientXPriv: HD) => {
   return ss.getX().toHex(32);
 };
 
-const directedSecret = (sharedSecret: string, paymail: string): Uint8Array => {
-  const paymailEncoded = Uint8Array.from(paymail, (c) => c.charCodeAt(0));
-  const sharedSecretEncoded = hexToUint8Array(sharedSecret);
-
-  // Concatenate sharedSecretEncoded and paymailEncoded
-  const concatenated = new Uint8Array(sharedSecretEncoded.length + paymailEncoded.length);
-  concatenated.set(sharedSecretEncoded, 0);
-  concatenated.set(paymailEncoded, sharedSecretEncoded.length);
-
+const directedSecret = (sharedSecret: string, paymail: string): number[] => {
+  const sharedSecretDigest = Utils.toArray(sharedSecret, 'hex') as number[];
+  const paymailDigest = Utils.toArray(paymail, 'utf8') as number[];
+  const concatenated = [...sharedSecretDigest, ...paymailDigest];
   return concatenated;
 };
