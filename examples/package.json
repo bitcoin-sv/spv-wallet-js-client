@@ -17,7 +17,10 @@
     "send-op-return": "yarn run:example send-op-return.ts",
     "xpriv-from-mnemonic": "yarn run:example xpriv-from-mnemonic.ts",
     "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts",
-    "generate-totp": "yarn run:example generate-totp.ts"
+    "generate-totp": "yarn run:example generate-totp.ts",
+    "access-key": "yarn run:example access-key.ts",
+    "get-shared-config": "yarn run:example get-shared-config.ts",
+    "update-xpub-metadata": "yarn run:example update-xpub-metadata.ts"
   },
   "version": "0.0.0",
   "devDependencies": {

@@ -450,7 +450,7 @@ export class SpvWalletClient {
    * @return {XPub}
    */
   async GetXPub(): Promise<XPub> {
-    return await this.http.request(`xpub`);
+    return await this.http.request(`users/current`);
   }
 
   /**
@@ -462,7 +462,7 @@ export class SpvWalletClient {
    * @return {XPub}
    */
   async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
-    return await this.http.request(`xpub`, 'PATCH', { metadata });
+    return await this.http.request(`users/current`, 'PATCH', { metadata });
   }
 
   /**
@@ -472,7 +472,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async GetAccessKey(id: string): Promise<AccessKey> {
-    return await this.http.request(`access-key?id=${id}`);
+    return await this.http.request(`users/current/keys/${id}`);
   }
 
   /**
@@ -517,7 +517,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return await this.http.request(`access-key`, 'POST', { metadata });
+    return await this.http.request(`users/current/keys`, 'POST', { metadata });
   }
 
   /**
@@ -529,7 +529,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async RevokeAccessKey(id: string): Promise<AccessKey> {
-    return await this.http.request(`access-key?id=${id}`, 'DELETE');
+    return await this.http.request(`users/current/keys/${id}`, 'DELETE');
   }
 
   /**
@@ -983,9 +983,9 @@ export class SpvWalletClient {
    */
   async GetSharedConfig(): Promise<SharedConfig> {
     if (this.http.hasAdminKey()) {
-      return await this.http.adminRequest(`shared-config`, 'GET');
+      return await this.http.adminRequest(`configs/shared`, 'GET');
     }
-    return await this.http.request(`shared-config`, 'GET');
+    return await this.http.request(`configs/shared`, 'GET');
   }
 
   /**
