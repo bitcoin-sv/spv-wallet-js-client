@@ -64,7 +64,7 @@
     "rollup-plugin-polyfill-node": "^0.13.0",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
-    "typedoc": "^0.25.0",
+    "typedoc": "^0.26.3",
     "typescript": "^5.0.2"
   },
   "dependencies": {
