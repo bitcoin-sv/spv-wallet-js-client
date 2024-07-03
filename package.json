@@ -68,7 +68,7 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "@bsv/sdk": "^1.1.6",
+    "@bsv/sdk": "^1.1.10",
     "@types/rollup-plugin-node-builtins": "^2.1.5",
     "cross-fetch": "^4.0.0"
   }
