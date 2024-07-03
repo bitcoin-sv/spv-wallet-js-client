@@ -1213,9 +1213,9 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@bsv/sdk@^1.1.6":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@bsv/sdk/-/sdk-1.1.8.tgz#58e161b7bd01379c4967789007d6ed6441277c83"
-  integrity sha512-p8yCKwlA7+RYiJBDo+TRFUMGYhET0dDYGxF80ycz47f/kFfY+t0AThYrB4y6jlfh3ff9vcf8zOQOR60O2Lhz9g==
+  version "1.1.10"
+  resolved "https://registry.yarnpkg.com/@bsv/sdk/-/sdk-1.1.10.tgz#b6361a415ce447b68177446ea96c927b1d414700"
+  integrity sha512-QvXoqmszv+yZnsDRDhH0r9lm4xCb9IdKYfbCxrtrMYIrWaH6rRCXO6OnZ6Ri9rprU5HKet8SMBzRRqpqNOVcZw==
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
