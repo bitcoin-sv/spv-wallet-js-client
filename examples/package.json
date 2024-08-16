@@ -5,7 +5,7 @@
     "preinstall": "cd ../ && yarn install && yarn build",
     "build": "tsc",
     "build:client": "cd .. && yarn build",
-    "run:example": "yarn build:client && node --loader ts-node/esm",
+    "run:example": "yarn build:client && echo '==== Starting ====\n' && node --loader ts-node/esm",
     "admin-add-user": "yarn run:example admin-add-user.ts",
     "admin-remove-user": "yarn run:example admin-remove-user.ts",
     "create-transaction": "yarn run:example create-transaction.ts",
@@ -17,7 +17,8 @@
     "send-op-return": "yarn run:example send-op-return.ts",
     "xpriv-from-mnemonic": "yarn run:example xpriv-from-mnemonic.ts",
     "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts",
-    "generate-totp": "yarn run:example generate-totp.ts"
+    "generate-totp": "yarn run:example generate-totp.ts",
+    "get-handled-paymail-domains": "yarn run:example get-handled-paymail-domains.ts"
   },
   "version": "0.0.0",
   "devDependencies": {
