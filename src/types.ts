@@ -678,13 +678,13 @@ export interface SharedConfig {
   /**
    * PaymailDomains is an array of strings representing the allowed Paymail domains.
    */
-  PaymailDomains: string[];
+  paymail_domains: string[];
 
   /**
    * ExperimentalFeatures is a map of experimental features handled by spv-wallet.
    * The keys are strings representing the feature names, and the values are booleans representing whether the feature is enabled or not.
    */
-  ExperimentalFeatures: { [key: string]: boolean };
+  experimental_features: { [key: string]: boolean };
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE';

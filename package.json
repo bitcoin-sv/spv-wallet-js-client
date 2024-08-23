@@ -1,6 +1,6 @@
 {
   "name": "@bsv/spv-wallet-js-client",
-  "version": "1.0.0-beta.18",
+  "version": "1.0.0-beta.20",
   "description": "TypeScript library for connecting to a SPV Wallet server",
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.6",
     "@babel/preset-env": "^7.24.6",
-    "@babel/preset-typescript": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.7",
     "@microsoft/api-extractor": "^7.47.0",
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^25.0.8",
@@ -47,7 +47,7 @@
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/bsv": "github:chainbow/bsv-types",
     "@types/jest": "^29.0.0",
-    "@types/node": "^20.14.1",
+    "@types/node": "^22.1.0",
     "babel-jest": "^29.0.0",
     "babel-plugin-import": "^1.13.3",
     "better-docs": "^2.7.2",
@@ -56,19 +56,19 @@
     "jest-fetch-mock": "^3.0.3",
     "jsdoc-babel": "^0.5.0",
     "prettier": "^3.3.0",
-    "rimraf": "^5.0.7",
-    "rollup": "^4.18.0",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.20.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-externals": "^7.0.0",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "ts-node": "^10.9.1",
-    "tslib": "^2.4.0",
-    "typedoc": "^0.25.0",
-    "typescript": "^5.0.2"
+    "tslib": "^2.6.3",
+    "typedoc": "^0.26.5",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@bsv/sdk": "^1.1.6",
+    "@bsv/sdk": "^1.1.13",
     "@types/rollup-plugin-node-builtins": "^2.1.5",
     "cross-fetch": "^4.0.0"
   }

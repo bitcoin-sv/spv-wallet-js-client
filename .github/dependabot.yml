@@ -1,24 +1,23 @@
 # Basic dependabot.yml to update npm and Github Actions
-
 version: 2
 updates:
-  - package-ecosystem: 'npm'
-    target-branch: 'main'
-    directory: '/'
+  # Maintain dependencies for the codebase
+  - package-ecosystem: "npm"
+    target-branch: "main"
+    directories:
+      - "/"
+      - "/examples"
     schedule:
-      interval: 'daily'
-      # Check for npm updates at 10am UTC (5am EST)
-      time: '10:00'
-    ignore:
-      - dependency-name: "@types/bsv"
-      - dependency-name: "bsv"
-    reviewers:
-      - 'mrz1836'
-    assignees:
-      - 'mrz1836'
-    # Labels must be created first
+      interval: "weekly"
+      day: "monday"
     labels:
-      - 'chore'
+      - "dependencies"
+    groups:
+      dependencies:
+        update-types:
+          - "minor"
+          - "patch"
+          - "major"
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -27,10 +26,11 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    reviewers:
-      - "mrz1836"
-    assignees:
-      - "mrz1836"
     labels:
-      - "chore"
-    open-pull-requests-limit: 10
+      - "dependencies"
+    groups:
+      gh_actions:
+        update-types:
+          - "minor"
+          - "patch"
+          - "major"
