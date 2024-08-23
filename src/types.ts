@@ -330,7 +330,7 @@ export interface OpReturn {
 /**
  * Recipient interface
  */
-export interface Recipient {
+export interface Output {
   to: string;
   satoshis: number;
   op_return?: OpReturn;
@@ -338,9 +338,9 @@ export interface Recipient {
 
 /**
  * Array of Recipients
- * @see {@link Recipient}
+ * @see {@link Output}
  */
-export interface Recipients extends Array<Recipient> {}
+export interface Outputs extends Array<Output> {}
 
 /**
  * Fee unit to use when calculating the fee for the transaction (satoshis per byte)
@@ -482,7 +482,7 @@ export interface TxConfig {
 /**
  * Transaction input in a new transaction
  */
-export interface TransactionConfigInput {
+export interface DraftTransactionConfig {
   change_destinations?: Destination[];
   change_destinations_strategy?: ChangeStrategy;
   change_minimum_satoshis?: number;

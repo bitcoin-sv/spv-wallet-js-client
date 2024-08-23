@@ -9,14 +9,13 @@ import {
   Contacts,
   Destination,
   Destinations,
+  DraftTransactionConfig,
   DraftTx,
   Metadata,
   PaymailAddress,
   PaymailAddresses,
   QueryParams,
-  Recipients,
   SharedConfig,
-  TransactionConfigInput,
   Tx,
   Txs,
   Utxo,
@@ -681,6 +680,26 @@ export class SpvWalletClient {
   }
 
   /**
+   * Get a single contact by it's paymail address.
+   *
+   * @param {string} paymail  Contact paymail to get specific contact
+   * @return {Contact}
+   */
+  async GetContact(paymail: string): Promise<Contact> {
+    return await this.http.request(`contacts/${paymail}`, 'GET');
+  }
+
+  /**
+   * Get a single contact by it's paymail address.
+   *
+   * @param {string} paymail  Contact paymail to get specific contact
+   * @return {Contact}
+   */
+  async DeleteContact(paymail: string): Promise<Contact> {
+    return await this.http.request(`contacts/${paymail}`, 'DELETE');
+  }
+
+  /**
    * Upsert will add a new contact or modify an existing one.
    *
    * @param {string} paymail            Contact paymail to add or modify
@@ -699,27 +718,27 @@ export class SpvWalletClient {
     if (requesterPaymail !== '') {
       payload['requesterPaymail'] = requesterPaymail;
     }
-    return await this.http.request(`contact/${paymail}`, 'PUT', payload);
+    return await this.http.request(`contacts/${paymail}`, 'PUT', payload);
   }
 
   /**
    * Accept a contact request
    *
-   * @param {string} paymail Contact paymail to modify
+   * @param {string} paymail Contact paymail to accept invitation
    * @return {void}
    */
-  async AcceptContact(paymail: string): Promise<void> {
-    return await this.http.request(`contact/accepted/${paymail}`, 'PATCH');
+  async AcceptContactInvitation(paymail: string): Promise<void> {
+    return await this.http.request(`invitations/${paymail}/contacts`, 'POST');
   }
 
   /**
    * Reject a contact request
    *
-   * @param {string} paymail Contact paymail to modify
+   * @param {string} paymail Contact paymail to reject invitation
    * @return {void}
    */
-  async RejectContact(paymail: string): Promise<void> {
-    return await this.http.request(`contact/rejected/${paymail}`, 'PATCH');
+  async RejectContactInvitation(paymail: string): Promise<void> {
+    return await this.http.request(`invitations/${paymail}/contacts`, 'DELETE');
   }
 
   /**
@@ -746,17 +765,27 @@ export class SpvWalletClient {
       throw new ErrorWrongTOTP();
     }
 
-    return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
+    return await this.http.request(`contacts/${paymail}/confirmation`, 'POST');
   }
 
   /**
-   * Get all details of the transaction by the given ID
+   * Unconfirm previously confirmed contact
    *
-   * @param {string} txID Transaction ID
+   * @param {string} paymail Contact paymail to unconfirm
+   * @return {void}
+   */
+  async UnconfirmContact(paymail: string): Promise<void> {
+    return await this.http.request(`contacts/${paymail}/confirmation`, 'DELETE');
+  }
+
+  /**
+   * Get all details of the transaction by the given id
+   *
+   * @param {string} txId Transaction ID
    * @return {Tx}
    */
-  async GetTransaction(txID: string): Promise<Tx> {
-    return await this.http.request(`transaction?id=${txID}`, 'GET');
+  async GetTransactionById(txId: string): Promise<Tx> {
+    return await this.http.request(`transactions/${txId}`, 'GET');
   }
 
   /**
@@ -775,20 +804,6 @@ export class SpvWalletClient {
       page_size: queryParams?.page_size || 0,
       order_by_field: queryParams?.order_by_field || '',
       sort_direction: queryParams?.sort_direction || '',
-    });
-  }
-
-  /**
-   * Get a count of all transactions for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async GetTransactionsCount(conditions: TransactionFilter, metadata: Metadata): Promise<number> {
-    return await this.http.request(`transaction/count`, 'POST', {
-      conditions,
-      metadata,
     });
   }
 
@@ -842,31 +857,13 @@ export class SpvWalletClient {
    * This is a helper function to easily create a new draft transaction to a list of recipients
    *
    * @see {@link SendToRecipients}
-   * @param {Recipients} recipients A list of recipients and a satoshi value to send to them
+   * @param {DraftTransactionConfig} config A config object with the recipients and the satoshi value to send to them
    * @param {Metadata} metadata     Key value object to use to add to the draft transaction
    * @return {DraftTx}     Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
-  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTx> {
-    const transactionConfig: TransactionConfigInput = {
-      outputs: recipients,
-    };
-
-    return await this.http.request(`transaction`, 'POST', {
-      config: transactionConfig,
-      metadata,
-    });
-  }
-
-  /**
-   * Create a draft transaction using the given transaction config
-   *
-   * @param {TransactionConfigInput} transactionConfig Configuration of the new transaction
-   * @param {Metadata} metadata                        Key value object to use to add to the draft transaction
-   * @return {DraftTx}                        Complete draft transaction object from SPV Wallet, all configuration options filled in
-   */
-  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTx> {
-    return await this.http.request(`transaction`, 'POST', {
-      config: transactionConfig,
+  async NewDraftTransaction(config: DraftTransactionConfig, metadata: Metadata): Promise<DraftTx> {
+    return await this.http.request(`transactions/drafts`, 'POST', {
+      config: config,
       metadata,
     });
   }
@@ -874,17 +871,17 @@ export class SpvWalletClient {
   /**
    * Helper function to create a draft, sign it and send it to a list of recipients
    *
-   * @param {Recipients} recipients A list of recipients and a satoshi value to send to them
+   * @param {DraftTransactionConfig} config A config object with the recipients and the satoshi value to send to them
    * @param {Metadata} metadata     Key value object to use to add to the (draft) transaction
    * @return {Tx}          The final transaction object, including the hex of the Bitcoin transaction
    * @example
    * // This function is a shorthand for:
-   * const draft = await spvWalletClient.DraftToRecipients(recipients, metadata);
+   * const draft = await spvWalletClient.NewDraftTransaction(recipients, metadata);
    * const finalized = await spvWalletClient.SignTransaction(draft);
    * const tx = await spvWalletClient.RecordTransaction(finalized, draft.id, metadata)
    */
-  async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Tx> {
-    const draft = await this.DraftToRecipients(recipients, metadata);
+  async SendToRecipients(config: DraftTransactionConfig, metadata: Metadata): Promise<Tx> {
+    const draft = await this.NewDraftTransaction(config, metadata);
     const finalized = await this.SignTransaction(draft);
     return this.RecordTransaction(finalized, draft.id, metadata);
   }
@@ -954,7 +951,7 @@ export class SpvWalletClient {
    * @return {Tx}       The SPV Wallet transaction object
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Tx> {
-    return await this.http.request(`transaction/record`, 'POST', {
+    return await this.http.request(`transactions`, 'POST', {
       hex,
       reference_id: referenceID,
       metadata,
@@ -966,13 +963,12 @@ export class SpvWalletClient {
    *
    * To remove a key from the metadata object, add a key to set with a value of `null`
    *
-   * @param {string} txID       The ID of the transaction
+   * @param {string} txId       The ID of the transaction
    * @param {Metadata} metadata Key value object to use to add to the transaction
    * @return {Tx}      The complete SPV Wallet transaction object, with the new changes
    */
-  async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Tx> {
-    return await this.http.request(`transaction`, 'PATCH', {
-      id: txID,
+  async UpdateTransactionMetadata(txId: string, metadata: Metadata): Promise<Tx> {
+    return await this.http.request(`transactions/${txId}`, 'PATCH', {
       metadata,
     });
   }

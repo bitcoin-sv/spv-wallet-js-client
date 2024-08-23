@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
 import { SpvWalletClient } from './index';
-import { ClientOptions, DraftTx, Recipients, TransactionConfigInput } from './types';
+import { ClientOptions, DraftTx, Outputs, DraftTransactionConfig } from './types';
 
 const xPrivString =
   'xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A';
@@ -53,10 +53,13 @@ describe('SPVWalletClient routing', () => {
     ${'GetAccessKeysCount'}                       | ${'post'}   | ${'access-key/count'}                      | ${() => spvWalletClient.GetAccessKeysCount({}, {})}
     ${'CreateAccessKey'}                          | ${'post'}   | ${'users/current/keys'}                    | ${() => spvWalletClient.CreateAccessKey({})}
     ${'RevokeAccessKey'}                          | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.RevokeAccessKey(accessKeyString)}
+    ${'GetContact'}                               | ${'get'}    | ${'contacts/test'}                         | ${() => spvWalletClient.GetContact('test')}
     ${'GetContacts'}                              | ${'post'}   | ${'contact/search'}                        | ${() => spvWalletClient.GetContacts({}, {}, {})}
-    ${'UpsertContact'}                            | ${'post'}   | ${'contact/test'}                          | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
-    ${'AcceptContact'}                            | ${'patch'}  | ${'contact/accepted/test'}                 | ${() => spvWalletClient.AcceptContact('test')}
-    ${'RejectContact'}                            | ${'patch'}  | ${'contact/rejected/test'}                 | ${() => spvWalletClient.RejectContact('test')}
+    ${'UpsertContact'}                            | ${'put'}    | ${'contacts/test'}                         | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
+    ${'DeleteContact'}                            | ${'delete'} | ${'contacts/test'}                         | ${() => spvWalletClient.DeleteContact('test')}
+    ${'AcceptContactInvitation'}                  | ${'post'}   | ${'invitations/test/contacts'}             | ${() => spvWalletClient.AcceptContactInvitation('test')}
+    ${'RejectContactInvitation'}                  | ${'delete'} | ${'invitations/test/contacts'}             | ${() => spvWalletClient.RejectContactInvitation('test')}
+    ${'UnconfirmContact'}                         | ${'delete'} | ${'contacts/test/confirmation'}            | ${() => spvWalletClient.UnconfirmContact('test')}
     ${'GetDestinationByID'}                       | ${'get'}    | ${'destination?id='}                       | ${() => spvWalletClient.GetDestinationByID('')}
     ${'GetDestinationByLockingScript'}            | ${'get'}    | ${'destination?locking_script='}           | ${() => spvWalletClient.GetDestinationByLockingScript('')}
     ${'GetDestinationByAddress'}                  | ${'get'}    | ${'destination?address='}                  | ${() => spvWalletClient.GetDestinationByAddress('')}
@@ -66,13 +69,11 @@ describe('SPVWalletClient routing', () => {
     ${'UpdateDestinationMetadataByID'}            | ${'patch'}  | ${'destination'}                           | ${() => spvWalletClient.UpdateDestinationMetadataByID('', {})}
     ${'UpdateDestinationMetadataByLockingScript'} | ${'patch'}  | ${'destination'}                           | ${() => spvWalletClient.UpdateDestinationMetadataByLockingScript('', {})}
     ${'UpdateDestinationMetadataByAddress'}       | ${'patch'}  | ${'destination'}                           | ${() => spvWalletClient.UpdateDestinationMetadataByAddress('', {})}
-    ${'GetTransaction'}                           | ${'get'}    | ${'transaction?id='}                       | ${() => spvWalletClient.GetTransaction('')}
+    ${'GetTransactionById'}                       | ${'get'}    | ${'transactions/id'}                       | ${() => spvWalletClient.GetTransactionById('id')}
     ${'GetTransactions'}                          | ${'post'}   | ${'transaction/search'}                    | ${() => spvWalletClient.GetTransactions({}, {}, {})}
-    ${'GetTransactionsCount'}                     | ${'post'}   | ${'transaction/count'}                     | ${() => spvWalletClient.GetTransactionsCount({}, {})}
-    ${'DraftTransaction'}                         | ${'post'}   | ${'transaction'}                           | ${() => spvWalletClient.DraftTransaction({} as TransactionConfigInput, {})}
-    ${'DraftToRecipients'}                        | ${'post'}   | ${'transaction'}                           | ${() => spvWalletClient.DraftToRecipients([] as Recipients, {})}
-    ${'RecordTransaction'}                        | ${'post'}   | ${'transaction/record'}                    | ${() => spvWalletClient.RecordTransaction('', '', {})}
-    ${'UpdateTransactionMetadata'}                | ${'patch'}  | ${'transaction'}                           | ${() => spvWalletClient.UpdateTransactionMetadata('', {})}
+    ${'NewDraftTransaction'}                      | ${'post'}   | ${'transactions/drafts'}                   | ${() => spvWalletClient.NewDraftTransaction({} as DraftTransactionConfig, {})}
+    ${'RecordTransaction'}                        | ${'post'}   | ${'transactions'}                          | ${() => spvWalletClient.RecordTransaction('', '', {})}
+    ${'UpdateTransactionMetadata'}                | ${'patch'}  | ${'transactions/id'}                       | ${() => spvWalletClient.UpdateTransactionMetadata('id', {})}
     ${'GetUtxo'}                                  | ${'get'}    | ${'utxo?tx_id=&output_index=0'}            | ${() => spvWalletClient.GetUtxo('', 0)}
     ${'GetUtxos'}                                 | ${'post'}   | ${'utxo/search'}                           | ${() => spvWalletClient.GetUtxos({}, {}, {})}
     ${'GetUtxosCount'}                            | ${'post'}   | ${'utxo/count'}                            | ${() => spvWalletClient.GetUtxosCount({}, {})}
