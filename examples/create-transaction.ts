@@ -14,15 +14,18 @@ const client = new SpvWalletClient(server, {
 });
 
 const newTransaction = await client.SendToRecipients(
-  [
-    {
-      to: 'receiver@example.com',
-      satoshis: 1,
-    },
-  ],
+  {
+    outputs: [
+      {
+        to: 'receiver@example.com',
+        satoshis: 1,
+      }
+    ]
+  },
   { some_metadata: 'example' },
 );
+
 console.log('SendToRecipients response:', newTransaction);
 
-const tx = await client.GetTransaction(newTransaction.id);
+const tx = await client.GetTransactionById(newTransaction.id);
 console.log('GetTransaction response:', tx);
