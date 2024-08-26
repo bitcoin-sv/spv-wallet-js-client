@@ -2,7 +2,7 @@ import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
 import { exampleAdminKey, exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
-const server = 'http://localhost:3003/v1';
+const server = 'http://localhost:3003/api/v1';
 
 // It is possible to get paymail domains either as an admin or as a user.
 if (!exampleAdminKey && !exampleXPriv) {

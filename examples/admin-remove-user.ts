@@ -2,7 +2,7 @@ import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
 import { exampleAdminKey, examplePaymail } from './example-keys.js';
 import { errMessage } from './utils.js';
 
-const server = 'http://localhost:3003/v1';
+const server = 'http://localhost:3003/api/v1';
 
 if (!exampleAdminKey) {
   console.log(errMessage('adminKey'));

@@ -1,6 +1,6 @@
 import { SpvWalletClient, generateKeys } from '../dist/typescript-npm-package.cjs.js';
 
-const server = 'http://localhost:3003/v1';
+const server = 'http://localhost:3003/api/v1';
 
 const newXPub = generateKeys().xPub.toString();
 
