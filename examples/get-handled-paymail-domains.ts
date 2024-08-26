@@ -16,4 +16,4 @@ const client = exampleXPriv
 
 const sharedConfig = await client.GetSharedConfig();
 
-console.log(sharedConfig.paymail_domains[0]);
+console.log(sharedConfig.PaymailDomains[0]);
