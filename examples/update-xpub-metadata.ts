@@ -13,10 +13,10 @@ const client = new SpvWalletClient(server, {
   xPriv: exampleXPriv,
 });
 
-const xpubInfo = await client.GetXPub();
-console.log('XPub metadata:', xpubInfo.metadata);
-console.log('XPub (updated_at):', xpubInfo.updated_at);
+const userInfo = await client.GetUserInfo();
+console.log('XPub metadata:', userInfo.metadata);
+console.log('XPub (updated_at):', userInfo.updatedAt);
 
 const updatedXpubInfo = await client.UpdateXPubMetadata({ some_metadata_2: 'example2' });
 console.log('Updated XPub metadata:', updatedXpubInfo.metadata);
-console.log('Updated XPub (updated_at):', updatedXpubInfo.updated_at);
+console.log('Updated XPub (updated_at):', updatedXpubInfo.updatedAt);

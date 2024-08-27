@@ -14,13 +14,13 @@ const client = new SpvWalletClient(server, {
 });
 
 const opReturn: OpReturn = {
-  string_parts: ['hello', 'world'],
+  stringParts: ['hello', 'world'],
 };
 
 const transactionConfig: DraftTransactionConfig = {
   outputs: [
     {
-      op_return: opReturn,
+      opReturn: opReturn,
     },
   ],
 };

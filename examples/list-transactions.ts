@@ -22,7 +22,7 @@ const txsFiltered = await client.GetTransactions(
   },
   {},
   {
-    page_size: 100,
+    pageSize: 100,
     page: 1,
   },
 );

@@ -19,7 +19,7 @@ const mockBobContact = {
   pubKey: bobPKI,
 
   //the rest of the fields won't be used for OTP generation but they still need to be defined
-  created_at: new Date(),
+  createdAt: new Date(),
   fullName: '',
   id: '',
   status: '',

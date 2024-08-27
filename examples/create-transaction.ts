@@ -17,7 +17,7 @@ const newTransaction = await client.SendToRecipients(
   {
     outputs: [
       {
-        to: 'tx2@wojtek.test.4chain.space',
+        to: 'receiver@example.com',
         satoshis: 1,
       }
     ]
