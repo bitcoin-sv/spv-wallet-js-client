@@ -1,13 +1,18 @@
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import typescript from "@rollup/plugin-typescript";
-import json from "@rollup/plugin-json";
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
+import json from '@rollup/plugin-json';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
-import externals from "rollup-plugin-node-externals";
+import externals from 'rollup-plugin-node-externals';
 import dts from 'rollup-plugin-dts';
 import builtins from 'rollup-plugin-node-builtins';
-import pkg from  "./package.json" assert { type: "json" };
 import type { RollupOptions } from 'rollup';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const configPath = join(dirname(fileURLToPath(import.meta.url)), './package.json');
+const pkg = JSON.parse(readFileSync(configPath, 'utf8'));
 
 const config: RollupOptions[] = [
   // browser-friendly UMD build
