@@ -46,7 +46,7 @@ describe('SPVWalletClient routing', () => {
 
   it.each`
     spvWalletMethod                               | httpMethod  | path                                       | act
-    ${'GetXpub'}                                  | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetXPub()}
+    ${'GetXpub'}                                  | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetUserInfo()}
     ${'UpdateXPubMetadata'}                       | ${'patch'}  | ${'users/current'}                         | ${() => spvWalletClient.UpdateXPubMetadata({})}
     ${'GetAccessKey'}                             | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKey(accessKeyString)}
     ${'GetAccessKeys'}                            | ${'post'}   | ${'access-key/search'}                     | ${() => spvWalletClient.GetAccessKeys({}, {}, {})}

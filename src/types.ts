@@ -48,19 +48,19 @@ export interface Metadata {
  * @example
  * {
     "_id": "7406ab7d9e781685d6d0ceb319b84b332ff1b773ff0bbce1671d843d50c9532a",
-    "created_at": new Date(1645796112916),
+    "createdAt": new Date(1645796112916),
     "metadata": [
       {
         "k": "user_agent",
         "v": "SpvWalletClient v1.0.0"
       },
     ],
-    "current_balance": 99848517,
-    "next_internal_num": 100,
-    "next_external_num": 229
+    "currentBalance": 99848517,
+    "nextInternalNum": 100,
+    "nextExternalNum": 229
   }
  */
-export interface XPub {
+export interface User {
   /**
    * metadata object
    */
@@ -72,38 +72,38 @@ export interface XPub {
   /**
    * Current balance in sats of the xpub
    */
-  current_balance: number;
+  currentBalance: number;
   /**
    * Next internal (change address) number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_internal_num: number;
+  nextInternalNum: number;
   /**
    * Next external number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_external_num: number;
+  nextExternalNum: number;
   /**
    * Date when this object was created
    */
-  created_at?: Date;
+  createdAt?: Date;
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updatedAt?: Date;
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 /**
  * Array of xpubs
- * @see {@link XPub}
+ * @see {@link User}
  */
-export interface XPubs extends Array<XPub> {}
+export interface Users extends Array<User> {}
 
 /**
  * Access key interface.
@@ -118,7 +118,7 @@ export interface AccessKey {
   /**
    * Xpub ID this access key was created for
    */
-  xpub_id: string;
+  xpubId: string;
   /**
    * Private access key, only given out on creation
    */
@@ -130,19 +130,19 @@ export interface AccessKey {
   /**
    * Date when this object was created
    */
-  created_at: Date;
+  createdAt: Date;
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updatedAt?: Date;
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deletedAt?: Date;
   /**
    * If this access key has been revoked, this date will be set and the access key will not work anymore
    */
-  revoked_at?: Date;
+  revokedAt?: Date;
 }
 
 /**
@@ -175,15 +175,15 @@ export interface Contact {
   /**
    * Date when this object was created
    */
-  created_at: Date;
+  createdAt: Date;
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updatedAt?: Date;
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deletedAt?: Date;
   /**
    * Metadata object
    */
@@ -207,11 +207,11 @@ export interface Destination {
   /**
    * Xpub ID this destination was created for
    */
-  xpub_id: string;
+  xpubId: string;
   /**
    * Locking script (script pub key) of the destination
    */
-  locking_script: string;
+  lockingScript: string;
   /**
    * Type of destination: pubkeyhash, nulldata (op return), multisig, nonstandard, scripthash (deprecated p2sh), metanet, token_stas
    */
@@ -227,7 +227,7 @@ export interface Destination {
   /**
    * Paymail derivation number used for the derivation of the destination
    */
-  paymail_external_derivation_num?: number;
+  paymailExternalDerivationNum?: number;
   /**
    * Address of the destination, empty of not p2pkh
    */
@@ -235,7 +235,7 @@ export interface Destination {
   /**
    * ID of the draft transaction associated with this destination
    */
-  draft_id: string;
+  draftId: string;
   /**
    * Metadata object
    */
@@ -243,15 +243,15 @@ export interface Destination {
   /**
    * Date when this object was created
    */
-  created_at: Date;
+  createdAt: Date;
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updatedAt?: Date;
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 /**
@@ -266,18 +266,18 @@ export interface Destinations extends Array<Destination> {}
 export interface Tx {
   id: string;
   hex: string;
-  block_hash: string;
-  block_height: number;
+  blockHash: string;
+  blockHeight: number;
   fee: number;
-  number_of_inputs: number;
-  number_of_outputs: number;
-  output_value: number;
-  total_value: number;
+  numberOfInputs: number;
+  numberOfOutputs: number;
+  outputValue: number;
+  totalValue: number;
   metadata?: Metadata;
   direction: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 /**
@@ -315,7 +315,7 @@ export interface OpReturn {
   /**
    * Array of parts of the OP_RETURN in hex
    */
-  hex_parts?: string[];
+  hexParts?: string[];
   /**
    * MAP protocol definition
    * @see {@link Map}
@@ -324,20 +324,20 @@ export interface OpReturn {
   /**
    * String parts array
    */
-  string_parts?: string[];
+  stringParts?: string[];
 }
 
 /**
- * Recipient interface
+ * Output interface
  */
 export interface Output {
   to: string;
   satoshis: number;
-  op_return?: OpReturn;
+  opReturn?: OpReturn;
 }
 
 /**
- * Array of Recipients
+ * Array of Outputs
  * @see {@link Output}
  */
 export interface Outputs extends Array<Output> {}
@@ -363,31 +363,31 @@ export interface UtxoPointer {
   /**
    * Transaction ID
    */
-  transaction_id: string;
+  transactionId: string;
   /**
    * Output index
    */
-  output_index: number;
+  outputIndex: number;
 }
 
 /**
  * Transaction used as an input in a draft transaction
  */
 export interface TxInput {
-  created_at?: Date;
-  updated_at?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   metadata?: Metadata;
-  deleted_at?: Date;
+  deletedAt?: Date;
   id?: string;
-  transaction_id: string;
-  xpub_id?: string;
-  output_index: number;
+  transactionId: string;
+  xpubId?: string;
+  outputIndex: number;
   satoshis: number;
-  script_pub_key: string;
+  scriptPubKey: string;
   type: string;
-  draft_id?: string;
-  reserved_at?: Date;
-  spending_tx_id?: string;
+  draftId?: string;
+  reservedAt?: Date;
+  spendingTxId?: string;
   destination?: Destination;
 }
 
@@ -396,14 +396,14 @@ export interface TxInput {
  */
 export interface PaymailAddress {
   id: string;
-  xpub_id: string;
+  xpubId: string;
   alias: string;
   domain: string;
-  public_name: string;
+  publicName: string;
   avatar: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 /**
@@ -418,12 +418,12 @@ export interface PaymailAddresses extends Array<PaymailAddress> {}
 export interface PaymailP4 {
   alias: string;
   domain: string;
-  from_paymail?: string;
+  fromPaymail?: string;
   note?: string;
-  pub_key?: string;
-  receive_endpoint?: string;
-  reference_id?: string;
-  resolution_type: string;
+  pubKey?: string;
+  receiveEndpoint?: string;
+  referenceId?: string;
+  resolutionType: string;
 }
 
 /**
@@ -433,19 +433,19 @@ export interface ScriptOutput {
   address?: string;
   satoshis?: number;
   script: string;
-  script_type?: string;
+  scriptType?: string;
 }
 
 /**
  * Transaction output record in a draft transaction
  */
 export interface TxOutput {
-  paymail_p4?: PaymailP4;
+  paymailP4?: PaymailP4;
   satoshis?: number;
   script?: string;
   scripts?: ScriptOutput[];
   to?: string;
-  op_return?: OpReturn;
+  opReturn?: OpReturn;
 }
 
 /**
@@ -453,29 +453,29 @@ export interface TxOutput {
  */
 export interface SyncConfig {
   broadcast: boolean;
-  broadcast_instant: boolean;
-  sync_on_chain: boolean;
-  paymail_p2p: boolean;
+  broadcastInstant: boolean;
+  syncOnChain: boolean;
+  paymailP2p: boolean;
 }
 
 /**
  * Configuration for a new transaction
  */
 export interface TxConfig {
-  change_destinations?: Destination[];
-  change_destinations_strategy?: ChangeStrategy;
-  change_minimum_satoshis?: number;
-  change_number_of_destinations?: number;
-  change_satoshis?: number;
-  expires_in?: number;
+  changeDestinations?: Destination[];
+  changeDestinationsStrategy?: ChangeStrategy;
+  changeMinimumSatoshis?: number;
+  changeNumberOfDestinations?: number;
+  changeSatoshis?: number;
+  expiresIn?: number;
   fee?: number;
-  fee_unit?: FeeUnit;
-  from_utxos?: UtxoPointer[];
-  include_utxos?: UtxoPointer[];
+  feeUnit?: FeeUnit;
+  fromUtxos?: UtxoPointer[];
+  includeUtxos?: UtxoPointer[];
   inputs?: TxInput[];
   miner?: string;
   outputs: TxOutput[];
-  send_all_to?: string;
+  sendAllTo?: string;
   sync?: SyncConfig;
 }
 
@@ -483,18 +483,18 @@ export interface TxConfig {
  * Transaction input in a new transaction
  */
 export interface DraftTransactionConfig {
-  change_destinations?: Destination[];
-  change_destinations_strategy?: ChangeStrategy;
-  change_minimum_satoshis?: number;
-  change_number_of_destinations?: number;
-  change_satoshis?: number;
-  expires_in?: number;
+  changeDestinations?: Destination[];
+  changeDestinationsStrategy?: ChangeStrategy;
+  changeMinimumSatoshis?: number;
+  changeNumberOfDestinations?: number;
+  changeSatoshis?: number;
+  expiresIn?: number;
   fee?: number;
-  fee_unit?: FeeUnit;
-  from_utxos?: UtxoPointer[];
+  feeUnit?: FeeUnit;
+  fromUtxos?: UtxoPointer[];
   miner?: string;
   outputs: TxOutput[];
-  send_all_to?: string;
+  sendAllTo?: string;
   sync?: SyncConfig;
 }
 
@@ -514,14 +514,14 @@ export interface DraftTx {
   id: string;
   hex: string;
   metadata?: Metadata;
-  xpub_id: string;
-  expires_at: Date;
+  xpubId: string;
+  expiresAt: Date;
   configuration: TxConfig;
   status: DraftStatus;
-  final_tx_id?: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  finalTxId?: string;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 /**
@@ -529,17 +529,17 @@ export interface DraftTx {
  */
 export interface Utxo {
   id: string;
-  xpub_id: string;
+  xpubId: string;
   satoshis: number;
-  script_pub_key: string;
+  scriptPubKey: string;
   type: string;
-  draft_id?: string;
-  reserved_at?: Date;
-  spending_tx_id?: string;
+  draftId?: string;
+  reservedAt?: Date;
+  spendingTxId?: string;
   transaction?: Tx;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 /**
@@ -567,7 +567,7 @@ export interface AdminStats {
   /**
    * Number of paymail addresses in the database
    */
-  paymail_addresses: number;
+  paymailAddresses: number;
   /**
    * Number of utxos in the database
    */
@@ -579,11 +579,11 @@ export interface AdminStats {
   /**
    * A key value object of dates and number of transactions on that date (YYYYMMDD)
    */
-  transactions_per_day: { [key: string]: any };
+  transactionsPerDay: { [key: string]: any };
   /**
    * Number of utxos per output type
    */
-  utxos_per_type: { [key: string]: any };
+  utxosPerType: { [key: string]: any };
 }
 
 /**
@@ -660,15 +660,15 @@ export interface QueryParams {
   /**
    * Number of items to return per page
    */
-  page_size?: number;
+  pageSize?: number;
   /**
    * Order the results by this field
    */
-  order_by_field?: string;
+  orderByField?: string;
   /**
    * Sort order (desc, asc)
    */
-  sort_direction?: string;
+  sortDirection?: string;
 }
 
 /**
@@ -678,13 +678,13 @@ export interface SharedConfig {
   /**
    * PaymailDomains is an array of strings representing the allowed Paymail domains.
    */
-  paymail_domains: string[];
+  paymailDomains: string[];
 
   /**
    * ExperimentalFeatures is a map of experimental features handled by spv-wallet.
    * The keys are strings representing the feature names, and the values are booleans representing whether the feature is enabled or not.
    */
-  experimental_features: { [key: string]: boolean };
+  experimentalFeatures: { [key: string]: boolean };
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE';

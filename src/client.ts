@@ -21,8 +21,8 @@ import {
   Utxo,
   Utxos,
   XprivWithSigning,
-  XPub,
-  XPubs,
+  User,
+  Users,
   XpubWithoutSigning,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
@@ -395,9 +395,9 @@ export class SpvWalletClient {
    * @param {XpubFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {XPubs}
+   * @return {Users}
    */
-  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: QueryParams): Promise<XPubs> {
+  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: QueryParams): Promise<Users> {
     return await this.http.adminRequest(`admin/xpubs/search`, 'POST', {
       conditions,
       metadata,
@@ -424,9 +424,9 @@ export class SpvWalletClient {
    *
    * @param {string} rawXPub    XPub string
    * @param {Metadata} metadata Key value object to use to add to the xpub
-   * @return {XPub}             The newly registered xpub
+   * @return {User}             The newly registered xpub
    */
-  async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+  async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<User> {
     return await this.http.adminRequest(`admin/xpub`, 'POST', {
       key: rawXPub,
       metadata,
@@ -446,9 +446,9 @@ export class SpvWalletClient {
   /**
    * Get information about the xpub from the server of the current user
    *
-   * @return {XPub}
+   * @return {User}
    */
-  async GetXPub(): Promise<XPub> {
+  async GetUserInfo(): Promise<User> {
     return await this.http.request(`users/current`);
   }
 
@@ -458,9 +458,9 @@ export class SpvWalletClient {
    * Admin key should be set to use this method
    *
    * @param {Metadata} metadata Key value object to use to update the metadata. To delete keys add a key with null value
-   * @return {XPub}
+   * @return {User}
    */
-  async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
+  async UpdateXPubMetadata(metadata: Metadata): Promise<User> {
     return await this.http.request(`users/current`, 'PATCH', { metadata });
   }
 
@@ -487,9 +487,9 @@ export class SpvWalletClient {
       conditions,
       metadata,
       page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+      page_size: queryParams?.pageSize || 0,
+      order_by_field: queryParams?.orderByField || '',
+      sort_direction: queryParams?.sortDirection || '',
     });
   }
 
@@ -578,9 +578,9 @@ export class SpvWalletClient {
       conditions,
       metadata,
       page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+      page_size: queryParams?.pageSize || 0,
+      order_by_field: queryParams?.orderByField || '',
+      sort_direction: queryParams?.sortDirection || '',
     });
   }
 
@@ -673,9 +673,9 @@ export class SpvWalletClient {
       conditions,
       metadata,
       page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+      page_size: queryParams?.pageSize || 0,
+      order_by_field: queryParams?.orderByField || '',
+      sort_direction: queryParams?.sortDirection || '',
     });
   }
 
@@ -801,9 +801,9 @@ export class SpvWalletClient {
       conditions,
       metadata,
       page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+      page_size: queryParams?.pageSize || 0,
+      order_by_field: queryParams?.orderByField || '',
+      sort_direction: queryParams?.sortDirection || '',
     });
   }
 
@@ -831,9 +831,9 @@ export class SpvWalletClient {
       conditions,
       metadata,
       page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+      page_size: queryParams?.pageSize || 0,
+      order_by_field: queryParams?.orderByField || '',
+      sort_direction: queryParams?.sortDirection || '',
     });
   }
 
@@ -909,15 +909,15 @@ export class SpvWalletClient {
       // derive private key (m/chain/num)
       let hdWallet = xPriv.deriveChild(destination.chain).deriveChild(destination.num);
 
-      if (destination.paymail_external_derivation_num != null) {
+      if (destination.paymailExternalDerivationNum != null) {
         // derive private key (m/chain/num/paymail_num)
-        hdWallet = hdWallet.deriveChild(destination.paymail_external_derivation_num);
+        hdWallet = hdWallet.deriveChild(destination.paymailExternalDerivationNum);
       }
 
       // small sanity check for the inputs
       if (
-        input.transaction_id != txDraft.inputs[index].sourceTXID ||
-        input.output_index != txDraft.inputs[index].sourceOutputIndex
+        input.transactionId != txDraft.inputs[index].sourceTXID ||
+        input.outputIndex != txDraft.inputs[index].sourceOutputIndex
       ) {
         throw new ErrorTxIdsDontMatchToDraft(this.logger, input, index, txDraft.inputs[index]);
       }
@@ -930,8 +930,8 @@ export class SpvWalletClient {
         new P2PKH().lock(destination.address),
       );
 
-      txDraft.inputs[index].sourceOutputIndex = input.output_index;
-      txDraft.inputs[index].sourceTXID = input.transaction_id;
+      txDraft.inputs[index].sourceOutputIndex = input.outputIndex;
+      txDraft.inputs[index].sourceTXID = input.transactionId;
     });
 
     await txDraft.sign();

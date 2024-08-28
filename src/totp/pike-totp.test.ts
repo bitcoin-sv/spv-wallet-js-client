@@ -16,7 +16,7 @@ const bobXPub =
   'xpub661MyMwAqRbcFf7dwiYF2cvyqrrfA9H4oMAuShiYJAJRUrc1vRKyXdpgsLQ55cxnsemYbJNaFBtYAyijPeosA46Sy9xwA9jQC4DGkEUW6XR';
 
 const mockBobContact: Contact = {
-  created_at: new Date(),
+  createdAt: new Date(),
   fullName: '',
   id: '',
   status: '',
