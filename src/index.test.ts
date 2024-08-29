@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import fetchMock from 'jest-fetch-mock';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { SpvWalletClient } from './index';
 import { ClientOptions, DraftTx, Recipients, TransactionConfigInput } from './types';
 
@@ -24,6 +24,8 @@ const httpTestClient: TestClient = {
 };
 
 const testClient: TestClient = httpTestClient;
+
+enableFetchMocks();
 
 describe('SPVWalletClient class', () => {
   test('instantiate with options', () => {
