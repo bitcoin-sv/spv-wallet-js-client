@@ -953,7 +953,7 @@ export class SpvWalletClient {
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Tx> {
     return await this.http.request(`transactions`, 'POST', {
       hex,
-      reference_id: referenceID,
+      referenceId: referenceID,
       metadata,
     });
   }
