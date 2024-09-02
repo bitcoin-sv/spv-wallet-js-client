@@ -18,8 +18,8 @@ const ADMIN_XPRIV =
 const ADMIN_XPUB =
   'xpub661MyMwAqRbcFgfmdkPgE2m5UjHXu9dj124DbaGLSjaqVESTWfCD4VuNmEbVPkbYLCkykwVZvmA8Pbf8884TQr1FgdG2nPoHR8aB36YdDQh';
 
-let paymailDomainInstanceOne: string;
-let paymailDomainInstanceTwo: string;
+let paymailDomainInstanceOne: string = '';
+let paymailDomainInstanceTwo: string = '';
 let userOne: RegressionTestUser;
 let userTwo: RegressionTestUser;
 let rtConfig: RegressionTestConfig;
@@ -44,10 +44,12 @@ describe('TestRegression', () => {
   describe('Initialize Shared Configurations', () => {
     test('Should get sharedConfig for instance one', async () => {
       paymailDomainInstanceOne = await getPaymailDomain(ADMIN_XPRIV, rtConfig.clientOneURL);
+      expect(paymailDomainInstanceOne).not.toBe('');
     });
 
     test('Should get sharedConfig for instance two', async () => {
       paymailDomainInstanceTwo = await getPaymailDomain(ADMIN_XPRIV, rtConfig.clientOneURL);
+      expect(paymailDomainInstanceTwo).not.toBe('');
     });
   });
 
