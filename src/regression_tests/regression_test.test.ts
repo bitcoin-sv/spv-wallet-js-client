@@ -12,6 +12,7 @@ import {
 } from './utils';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
+// Two minute timeout for transaction tests
 const TEST_TIMEOUT_MS = 120000;
 const ADMIN_XPRIV =
   'xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK';
@@ -77,7 +78,7 @@ describe('TestRegression', () => {
           userOne.paymail,
           amountToSend,
         );
-        expect(-1).toBeGreaterThanOrEqual(transaction.output_value);
+        expect(transaction.output_value).toBeLessThanOrEqual(-1);
 
         const balance = await getBalance(rtConfig.clientOneURL, userOne.xpriv);
         expect(balance).toBeGreaterThanOrEqual(1);
@@ -97,7 +98,7 @@ describe('TestRegression', () => {
           userTwo.paymail,
           MINIMAL_FUNDS_PER_TRANSACTION,
         );
-        expect(-1).toBeGreaterThanOrEqual(transaction.output_value);
+        expect(transaction.output_value).toBeLessThanOrEqual(-1);
 
         const balance = await getBalance(rtConfig.clientTwoURL, userTwo.xpriv);
         expect(balance).toBeGreaterThanOrEqual(1);
@@ -117,7 +118,7 @@ describe('TestRegression', () => {
           userTwo.paymail,
           MINIMAL_FUNDS_PER_TRANSACTION,
         );
-        expect(-1).toBeGreaterThanOrEqual(transaction.output_value);
+        expect(transaction.output_value).toBeLessThanOrEqual(-1);
 
         const balanceInstance2 = await getBalance(rtConfig.clientTwoURL, userTwo.xpriv);
         expect(balanceInstance2).toBeGreaterThanOrEqual(2);
