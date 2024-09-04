@@ -177,7 +177,7 @@ const addApiVersionIfNeeded = function (url: string, apiVersion: string): string
   const apiVersionWithSlash = '/' + apiVersion;
   if (url.includes(apiVersionWithSlash)) {
     return url;
-  } else {
-    return url.endsWith('/') ? url + apiVersion : url + apiVersionWithSlash;
   }
+
+  return url.endsWith('/') ? url + apiVersion : url + apiVersionWithSlash;
 };

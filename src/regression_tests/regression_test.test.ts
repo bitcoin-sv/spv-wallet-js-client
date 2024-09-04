@@ -12,15 +12,14 @@ import {
 } from './utils';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
-// Two minute timeout for transaction tests
-const TEST_TIMEOUT_MS = 120000;
+const TEST_TIMEOUT_MS = 2 * 60 * 1000;
 const ADMIN_XPRIV =
   'xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK';
 const ADMIN_XPUB =
   'xpub661MyMwAqRbcFgfmdkPgE2m5UjHXu9dj124DbaGLSjaqVESTWfCD4VuNmEbVPkbYLCkykwVZvmA8Pbf8884TQr1FgdG2nPoHR8aB36YdDQh';
 
-let paymailDomainInstanceOne: string = '';
-let paymailDomainInstanceTwo: string = '';
+let paymailDomainInstanceOne = '';
+let paymailDomainInstanceTwo = '';
 let userOne: RegressionTestUser;
 let userTwo: RegressionTestUser;
 let rtConfig: RegressionTestConfig;
@@ -49,7 +48,7 @@ describe('TestRegression', () => {
     });
 
     test('Should get sharedConfig for instance two', async () => {
-      paymailDomainInstanceTwo = await getPaymailDomain(ADMIN_XPRIV, rtConfig.clientOneURL);
+      paymailDomainInstanceTwo = await getPaymailDomain(ADMIN_XPRIV, rtConfig.clientTwoURL);
       expect(paymailDomainInstanceTwo).not.toBe('');
     });
   });
