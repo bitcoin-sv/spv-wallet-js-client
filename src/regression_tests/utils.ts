@@ -95,7 +95,7 @@ export const removeRegisteredPaymail = async (paymail: string, instanceURL: stri
 };
 
 // getBalance retrieves the balance from the SPV Wallet.
-export const getBalance = async function (fromInstance: string, fromXPriv: string): Promise<number> {
+export const getBalance = async (fromInstance: string, fromXPriv: string) => {
   const client = new SpvWalletClient(fromInstance, { xPriv: fromXPriv });
 
   const xpubInfo = await client.GetXPub();
