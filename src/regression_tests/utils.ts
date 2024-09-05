@@ -27,7 +27,7 @@ export interface RegressionTestConfig {
 }
 
 // getEnvVariables retrieves the environment variables needed for the regression tests.
-export const getEnvVariables = function (): RegressionTestConfig {
+export const getEnvVariables = () => {
   const rtConfig: RegressionTestConfig = {
     clientOneURL: process.env[CLIENT_ONE_URL_ENV_VAR] || '',
     clientTwoURL: process.env[CLIENT_TWO_URL_ENV_VAR] || '',
@@ -54,7 +54,7 @@ export const getEnvVariables = function (): RegressionTestConfig {
 };
 
 // getPaymailDomain retrieves the shared configuration from the SPV Wallet.
-export const getPaymailDomain = async function (xpriv: string, clientUrl: string): Promise<string> {
+export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
   const wc = new SpvWalletClient(clientUrl, {
     xPriv: xpriv,
   });
@@ -69,12 +69,7 @@ export const getPaymailDomain = async function (xpriv: string, clientUrl: string
 };
 
 // createUser creates a set of keys and new paymail in the SPV wallet
-export const createUser = async function (
-  paymail: string,
-  paymailDomain: string,
-  instanceUrl: string,
-  adminXPriv: string,
-): Promise<RegressionTestUser> {
+export const createUser = async (paymail: string, paymailDomain: string, instanceUrl: string, adminXPriv: string) => {
   const keys = generateKeys();
 
   const user: RegressionTestUser = {
@@ -94,11 +89,7 @@ export const createUser = async function (
 };
 
 // removeRegisteredPaymail soft deletes paymail from the SPV Wallet.
-export const removeRegisteredPaymail = async function (
-  paymail: string,
-  instanceURL: string,
-  adminXPriv: string,
-): Promise<void> {
+export const removeRegisteredPaymail = async (paymail: string, instanceURL: string, adminXPriv: string) => {
   const adminClient = new SpvWalletClient(instanceURL, { adminKey: adminXPriv, xPriv: adminXPriv });
   await adminClient.AdminDeletePaymail(paymail);
 };
@@ -113,7 +104,7 @@ export const getBalance = async function (fromInstance: string, fromXPriv: strin
 };
 
 // getTransactions retrieves the transactions from the SPV Wallet.
-export const getTransactions = async function (fromInstance: string, fromXPriv: string): Promise<Txs> {
+export const getTransactions = async (fromInstance: string, fromXPriv: string) => {
   const client = new SpvWalletClient(fromInstance, { xPriv: fromXPriv });
 
   const metadata = new Map<string, any>();
@@ -126,12 +117,7 @@ export const getTransactions = async function (fromInstance: string, fromXPriv: 
 };
 
 // sendFunds sends funds from one paymail to another
-export const sendFunds = async function (
-  fromInstance: string,
-  fromXPriv: string,
-  toPaymail: string,
-  howMuch: number,
-): Promise<Tx> {
+export const sendFunds = async (fromInstance: string, fromXPriv: string, toPaymail: string, howMuch: number) => {
   const client = new SpvWalletClient(fromInstance, { xPriv: fromXPriv });
 
   const balance = await getBalance(fromInstance, fromXPriv);
@@ -150,7 +136,7 @@ export const sendFunds = async function (
 };
 
 // preparePaymail prepares the paymail address by combining the alias and domain.
-export const preparePaymail = function (paymailAlias: string, domain: string): string {
+const preparePaymail = (paymailAlias: string, domain: string) => {
   if (isValidURL(domain)) {
     const splitedDomain = domain.split('//');
     domain = splitedDomain[1];
@@ -160,7 +146,7 @@ export const preparePaymail = function (paymailAlias: string, domain: string): s
 };
 
 // addPrefixIfNeeded adds the HTTPS prefix to the URL if it is missing.
-export const addPrefixIfNeeded = function (url: string): string {
+const addPrefixIfNeeded = (url: string) => {
   if (!isValidURL(url)) {
     return DOMAIN_PREFIX + url;
   }
@@ -168,12 +154,12 @@ export const addPrefixIfNeeded = function (url: string): string {
 };
 
 // isValidURL validates the URL if it has http or https prefix.
-export const isValidURL = function (rawURL: string): boolean {
+const isValidURL = (rawURL: string) => {
   return EXPLICIT_HTTP_URL_REGEX.test(rawURL);
 };
 
 // addApiVersionIfNeeded adds api version if it's not present in the url
-const addApiVersionIfNeeded = function (url: string, apiVersion: string): string {
+const addApiVersionIfNeeded = (url: string, apiVersion: string) => {
   const apiVersionWithSlash = '/' + apiVersion;
   if (url.includes(apiVersionWithSlash)) {
     return url;
