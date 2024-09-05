@@ -25,6 +25,14 @@ const httpTestClient: TestClient = {
 
 const testClient: TestClient = httpTestClient;
 
+beforeAll(() => {
+  fetchMock.enableMocks();
+});
+
+afterAll(() => {
+  fetchMock.disableMocks();
+});
+
 describe('SPVWalletClient class', () => {
   test('instantiate with options', () => {
     const options: ClientOptions = {

@@ -33,7 +33,8 @@
     "prebuild:types": "rimraf ./build",
     "predocs": "rimraf ./docs",
     "pub": "yarn build && yarn publish",
-    "test": "jest"
+    "test": "jest",
+    "test:regression": "jest --testPathPattern=regression_tests --testPathIgnorePatterns=\"\""
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",
