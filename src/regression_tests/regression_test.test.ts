@@ -24,6 +24,24 @@ let userOne: RegressionTestUser;
 let userTwo: RegressionTestUser;
 let rtConfig: RegressionTestConfig;
 
+const sendAndVerifyFunds = async (
+  fromInstance: string,
+  fromXPriv: string,
+  toPaymail: string,
+  howMuch: number,
+  targetURL: string,
+  targetXPriv: string,
+) => {
+  const transaction = await sendFunds(fromInstance, fromXPriv, toPaymail, howMuch);
+  expect(transaction.output_value).toBeLessThanOrEqual(-1);
+
+  const balance = await getBalance(targetURL, targetXPriv);
+  expect(balance).toBeGreaterThanOrEqual(1);
+
+  const transactions = await getTransactions(targetURL, targetXPriv);
+  expect(transactions.length).toBeGreaterThanOrEqual(1);
+};
+
 beforeAll(() => {
   fetchMock.disableMocks();
   rtConfig = getEnvVariables();
@@ -71,19 +89,14 @@ describe('TestRegression', () => {
       async () => {
         const amountToSend = 3;
 
-        const transaction = await sendFunds(
+        await sendAndVerifyFunds(
           rtConfig.clientTwoURL,
           rtConfig.clientTwoLeaderXPriv,
           userOne.paymail,
           amountToSend,
+          rtConfig.clientOneURL,
+          userOne.xpriv,
         );
-        expect(transaction.output_value).toBeLessThanOrEqual(-1);
-
-        const balance = await getBalance(rtConfig.clientOneURL, userOne.xpriv);
-        expect(balance).toBeGreaterThanOrEqual(1);
-
-        const transactions = await getTransactions(rtConfig.clientOneURL, userOne.xpriv);
-        expect(transactions.length).toBeGreaterThanOrEqual(1);
       },
       TEST_TIMEOUT_MS,
     );
@@ -91,19 +104,14 @@ describe('TestRegression', () => {
     test(
       'Send money to instance 2',
       async () => {
-        const transaction = await sendFunds(
+        await sendAndVerifyFunds(
           rtConfig.clientOneURL,
           rtConfig.clientOneLeaderXPriv,
           userTwo.paymail,
           MINIMAL_FUNDS_PER_TRANSACTION,
+          rtConfig.clientTwoURL,
+          userTwo.xpriv,
         );
-        expect(transaction.output_value).toBeLessThanOrEqual(-1);
-
-        const balance = await getBalance(rtConfig.clientTwoURL, userTwo.xpriv);
-        expect(balance).toBeGreaterThanOrEqual(1);
-
-        const transactions = await getTransactions(rtConfig.clientTwoURL, userTwo.xpriv);
-        expect(transactions.length).toBeGreaterThanOrEqual(1);
       },
       TEST_TIMEOUT_MS,
     );
