@@ -21,6 +21,7 @@ import {
   Txs,
   Utxo,
   Utxos,
+  Webhook,
   XprivWithSigning,
   XPub,
   XPubs,
@@ -442,6 +443,37 @@ export class SpvWalletClient {
    */
   async AdminRecordTransaction(hex: string): Promise<Tx> {
     return await this.http.adminRequest(`admin/transactions/record`, 'POST', { hex });
+  }
+
+  /**
+   * Admin only: Subscribe to a webhook with the given URL, token header, and token value.
+   *
+   * @param url - The URL to subscribe the webhook to.
+   * @param tokenHeader - The header name for the authentication token.
+   * @param tokenValue - The value of the authentication token.
+   * @returns A Promise that resolves when the webhook subscription is complete.
+   */
+  async AdminSubscribeWebhook(url: string, tokenHeader: string, tokenValue: string): Promise<void> {
+    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'POST', { url, tokenHeader, tokenValue });
+  }
+
+  /**
+   * Admin only: Get a list of all webhook subscriptions.
+   *
+   * @returns A Promise that resolves to an array of Webhook objects representing the current webhook subscriptions.
+   */
+  async AdminGetWebhooks(): Promise<Webhook[]> {
+    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'GET');
+  }
+
+  /**
+   * Admin only: Delete a webhook subscription by the given URL.
+   *
+   * @param url - The URL of the webhook subscription to delete.
+   * @returns A Promise that resolves when the webhook subscription is deleted.
+   */
+  async AdminDeleteWebhook(url: string): Promise<void> {
+    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'DELETE', { url });
   }
 
   /**
