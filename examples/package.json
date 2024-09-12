@@ -6,7 +6,7 @@
     "build": "tsc",
     "build:client": "cd .. && yarn build",
     "_print_starting_label": "echo '' && echo '========== Starting ==========' && echo ''",
-    "run:example": "yarn build:client && yarn _print_startin_label && node --loader ts-node/esm",
+    "run:example": "yarn build:client && yarn _print_starting_label && node --loader ts-node/esm",
     "admin-add-user": "yarn run:example admin-add-user.ts",
     "admin-remove-user": "yarn run:example admin-remove-user.ts",
     "create-transaction": "yarn run:example create-transaction.ts",
