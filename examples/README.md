@@ -31,6 +31,7 @@ In this directory you can find examples of how to use the `spv-wallet-js-client`
 5. `list-transactions` - lists all transactions and with example filtering
 6. `send-op-return` - sends an OP_RETURN transaction
 7. `admin-remove-user` - removes the user
+8. `admin-webhooks` - shows how to set up webhooks and how to handle them
 
 In addition to the above, there are additional examples showing how to use the client from a developer perspective:
 

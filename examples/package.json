@@ -7,6 +7,7 @@
     "build:client": "cd .. && yarn build",
     "run:example": "yarn build:client && echo '==== Starting ====\n' && node --loader ts-node/esm",
     "admin-add-user": "yarn run:example admin-add-user.ts",
+    "admin-webhooks": "yarn run:example admin-webhooks.ts",
     "admin-remove-user": "yarn run:example admin-remove-user.ts",
     "create-transaction": "yarn run:example create-transaction.ts",
     "custom-logger": "yarn run:example custom-logger.ts",

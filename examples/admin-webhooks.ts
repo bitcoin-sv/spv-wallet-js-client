@@ -18,10 +18,10 @@ const webhookSuccessfullySubscribed = await adminClient.AdminSubscribeWebhook(
   'tokenHeader',
   'tokenValue',
 );
-console.log('Webhook response:', webhookSuccessfullySubscribed);
+console.log('Webhook added:', webhookSuccessfullySubscribed);
 
 const webhooks = await adminClient.AdminGetWebhooks();
-console.log('Webhooks response:', webhooks);
+console.log('Webhooks:', webhooks);
 
 const webhookSuccessfullyUnsubscribed = await adminClient.AdminDeleteWebhook('https://example.com');
-console.log('Webhook response:', webhookSuccessfullyUnsubscribed);
+console.log('Webhook deleted:', webhookSuccessfullyUnsubscribed);
