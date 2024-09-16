@@ -40,16 +40,16 @@ import {
 import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
 import {
   AccessKeyFilter,
+  AdminAccessKeyFilter,
+  AdminPaymailFilter,
+  AdminUtxoFilter,
   ContactFilter,
   DestinationFilter,
-  AdminPaymailFilter,
   TransactionFilter,
   UtxoFilter,
   XpubFilter,
-  AdminUtxoFilter,
-  AdminAccessKeyFilter,
 } from './filters';
-import { validateTotpForContact, generateTotpForContact, DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD } from './totp';
+import { DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD, generateTotpForContact, validateTotpForContact } from './totp';
 
 /**
  * SpvWallet class
@@ -610,10 +610,12 @@ export class SpvWalletClient {
     return await this.http.request(`destination/search`, 'POST', {
       conditions,
       metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+      params: {
+        page: queryParams?.page || 0,
+        page_size: queryParams?.page_size || 0,
+        order_by_field: queryParams?.order_by_field || '',
+        sort_direction: queryParams?.sort_direction || '',
+      },
     });
   }
 
