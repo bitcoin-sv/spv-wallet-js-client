@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task -l
+
+  run_regression_tests:
+    desc: 'running js regression tests'
+    cmds:
+      - echo "running js regression tests..."
+      - yarn test:regression
+    dir: .
+    env:
+      CLIENT_ONE_URL: '{{.CLIENT_ONE_URL}}'
+      CLIENT_TWO_URL: '{{.CLIENT_TWO_URL}}'
+      CLIENT_ONE_LEADER_XPRIV: '{{.CLIENT_ONE_LEADER_XPRIV}}'
+      CLIENT_TWO_LEADER_XPRIV: '{{.CLIENT_TWO_LEADER_XPRIV}}'

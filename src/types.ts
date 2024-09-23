@@ -642,6 +642,17 @@ export interface AccessKeyWithSigning extends OptionalAdminKey {
   accessKey: string;
 }
 
+export interface Webhook {
+  /**
+   * The URL for the webhook.
+   */
+  url: string;
+  /**
+   * Indicates whether the entity is banned or not.
+   */
+  banned: boolean;
+}
+
 export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning | AdminKey;
 
 /**
