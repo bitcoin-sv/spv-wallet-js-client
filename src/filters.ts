@@ -58,6 +58,7 @@ export type TransactionStatus =
   | 'REJECTED';
 
 export interface TransactionFilter extends ModelFilter {
+  id?: string;
   hex?: string;
   blockHash?: string;
   blockHeight?: number;

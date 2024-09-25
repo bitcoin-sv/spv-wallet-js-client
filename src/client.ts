@@ -7,7 +7,6 @@ import {
   ClientOptions,
   Contact,
   Contacts,
-  Destination,
   Destinations,
   DraftTransactionConfig,
   DraftTx,
@@ -18,7 +17,6 @@ import {
   SharedConfig,
   Tx,
   Txs,
-  Utxo,
   Utxos,
   Webhook,
   XprivWithSigning,
@@ -49,6 +47,7 @@ import {
   XpubFilter,
 } from './filters';
 import { DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD, generateTotpForContact, validateTotpForContact } from './totp';
+import { buildPath } from './query/query-builder';
 
 /**
  * SpvWallet class
@@ -502,7 +501,7 @@ export class SpvWalletClient {
    * @param {string} id The database ID of the access key
    * @return {AccessKey}
    */
-  async GetAccessKey(id: string): Promise<AccessKey> {
+  async GetAccessKeybyID(id: string): Promise<AccessKey> {
     return await this.http.request(`users/current/keys/${id}`);
   }
 
@@ -515,28 +514,16 @@ export class SpvWalletClient {
    * @return {AccessKeys}
    */
   async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
-    return await this.http.request(`access-key/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.pageSize || 0,
-      order_by_field: queryParams?.orderByField || '',
-      sort_direction: queryParams?.sortDirection || '',
-    });
-  }
+    const basePath = `users/current/keys`
+    const path = buildPath({
+        filter: conditions,
+        metadata: metadata,
+        queryParams: queryParams,
+        basePath: basePath
+      }
+    );
 
-  /**
-   * Get a count of all access keys for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async GetAccessKeysCount(conditions: AccessKeyFilter, metadata: Metadata): Promise<number> {
-    return await this.http.request(`access-key/count`, 'POST', {
-      conditions,
-      metadata,
-    });
+    return await this.http.request(path, 'GET');
   }
 
   /**
@@ -564,135 +551,6 @@ export class SpvWalletClient {
   }
 
   /**
-   * Get a destination of the current user by database ID
-   *
-   * @param id string Database ID of destination (sha256 hash of locking script)
-   * @return {Destination}
-   */
-  async GetDestinationByID(id: string): Promise<Destination> {
-    return await this.http.request(`destination?id=${id}`);
-  }
-
-  /**
-   * Get a destination of the current user by locking script
-   *
-   * @param locking_script string Locking script (script pub key)
-   * @return {Destination}
-   */
-  async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return await this.http.request(`destination?locking_script=${locking_script}`);
-  }
-
-  /**
-   * Get a destination of the current user by bitcoin address
-   *
-   * @param address string Bitcoin address
-   * @return {Destination}
-   */
-  async GetDestinationByAddress(address: string): Promise<Destination> {
-    return await this.http.request(`destination?address=${address}`);
-  }
-
-  /**
-   * Get a list of all destinations for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Destinations}
-   */
-  async GetDestinations(
-    conditions: DestinationFilter,
-    metadata: Metadata,
-    queryParams: QueryParams,
-  ): Promise<Destinations> {
-    return await this.http.request(`destination/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.pageSize || 0,
-      order_by_field: queryParams?.orderByField || '',
-      sort_direction: queryParams?.sortDirection || '',
-    });
-  }
-
-  /**
-   * Get a count of all destinations for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async GetDestinationsCount(conditions: DestinationFilter, metadata: Metadata): Promise<number> {
-    return await this.http.request(`destination/count`, 'POST', {
-      conditions,
-      metadata,
-    });
-  }
-
-  /**
-   * Create a new destination to receive bsv with and return that destination
-   *
-   * This function allows you to create a destination that will be monitored on-chain and will import any transactions
-   * related to that destination into SPV Wallet. This is legacy functionality in Bitcoin and should only be used if a p2p
-   * option (paymail) is not possible. Use sparingly.
-   *
-   * @param {Metadata} metadata Key value object to attach to the new destination
-   * @return {Destination}
-   */
-  async NewDestination(metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'POST', { metadata });
-  }
-
-  /**
-   * Updated the metadata object of the destination given by ID with new keys (does not overwrite the old object)
-   *
-   * To remove a key from the metadata object, add a key to set with a value of `null`
-   *
-   * @param {string} id Database ID of the destination
-   * @param {Metadata} metadata Key value object to append to the metadata of the destination
-   * @return {Destination}
-   */
-  async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'PATCH', {
-      id,
-      metadata,
-    });
-  }
-
-  /**
-   * Updated the metadata object of the destination given by locking script with new keys (does not overwrite the old object)
-   *
-   * To remove a key from the metadata object, add a key to set with a value of `null`
-   *
-   * @param {string} locking_script Locking script of the destination
-   * @param {Metadata} metadata Key value object to append to the metadata of the destination
-   * @return {Destination}
-   */
-  async UpdateDestinationMetadataByLockingScript(locking_script: string, metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'PATCH', {
-      locking_script,
-      metadata,
-    });
-  }
-
-  /**
-   * Updated the metadata object of the destination given by address with new keys (does not overwrite the old object)
-   *
-   * To remove a key from the metadata object, add a key to set with a value of `null`
-   *
-   * @param {string} address Address of the destination
-   * @param {Metadata} metadata Key value object to append to the metadata of the destination
-   * @return {Destination}
-   */
-  async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'PATCH', {
-      address,
-      metadata,
-    });
-  }
-
-  /**
    * Get a list of all contacts for the current user, filtered by conditions, metadata and queryParams
    *
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
@@ -701,14 +559,15 @@ export class SpvWalletClient {
    * @return {Contacts}
    */
   async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<Contacts> {
-    return await this.http.request(`contact/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.pageSize || 0,
-      order_by_field: queryParams?.orderByField || '',
-      sort_direction: queryParams?.sortDirection || '',
+    const basePath = 'contacts';
+    const path = buildPath({
+      filter: conditions,
+      metadata: metadata,
+      queryParams: queryParams,
+      basePath: basePath
     });
+
+    return await this.http.request(path, 'GET');
   }
 
   /**
@@ -717,7 +576,7 @@ export class SpvWalletClient {
    * @param {string} paymail  Contact paymail to get specific contact
    * @return {Contact}
    */
-  async GetContact(paymail: string): Promise<Contact> {
+  async GetContactByPaymail(paymail: string): Promise<Contact> {
     return await this.http.request(`contacts/${paymail}`, 'GET');
   }
 
@@ -727,7 +586,7 @@ export class SpvWalletClient {
    * @param {string} paymail  Contact paymail to get specific contact
    * @return {Contact}
    */
-  async DeleteContact(paymail: string): Promise<Contact> {
+  async RemoveContact(paymail: string): Promise<Contact> {
     return await this.http.request(`contacts/${paymail}`, 'DELETE');
   }
 
@@ -820,35 +679,25 @@ export class SpvWalletClient {
     return await this.http.request(`transactions/${txId}`, 'GET');
   }
 
-  /**
-   * Get a list of all transactions for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Txs}
-   */
-  async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
-    return await this.http.request(`transaction/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.pageSize || 0,
-      order_by_field: queryParams?.orderByField || '',
-      sort_direction: queryParams?.sortDirection || '',
-    });
-  }
+/**
+ * Get a list of all transactions for the current user, filtered by conditions, metadata, and queryParams
+ *
+ * @param {TransactionFilter} conditions   Key value object to use to filter the documents
+ * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+ * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+ * @return {Txs}
+ */
+async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
+  const basePath = 'transactions';
+  const path = buildPath({
+    filter: conditions,
+    metadata: metadata,
+    queryParams: queryParams,
+    basePath: basePath
+  });
 
-  /**
-   * Get all details of the utxo by the given ID
-   *
-   * @param {string} tx_id Transaction ID of the UTXO
-   * @param {number} output_index Index of output within the transaction of the UTXO
-   * @return {Utxo}
-   */
-  async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
-    return await this.http.request(`utxo?tx_id=${tx_id}&output_index=${output_index}`);
-  }
+  return await this.http.request(path, 'GET');
+}
 
   /**
    * Get a list of all utxos for the current user, filtered by conditions, metadata and queryParams
@@ -859,14 +708,15 @@ export class SpvWalletClient {
    * @return {Utxos}
    */
   async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
-    return await this.http.request(`utxo/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.pageSize || 0,
-      order_by_field: queryParams?.orderByField || '',
-      sort_direction: queryParams?.sortDirection || '',
+    const basePath = 'utxos';
+    const path = buildPath({
+      filter: conditions,
+      metadata: metadata,
+      queryParams: queryParams,
+      basePath: basePath
     });
+
+    return await this.http.request(path, 'GET');
   }
 
   /**
