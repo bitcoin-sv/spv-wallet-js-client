@@ -55,7 +55,7 @@ The main concept is to create a new instance of the `SpvWalletClient` class and 
 ```typescript
 import { SpvWalletClient } from '@bsv/spv-wallet-js-client';
 
-const spvWalletServerUrl = 'http://localhost:3003/api/api/v1';
+const spvWalletServerUrl = 'http://localhost:3003/api/v1';
 
 // Create a new instance of the SPV Wallet client
 const client = new SpvWalletClient(spvWalletServerUrl, {
