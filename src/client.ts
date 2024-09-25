@@ -491,7 +491,7 @@ export class SpvWalletClient {
    * @param {Metadata} metadata Key value object to use to update the metadata. To delete keys add a key with null value
    * @return {User}
    */
-  async UpdateXPubMetadata(metadata: Metadata): Promise<User> {
+  async UpdateUserMetadata(metadata: Metadata): Promise<User> {
     return await this.http.request(`users/current`, 'PATCH', { metadata });
   }
 
