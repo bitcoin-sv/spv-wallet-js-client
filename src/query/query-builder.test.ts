@@ -111,6 +111,11 @@ describe('buildPath', () => {
       basePath: 'transactions',
     };
 
+    // add tests to cover only filters and only queryParams
+    // consider building only ? query params to get
+    // lot of granular, "small" test to easier detect bugs
+    // expect something to match direct snapshot?? inline snapshotc damian prefers it :D
+
     const result = buildPath(options);
     expect(result).toBe(
       'transactions?metadata%5Bdomain%5D=example.com&metadata%5Bnested%5D%5Bkey%5D=value&metadata%5Bnested%5D%5BanotherKey%5D=anotherValue'
