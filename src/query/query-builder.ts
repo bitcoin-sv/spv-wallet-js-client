@@ -1,11 +1,10 @@
-import { ModelFilter, TransactionFilter } from "../filters";
-import { Metadata, QueryParams } from "../types";
+import { AccessKeyFilter, ContactFilter, ModelFilter, TransactionFilter, UtxoFilter, XpubFilter } from "../filters";
+import { Metadata, QueryParams as Page } from "../types";
 
 export interface BuildPathOptions {
-  filter: ModelFilter | TransactionFilter;
+  filter: ModelFilter | TransactionFilter | UtxoFilter | XpubFilter | AccessKeyFilter | ContactFilter;
   metadata: Metadata;
-  queryParams: QueryParams;
-  basePath: string;
+  page: Page;
 }
 
 const OPEN_BRACKET_ENCODED = '%5B';
@@ -39,7 +38,7 @@ function buildQueryParams(params: Record<string, any>, parentKey?: string): stri
   return queryString.join('&');
 }
 
-export function buildPath({ filter, metadata, queryParams, basePath }: BuildPathOptions): string {
+export function buildQueryPath({ filter, metadata, page: queryParams }: BuildPathOptions): string {
   const queryStringParts: string[] = [];
 
   if (queryParams) {
@@ -56,5 +55,6 @@ export function buildPath({ filter, metadata, queryParams, basePath }: BuildPath
 
   const queryString = queryStringParts.filter(Boolean).join('&');
 
-  return queryString ? `${basePath}?${queryString}` : basePath;
+  return queryString ? `?${queryString}` : '';
 }
+
