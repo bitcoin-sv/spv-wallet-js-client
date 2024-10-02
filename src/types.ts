@@ -2,6 +2,47 @@ export interface Client {
   server_url: string;
 }
 
+// ExclusiveStartKeyPage is object to use when returning database records in paged format using Exclusive Start Key paging
+export interface ExclusiveStartKeyPage<T> {
+  // List of records for the response
+  content: T;
+  // Pagination details
+  page: ExclusiveStartKeyPageInfo;
+}
+
+// ExclusiveStartKeyPageInfo is object to use when limiting and sorting database query results for Exclusive Start Key Paging
+export interface ExclusiveStartKeyPageInfo {
+  // Field by which to order the results
+  orderByField?: string;
+  // Direction in which to order the results ASC/DSC
+  sortDirection?: string;
+  // Total count of elements
+  totalElements: number;
+  // Size of the page/returned data
+  size: number;
+  // Last evaluated key returned from the DB
+  lastEvaluatedKey: string;
+}
+/**
+ * MerkleRoot interface
+ *
+ * Holds the content of the sync merkleroot response
+ */
+export interface MerkleRoot {
+  merkleRoot: string;
+  blockHeight: number;
+}
+
+/**
+ * Repository interface
+ *
+ * Holds methods needed to get lastEvaluatedKey from the client's database and to save them
+ */
+export interface Repository {
+  getLastEvaluatedKey(): Promise<string | undefined>;
+  saveMerkleRoots(syncedMerkleRoots: MerkleRoot[]): Promise<void>;
+}
+
 /**
  * Page interface
  *

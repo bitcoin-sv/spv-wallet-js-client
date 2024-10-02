@@ -10,11 +10,14 @@ import {
   Destination,
   Destinations,
   DraftTx,
+  ExclusiveStartKeyPage,
+  MerkleRoot,
   Metadata,
   PaymailAddress,
   PaymailAddresses,
   QueryParams,
   Recipients,
+  Repository,
   SharedConfig,
   TransactionConfigInput,
   Tx,
@@ -1062,5 +1065,36 @@ export class SpvWalletClient {
       throw new ErrorNoXPrivToValidateTOTP();
     }
     return validateTotpForContact(this.xPrivKey, contact, passcode, requesterPaymail, period, digits);
+  }
+
+  /**
+   * Syncs merkleroots from the client db to the last known block by SPV-Wallet
+   *
+   * @param {Repository} repo - Repository interface capable of reading lastEvaluatedKey and saving to the database
+   * @returns void
+   */
+  async SyncMerkleRoots(repo: Repository) {
+    let lastEvaluatedKey = await repo.getLastEvaluatedKey();
+    let requestPath = 'merkleroots';
+    let lastEvaluatedKeyQuery = '';
+
+    if (lastEvaluatedKey) {
+      lastEvaluatedKeyQuery = `?lastEvaluatedKey=${lastEvaluatedKey}`;
+    }
+
+    while (true) {
+      const merkleRootsResponse: ExclusiveStartKeyPage<MerkleRoot[]> = await this.http.request(
+        `${requestPath}${lastEvaluatedKeyQuery}`,
+        'GET',
+      );
+
+      await repo.saveMerkleRoots(merkleRootsResponse.content);
+
+      if (merkleRootsResponse.page.lastEvaluatedKey === '') {
+        break;
+      }
+
+      lastEvaluatedKeyQuery = `?lastEvaluatedKey=${merkleRootsResponse.page.lastEvaluatedKey}`;
+    }
   }
 }
