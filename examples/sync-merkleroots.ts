@@ -62,10 +62,12 @@ const repository: Repository = {
   },
 };
 
-console.log('INITIAL STATE: ', db.merkleRoots, '\n\n');
-
 try {
+  console.log('INITIAL STATE: ', db.merkleRoots, '\n\n');
+
   await client.SyncMerkleRoots(repository);
+  console.log('INITIAL STATE: ', db.merkleRoots, '\n\n');
+  console.log('AFTER SYNC', db.merkleRoots, '\n\n');
 } catch (e) {
   if (e instanceof SpvWalletError) {
     // You can check the type of the error and do something specific
@@ -80,5 +82,3 @@ try {
     console.log('Unknown error:', e);
   }
 }
-
-console.log('AFTER SYNC', db.merkleRoots, '\n\n');
