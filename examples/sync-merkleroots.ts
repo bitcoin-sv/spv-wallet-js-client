@@ -62,7 +62,7 @@ const repository: MerkleRootsRepository = {
 try {
   console.log('INITIAL STATE: ', db.merkleRoots.length, '\n\n');
 
-  await client.SyncMerkleRoots(repository);
+  await client.SyncMerkleRoots(repository, 1000);
 
   console.log('AFTER SYNC', db.merkleRoots.length, '\n\n');
 } catch (e) {

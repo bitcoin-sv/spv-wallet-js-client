@@ -85,3 +85,17 @@ export class ErrorWrongTOTP extends SpvWalletError {
     super('TOTP is invalid');
   }
 }
+
+export class ErrorSyncMerkleRootsTimeout extends SpvWalletError {
+  constructor() {
+    super('SyncMerkleRoots operation timed out');
+  }
+}
+
+export class ErrorStaleLastEvaluatedKey extends SpvWalletError {
+  constructor() {
+    super(
+      'The last evaluated key has not changed between requests, indicating a possible loop or synchronization issue.',
+    );
+  }
+}

@@ -37,6 +37,8 @@ import {
   ErrorNoXPrivToGenerateTOTP,
   ErrorNoXPrivToSignTransaction,
   ErrorNoXPrivToValidateTOTP,
+  ErrorStaleLastEvaluatedKey,
+  ErrorSyncMerkleRootsTimeout,
   ErrorTxIdsDontMatchToDraft,
   ErrorWrongTOTP,
 } from './errors';
@@ -1073,8 +1075,9 @@ export class SpvWalletClient {
    * @param {MerkleRootsRepository} repo - Repository interface capable of reading lastEvaluatedKey and saving to the database
    * @returns void
    */
-  async SyncMerkleRoots(repo: MerkleRootsRepository) {
+  async SyncMerkleRoots(repo: MerkleRootsRepository, timeoutMs?: number) {
     let lastEvaluatedKey = await repo.getLastEvaluatedKey();
+    let previousLastEvaluatedKey = lastEvaluatedKey || '';
     let requestPath = 'merkleroots';
     let lastEvaluatedKeyQuery = '';
 
@@ -1082,11 +1085,23 @@ export class SpvWalletClient {
       lastEvaluatedKeyQuery = `?lastEvaluatedKey=${lastEvaluatedKey}`;
     }
 
+    const startTime = Date.now();
     while (true) {
+      if (timeoutMs !== undefined && Date.now() - startTime >= timeoutMs) {
+        this.logger.error('SyncMerkleRoots operation timed out');
+        throw new ErrorSyncMerkleRootsTimeout();
+      }
       const merkleRootsResponse: ExclusiveStartKeyPage<MerkleRoot[]> = await this.http.request(
         `${requestPath}${lastEvaluatedKeyQuery}`,
         'GET',
       );
+
+      if (previousLastEvaluatedKey === merkleRootsResponse.page.lastEvaluatedKey) {
+        this.logger.error(
+          'The last evaluated key has not changed between requests, indicating a possible loop or synchronization issue.',
+        );
+        throw new ErrorStaleLastEvaluatedKey();
+      }
 
       await repo.saveMerkleRoots(merkleRootsResponse.content);
 
@@ -1095,6 +1110,7 @@ export class SpvWalletClient {
       }
 
       lastEvaluatedKeyQuery = `?lastEvaluatedKey=${merkleRootsResponse.page.lastEvaluatedKey}`;
+      previousLastEvaluatedKey = merkleRootsResponse.page.lastEvaluatedKey;
     }
   }
 }
