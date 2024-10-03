@@ -17,7 +17,7 @@ import {
   PaymailAddresses,
   QueryParams,
   Recipients,
-  Repository,
+  MerkleRootsRepository,
   SharedConfig,
   TransactionConfigInput,
   Tx,
@@ -1070,10 +1070,10 @@ export class SpvWalletClient {
   /**
    * Syncs merkleroots from the client db to the last known block by SPV-Wallet
    *
-   * @param {Repository} repo - Repository interface capable of reading lastEvaluatedKey and saving to the database
+   * @param {MerkleRootsRepository} repo - Repository interface capable of reading lastEvaluatedKey and saving to the database
    * @returns void
    */
-  async SyncMerkleRoots(repo: Repository) {
+  async SyncMerkleRoots(repo: MerkleRootsRepository) {
     let lastEvaluatedKey = await repo.getLastEvaluatedKey();
     let requestPath = 'merkleroots';
     let lastEvaluatedKeyQuery = '';

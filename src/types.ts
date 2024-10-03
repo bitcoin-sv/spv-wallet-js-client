@@ -38,8 +38,11 @@ export interface MerkleRoot {
  *
  * Holds methods needed to get lastEvaluatedKey from the client's database and to save them
  */
-export interface Repository {
+export interface MerkleRootsRepository {
+  // getLastEvaluatedKey should return the merkle root with the heighest height from your storage or undefined if empty
   getLastEvaluatedKey(): Promise<string | undefined>;
+  // saveMerkleRoots should store newly synced merkle roots into your storage;
+  // NOTE: items are ordered with ascending order by block height
   saveMerkleRoots(syncedMerkleRoots: MerkleRoot[]): Promise<void>;
 }
 

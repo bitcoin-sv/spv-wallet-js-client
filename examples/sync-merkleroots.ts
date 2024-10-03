@@ -21,7 +21,7 @@ const client = new SpvWalletClient(server, {
   xPub: exampleXPub,
 });
 
-// simulate database
+// simulate a storage of merkle roots that exists on a client side that is using SyncMerkleRoots method
 const db: {
   merkleRoots: MerkleRoot[];
 } = {
@@ -38,17 +38,15 @@ const db: {
       merkleRoot: '9b0fc92260312ce44e74ef369f5c66bbb85848f2eddd5a7a1cde251e54ccfdd5',
       blockHeight: 2,
     },
-    {
-      merkleRoot: '612209eca3ff078e55d1ffe4602e78ac9a53458c7f9196b38c232d8af9ed635d',
-      blockHeight: 864550,
-    },
   ],
 };
 
 // simulate repository
 const repository: Repository = {
   saveMerkleRoots: (syncedMerkleRoots: MerkleRoot[]) => {
+    console.log('\nsaveMerkleRoots called\n');
     db.merkleRoots.push(...syncedMerkleRoots);
+
     return new Promise((resolve) => setTimeout(resolve, 1000));
   },
   getLastEvaluatedKey: () => {
@@ -63,11 +61,11 @@ const repository: Repository = {
 };
 
 try {
-  console.log('INITIAL STATE: ', db.merkleRoots, '\n\n');
+  console.log('INITIAL STATE: ', db.merkleRoots.length, '\n\n');
 
   await client.SyncMerkleRoots(repository);
-  console.log('INITIAL STATE: ', db.merkleRoots, '\n\n');
-  console.log('AFTER SYNC', db.merkleRoots, '\n\n');
+
+  console.log('AFTER SYNC', db.merkleRoots.length, '\n\n');
 } catch (e) {
   if (e instanceof SpvWalletError) {
     // You can check the type of the error and do something specific
