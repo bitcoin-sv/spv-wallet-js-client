@@ -59,12 +59,23 @@ const repository: MerkleRootsRepository = {
   },
 };
 
+const getLastFiveOrFewer = (merkleroots: MerkleRoot[]) => {
+  let startIndex = merkleroots.length - 5;
+  if (startIndex < 0) {
+    startIndex = 0;
+  }
+
+  return merkleroots.slice(startIndex);
+};
+
 try {
-  console.log('INITIAL STATE: ', db.merkleRoots.length, '\n\n');
+  console.log('\n\nINITIAL STATE LENGTH: ', db.merkleRoots.length, '\n\n');
+  console.log('\nInitial State Last 5 MerkleRoots (or fewer):\n', getLastFiveOrFewer(db.merkleRoots), '\n\n');
 
-  await client.SyncMerkleRoots(repository, 1000);
+  await client.SyncMerkleRoots(repository);
 
-  console.log('AFTER SYNC', db.merkleRoots.length, '\n\n');
+  console.log('\nAFTER SYNC', db.merkleRoots.length, '\n\n');
+  console.log('\nAFTER SYNC Last 5 MerkleRoots (or fewer):\n', getLastFiveOrFewer(db.merkleRoots), '\n\n');
 } catch (e) {
   if (e instanceof SpvWalletError) {
     // You can check the type of the error and do something specific
