@@ -1076,6 +1076,8 @@ export class SpvWalletClient {
    * @returns void
    */
   async SyncMerkleRoots(repo: MerkleRootsRepository, timeoutMs?: number) {
+    const startTime = Date.now();
+
     let lastEvaluatedKey = await repo.getLastEvaluatedKey();
     let previousLastEvaluatedKey = lastEvaluatedKey || '';
     let requestPath = 'merkleroots';
@@ -1085,7 +1087,6 @@ export class SpvWalletClient {
       lastEvaluatedKeyQuery = `?lastEvaluatedKey=${lastEvaluatedKey}`;
     }
 
-    const startTime = Date.now();
     while (true) {
       if (timeoutMs !== undefined && Date.now() - startTime >= timeoutMs) {
         this.logger.error('SyncMerkleRoots operation timed out');
