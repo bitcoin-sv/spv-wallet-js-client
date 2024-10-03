@@ -1,8 +1,7 @@
 import {
-  ErrorNoAdminKey,
   ErrorResponse,
   MerkleRoot,
-  Repository,
+  MerkleRootsRepository,
   SpvWalletClient,
   SpvWalletError,
 } from '../dist/typescript-npm-package.cjs.js';
@@ -42,7 +41,7 @@ const db: {
 };
 
 // simulate repository
-const repository: Repository = {
+const repository: MerkleRootsRepository = {
   saveMerkleRoots: (syncedMerkleRoots: MerkleRoot[]) => {
     console.log('\nsaveMerkleRoots called\n');
     db.merkleRoots.push(...syncedMerkleRoots);
