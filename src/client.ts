@@ -47,7 +47,7 @@ import {
   XpubFilter,
 } from './filters';
 import { DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD, generateTotpForContact, validateTotpForContact } from './totp';
-import { buildPath } from './query/query-builder';
+import { buildQueryPath } from './query/query-builder';
 
 /**
  * SpvWallet class
@@ -515,14 +515,14 @@ export class SpvWalletClient {
    */
   async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
     const basePath = `users/current/keys`
-    const path = buildPath({
-        filter: conditions,
-        metadata: metadata,
-        queryParams: queryParams,
-        basePath: basePath
-      }
-    );
-
+    const queryString = buildQueryPath({
+      filter: conditions,
+      metadata: metadata,
+      page: queryParams
+    });
+    
+    const path = `${basePath}${queryString}`;
+    
     return await this.http.request(path, 'GET');
   }
 
@@ -560,13 +560,14 @@ export class SpvWalletClient {
    */
   async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<Contacts> {
     const basePath = 'contacts';
-    const path = buildPath({
+    const queryString = buildQueryPath({
       filter: conditions,
       metadata: metadata,
-      queryParams: queryParams,
-      basePath: basePath
+      page: queryParams
     });
-
+    
+    const path = `${basePath}${queryString}`;
+    
     return await this.http.request(path, 'GET');
   }
 
@@ -689,13 +690,14 @@ export class SpvWalletClient {
  */
 async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
   const basePath = 'transactions';
-  const path = buildPath({
+  const queryString = buildQueryPath({
     filter: conditions,
     metadata: metadata,
-    queryParams: queryParams,
-    basePath: basePath
+    page: queryParams
   });
-
+  
+  const path = `${basePath}${queryString}`;
+  
   return await this.http.request(path, 'GET');
 }
 
@@ -709,14 +711,16 @@ async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryPa
    */
   async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
     const basePath = 'utxos';
-    const path = buildPath({
+    const queryString = buildQueryPath({
       filter: conditions,
       metadata: metadata,
-      queryParams: queryParams,
-      basePath: basePath
+      page: queryParams
     });
-
+    
+    const path = `${basePath}${queryString}`;
+    
     return await this.http.request(path, 'GET');
+    
   }
 
   /**

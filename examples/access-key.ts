@@ -18,7 +18,7 @@ console.log('Created access key ID:', JSON.stringify(createdAccessKey.id));
 console.log('Metadata:', JSON.stringify(createdAccessKey.metadata));
 console.log('Created at:', JSON.stringify(createdAccessKey.createdAt));
 
-const fetchedAccessKey = await client.GetAccessKey(createdAccessKey.id);
+const fetchedAccessKey = await client.GetAccessKeyByID(createdAccessKey.id);
 console.log('Fetched access key ID:', JSON.stringify(fetchedAccessKey.id));
 
 const revokedAccessKey = await client.RevokeAccessKey(createdAccessKey.id);
