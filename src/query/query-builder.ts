@@ -7,54 +7,40 @@ export interface BuildPathOptions {
   page: Page;
 }
 
-const OPEN_BRACKET_ENCODED = '%5B';
-const CLOSE_BRACKET_ENCODED = '%5D';
-
-function encodeKey(key: string, parentKey?: string): string {
-  const encodedKey = encodeURIComponent(key);
-  if (parentKey) {
-    return `${parentKey}${OPEN_BRACKET_ENCODED}${encodedKey}${CLOSE_BRACKET_ENCODED}`;
-  }
-  return encodedKey;
-}
-
-function encodeValue(value: any): string {
-  return encodeURIComponent(value);
-}
-
-function buildQueryParams(params: Record<string, any>, parentKey?: string): string {
-  const queryString: string[] = [];
+function flattenParams(params: Record<string, any>, parentKey?: string): Record<string, string> {
+  const flattened: Record<string, string> = {};
 
   Object.entries(params).forEach(([key, value]) => {
-    const encodedKey = encodeKey(key, parentKey);
+    const newKey = parentKey ? `${parentKey}[${key}]` : key;
 
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      queryString.push(buildQueryParams(value, encodedKey));
+      // Recursively flatten nested objects
+      Object.assign(flattened, flattenParams(value, newKey));
     } else {
-      queryString.push(`${encodedKey}=${encodeValue(value)}`);
+      flattened[newKey] = String(value); // Ensure value is a string
     }
   });
 
-  return queryString.join('&');
+  return flattened;
 }
 
 export function buildQueryPath({ filter, metadata, page: queryParams }: BuildPathOptions): string {
-  const queryStringParts: string[] = [];
+  const allParams: Record<string, string> = {};
 
   if (queryParams) {
-    queryStringParts.push(buildQueryParams(queryParams));
+    Object.assign(allParams, flattenParams(queryParams));
   }
 
   if (filter) {
-    queryStringParts.push(buildQueryParams(filter));
+    Object.assign(allParams, flattenParams(filter));
   }
 
   if (metadata) {
-    queryStringParts.push(buildQueryParams(metadata, 'metadata'));
+    Object.assign(allParams, flattenParams(metadata, 'metadata'));
   }
 
-  const queryString = queryStringParts.filter(Boolean).join('&');
+  const params = new URLSearchParams(allParams);
+  const queryString = params.toString();
 
   return queryString ? `?${queryString}` : '';
 }
-

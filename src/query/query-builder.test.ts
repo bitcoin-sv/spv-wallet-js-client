@@ -178,7 +178,7 @@ describe('buildQueryPath with all supported filters', () => {
     };
 
     const result = buildQueryPath(options);
-    expect(result).toBe('?id=contact456&fullName=John%20Doe&status=confirmed');
+    expect(result).toBe('?id=contact456&fullName=John+Doe&status=confirmed');
   });
 
   test('should build query string with XpubFilter', () => {
