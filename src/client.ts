@@ -26,11 +26,11 @@ import {
   OldPaymailAddress,
   OldTxs,
   OldUtxos,
-  OldWebhook,
   XPubs,
   OldPaymailAddresses,
   XPub,
   OldTx,
+  Webhook,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -457,7 +457,7 @@ export class SpvWalletClient {
    *
    * @returns A Promise that resolves to an array of OldWebhook objects representing the current webhook subscriptions.
    */
-  async AdminGetWebhooks(): Promise<OldWebhook[]> {
+  async AdminGetWebhooks(): Promise<Webhook[]> {
     return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'GET');
   }
 

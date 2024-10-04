@@ -449,14 +449,6 @@ export interface Webhook {
 }
 
 /**
- * Old Webhook interface for Admin endpoints (Deprecated)
- */
-export interface OldWebhook {
-  url: string;
-  banned: boolean;
-}
-
-/**
  * Output interface for non-admin (User) endpoints.
  */
 export interface Output {
