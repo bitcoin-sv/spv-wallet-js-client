@@ -14,4 +14,4 @@ const client = new SpvWalletClient(server, {
 });
 
 const sharedConfig = await client.GetSharedConfig();
-console.log('Shared config:', JSON.stringify(sharedConfig));
+console.log('Shared config:', sharedConfig);
