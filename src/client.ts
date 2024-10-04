@@ -69,12 +69,23 @@ export class SpvWalletClient {
   constructor(serverUrl: string, options: XprivWithSigning, loggerConfig?: LoggerConfig);
   constructor(serverUrl: string, options: AdminKey, loggerConfig?: LoggerConfig);
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
+    if ('adminKey' in options) {
+      // When we move the admin API to more restful routes, we can remove this if/else condition
+      serverUrl = this.ensureSuffix(serverUrl, '/v1');
+    } else {
+      serverUrl = this.ensureSuffix(serverUrl, '/api/v1');
+    }
+
     this.logger = makeLogger(loggerConfig);
     this.http = this.makeRequester(options, serverUrl);
   }
 
   get xPrivKey(): HD | undefined {
     return this.xPriv;
+  }
+
+  private ensureSuffix(serverUrl: string, suffix: string): string {
+    return serverUrl.endsWith(suffix) ? serverUrl : serverUrl + suffix;
   }
 
   private makeRequester(options: ClientOptions, serverUrl: string): HttpClient {

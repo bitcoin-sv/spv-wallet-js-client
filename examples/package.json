@@ -21,7 +21,7 @@
     "handle-exceptions": "yarn run:example handle-exceptions.ts",
     "list-transactions": "yarn run:example list-transactions.ts",
     "send-op-return": "yarn run:example send-op-return.ts",
-    "update-xpub-metadata": "yarn run:example update-xpub-metadata.ts",
+    "update-user-xpub-metadata": "yarn run:example update-user-xpub-metadata.ts",
     "xpriv-from-mnemonic": "yarn run:example xpriv-from-mnemonic.ts",
     "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts"
   },

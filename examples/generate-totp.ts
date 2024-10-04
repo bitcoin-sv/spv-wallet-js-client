@@ -1,6 +1,6 @@
 import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
 
-const server = 'http://localhost:3003/api/v1';
+const server = 'http://localhost:3003';
 
 const aliceXPriv =
   'xprv9s21ZrQH143K4JFXqGhBzdrthyNFNuHPaMUwvuo8xvpHwWXprNK7T4JPj1w53S1gojQncyj8JhSh8qouYPZpbocsq934cH5G1t1DRBfgbod';

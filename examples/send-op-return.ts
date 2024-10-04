@@ -2,7 +2,7 @@ import { DraftTransactionConfig, OpReturn, SpvWalletClient } from '../dist/types
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
-const server = 'http://localhost:3003/api/v1';
+const server = 'http://localhost:3003';
 
 if (!exampleXPriv) {
   console.log(errMessage('xPriv'));

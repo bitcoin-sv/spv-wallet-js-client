@@ -14,4 +14,9 @@ const client = new SpvWalletClient(server, {
 });
 
 const userInfo = await client.GetUserInfo();
-console.log('Current balance:', userInfo.currentBalance);
+console.log('User XPub metadata:', userInfo.metadata);
+console.log('User XPub (updated_at):', userInfo.updatedAt);
+
+const updatedUserInfo = await client.UpdateUserMetadata({ some_metadata_2: 'example2' });
+console.log('Updated User XPub metadata:', updatedUserInfo.metadata);
+console.log('Updated User XPub (updated_at):', updatedUserInfo.updatedAt);

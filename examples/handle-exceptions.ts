@@ -2,7 +2,7 @@ import { ErrorNoAdminKey, ErrorResponse, SpvWalletClient, SpvWalletError } from 
 import { exampleXPub } from './example-keys.js';
 import { errMessage } from './utils.js';
 
-const server = 'http://localhost:3003/api/v1';
+const server = 'http://localhost:3003';
 
 if (!exampleXPub) {
   console.log(errMessage('xPub'));
