@@ -14,13 +14,13 @@ const client = new SpvWalletClient(server, {
 });
 
 const createdAccessKey = await client.CreateAccessKey({ some_metadata: 'example' });
-console.log('Created access key ID:', JSON.stringify(createdAccessKey.id));
-console.log('Metadata:', JSON.stringify(createdAccessKey.metadata));
-console.log('Created at:', JSON.stringify(createdAccessKey.createdAt));
+console.log('Created access key ID:', (createdAccessKey.id));
+console.log('Metadata:', (createdAccessKey.metadata));
+console.log('Created at:', (createdAccessKey.createdAt));
 
 const fetchedAccessKey = await client.GetAccessKeyByID(createdAccessKey.id);
-console.log('Fetched access key ID:', JSON.stringify(fetchedAccessKey.id));
+console.log('Fetched access key ID:', (fetchedAccessKey.id));
 
 const revokedAccessKey = await client.RevokeAccessKey(createdAccessKey.id);
-console.log('Revoked access key ID:', JSON.stringify(revokedAccessKey.id));
-console.log('Revoked at:', JSON.stringify(revokedAccessKey.revokedAt));
+console.log('Revoked access key ID:', (revokedAccessKey.id));
+console.log('Revoked at:', (revokedAccessKey.revokedAt));
