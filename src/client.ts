@@ -28,6 +28,9 @@ import {
   OldUtxos,
   OldWebhook,
   XPubs,
+  OldPaymailAddresses,
+  XPub,
+  OldTx,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -43,6 +46,7 @@ import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
 import {
   AccessKeyFilter,
   AdminAccessKeyFilter,
+  AdminPaymailFilter,
   AdminUtxoFilter,
   ContactFilter,
   DestinationFilter,
@@ -357,6 +361,65 @@ export class SpvWalletClient {
   }
 
   /**
+ * Admin only: Register a new xPub into the SPV Wallet
+ *
+ * @param {string} rawXPub    XPub string
+ * @param {Metadata} metadata Key value object to use to add to the xpub
+ * @return {XPub}             The newly registered xpub
+ */
+  async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
+    return await this.http.adminRequest(`admin/xpub`, 'POST', {
+      key: rawXPub,
+      metadata,
+    });
+  }
+
+  /**
+   * Admin only: Get a paymail by address
+   *
+   * @param address string Paymail address (i.e. alias@example.com)
+   * @return {OldPaymailAddress}
+   */
+  async AdminGetPaymail(address: string): Promise<OldPaymailAddress> {
+    return await this.http.adminRequest(`admin/paymail/get`, 'POST', { address });
+  }
+
+  /**
+   * Admin only: Get a list of all paymails in the system, filtered by conditions, metadata and queryParams
+   *
+   * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
+   * @return {OldPaymailAddresses}
+   */
+  async AdminGetPaymails(
+    conditions: AdminPaymailFilter,
+    metadata: Metadata,
+    params: QueryParams,
+  ): Promise<OldPaymailAddresses> {
+    return await this.http.adminRequest(`admin/paymails/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    });
+  }
+
+  /**
+   * Admin only: Get a count of all paymails in the system, filtered by conditions, metadata and queryParams
+   * To get a count of not-deleted paymails, use the condition: { deleted_at: null }
+   *
+   * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @return {number}
+   */
+  async AdminGetPaymailsCount(conditions: AdminPaymailFilter, metadata: Metadata): Promise<number> {
+    return await this.http.adminRequest(`admin/paymails/count`, 'POST', {
+      conditions,
+      metadata,
+    });
+  }
+
+  /**
    * Admin only: Create a new paymail for an xPub
    *
    * @param {string} rawXPub Raw xPub to register the paymail to
@@ -419,6 +482,17 @@ export class SpvWalletClient {
   async AdminDeleteWebhook(url: string): Promise<void> {
     return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'DELETE', { url });
   }
+
+  /**
+   * Admin only: Record a transaction without any of the normal checks
+   *
+   * @param {string} hex  Hex string of the transaction
+   * @return {OldTx}
+   */
+  async AdminRecordTransaction(hex: string): Promise<OldTx> {
+    return await this.http.adminRequest(`admin/transactions/record`, 'POST', { hex });
+  }
+
   /**
    * Get information about the xpub from the server of the current user
    *
@@ -446,7 +520,7 @@ export class SpvWalletClient {
    * @param {string} id The database ID of the access key
    * @return {AccessKey}
    */
-  async GetAccessKeybyID(id: string): Promise<AccessKey> {
+  async GetAccessKeyByID(id: string): Promise<AccessKey> {
     return await this.http.request(`users/current/keys/${id}`);
   }
 

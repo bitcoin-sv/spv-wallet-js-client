@@ -56,7 +56,7 @@ describe('SPVWalletClient routing', () => {
     spvWalletMethod                               | httpMethod  | path                                       | act
     ${'GetUserInfo'}                              | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetUserInfo()}
     ${'UpdateXPubMetadata'}                       | ${'patch'}  | ${'users/current'}                         | ${() => spvWalletClient.UpdateUserMetadata({})}
-    ${'GetAccessKeyByID'}                         | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKeybyID(accessKeyString)}
+    ${'GetAccessKeyByID'}                         | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKeyByID(accessKeyString)}
     ${'GetAccessKeys'}                            | ${'get'}    | ${'users/current/keys'}                    | ${() => spvWalletClient.GetAccessKeys({}, {}, {})}
     ${'CreateAccessKey'}                          | ${'post'}   | ${'users/current/keys'}                    | ${() => spvWalletClient.CreateAccessKey({})}
     ${'RevokeAccessKey'}                          | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.RevokeAccessKey(accessKeyString)}
