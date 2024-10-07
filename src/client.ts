@@ -1095,7 +1095,7 @@ export class SpvWalletClient {
       }
       merkleRootsResponse = await this.http.request(`${requestPath}${lastEvaluatedKeyQuery}`, 'GET');
 
-      if (previousLastEvaluatedKey === merkleRootsResponse.page.lastEvaluatedKey) {
+      if (previousLastEvaluatedKey !== '' && previousLastEvaluatedKey === merkleRootsResponse.page.lastEvaluatedKey) {
         this.logger.error(
           'The last evaluated key has not changed between requests, indicating a possible loop or synchronization issue.',
         );
