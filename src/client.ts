@@ -165,7 +165,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a count of all access keys in the system, filtered by conditions, metadata, and queryParams
+   * Admin only: Get a count of all access keys in the system, filtered by conditions, metadata and queryParams
    *
    * @param {AdminAccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
@@ -601,9 +601,9 @@ export class SpvWalletClient {
   }
 
   /**
-   * Get a single contact by it's paymail address.
+   * Remove a single contact by it's paymail address.
    *
-   * @param {string} paymail  Contact paymail to get specific contact
+   * @param {string} paymail  Contact paymail to remove specific contact
    * @return {Contact}
    */
   async RemoveContact(paymail: string): Promise<Contact> {
@@ -680,7 +680,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Unconfirm previously confirmed contact
+   * Unconfirm previously confirmed contact using paymail
    *
    * @param {string} paymail Contact paymail to unconfirm
    * @return {void}
