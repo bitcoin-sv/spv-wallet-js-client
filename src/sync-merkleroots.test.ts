@@ -270,11 +270,6 @@ describe('Test sync merkle roots failure scenarios', () => {
   test('Should fail sync database due to last evaluated key being the same in the response', async () => {
     // setup
     fetchMock.mockResponse((req) => {
-      const url = new URL(req.url);
-      const queryParams = url.searchParams;
-
-      const lastEvaluatedKey = queryParams.get('lastEvaluatedKey') || '';
-
       const staleLastEvaluatedKeyResponse: ExclusiveStartKeyPage<MerkleRoot[]> = {
         content: [
           {
