@@ -1078,7 +1078,8 @@ export class SpvWalletClient {
   async SyncMerkleRoots(repo: MerkleRootsRepository, timeoutMs?: number) {
     const startTime = Date.now();
 
-    let lastEvaluatedKey = await repo.getLastEvaluatedKey();
+    let merkleRootsResponse: ExclusiveStartKeyPage<MerkleRoot[]>;
+    let lastEvaluatedKey = await repo.getLastMerkleRoot();
     let previousLastEvaluatedKey = lastEvaluatedKey || '';
     let requestPath = 'merkleroots';
     let lastEvaluatedKeyQuery = '';
@@ -1087,15 +1088,12 @@ export class SpvWalletClient {
       lastEvaluatedKeyQuery = `?lastEvaluatedKey=${lastEvaluatedKey}`;
     }
 
-    while (true) {
+    do {
       if (timeoutMs !== undefined && Date.now() - startTime >= timeoutMs) {
         this.logger.error('SyncMerkleRoots operation timed out');
         throw new ErrorSyncMerkleRootsTimeout();
       }
-      const merkleRootsResponse: ExclusiveStartKeyPage<MerkleRoot[]> = await this.http.request(
-        `${requestPath}${lastEvaluatedKeyQuery}`,
-        'GET',
-      );
+      merkleRootsResponse = await this.http.request(`${requestPath}${lastEvaluatedKeyQuery}`, 'GET');
 
       if (previousLastEvaluatedKey === merkleRootsResponse.page.lastEvaluatedKey) {
         this.logger.error(
@@ -1106,12 +1104,8 @@ export class SpvWalletClient {
 
       await repo.saveMerkleRoots(merkleRootsResponse.content);
 
-      if (merkleRootsResponse.page.lastEvaluatedKey === '') {
-        break;
-      }
-
       lastEvaluatedKeyQuery = `?lastEvaluatedKey=${merkleRootsResponse.page.lastEvaluatedKey}`;
       previousLastEvaluatedKey = merkleRootsResponse.page.lastEvaluatedKey;
-    }
+    } while (merkleRootsResponse.page.lastEvaluatedKey !== '');
   }
 }

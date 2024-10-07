@@ -5,19 +5,19 @@ import {
   SpvWalletClient,
   SpvWalletError,
 } from '../dist/typescript-npm-package.cjs.js';
-import { exampleXPub } from './example-keys.js';
+import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
 const server = 'http://localhost:3003/api/v1';
 
 // perhaps change exmapleXPub to actual existing in db
-if (!exampleXPub) {
-  console.log(errMessage('xPub'));
+if (!exampleXPriv) {
+  console.log(errMessage('xPriv'));
   process.exit(1);
 }
 
 const client = new SpvWalletClient(server, {
-  xPub: exampleXPub,
+  xPriv: exampleXPriv,
 });
 
 // simulate a storage of merkle roots that exists on a client side that is using SyncMerkleRoots method
@@ -48,14 +48,12 @@ const repository: MerkleRootsRepository = {
 
     return new Promise((resolve) => setTimeout(resolve, 1000));
   },
-  getLastEvaluatedKey: () => {
-    return new Promise((resolve) => {
-      if (db.merkleRoots.length < 1) {
-        resolve(undefined);
-      } else {
-        resolve(db.merkleRoots[db.merkleRoots.length - 1].merkleRoot);
-      }
-    });
+  getLastMerkleRoot: async () => {
+    if (db.merkleRoots.length < 1) {
+      return undefined;
+    } else {
+      return db.merkleRoots[db.merkleRoots.length - 1].merkleRoot;
+    }
   },
 };
 
