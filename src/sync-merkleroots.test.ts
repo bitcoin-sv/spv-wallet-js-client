@@ -103,7 +103,7 @@ describe('Test SyncMerkleRoots', () => {
       const repository = createRepository(clientDb);
 
       //then
-      await expect(client.SyncMerkleRoots(repository, 10)).rejects.toThrowError(new ErrorSyncMerkleRootsTimeout());
+      await expect(client.SyncMerkleRoots(repository, 10)).rejects.toThrow(new ErrorSyncMerkleRootsTimeout());
     });
 
     test('Should fail sync database due to last evaluated key being the same in the response', async () => {
@@ -122,7 +122,7 @@ describe('Test SyncMerkleRoots', () => {
       const syncMerkleRoots = async () => await client.SyncMerkleRoots(repository);
 
       //then
-      await expect(syncMerkleRoots()).rejects.toThrowError(new ErrorStaleLastEvaluatedKey());
+      await expect(syncMerkleRoots()).rejects.toThrow(new ErrorStaleLastEvaluatedKey());
     });
   });
 });
