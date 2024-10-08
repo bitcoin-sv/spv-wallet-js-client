@@ -593,7 +593,7 @@ export class SpvWalletClient {
   /**
    * Get a single contact by it's paymail address.
    *
-   * @param {string} paymail  Contact paymail to get specific contact
+   * @param {string} paymail  Contact paymail to get a specific contact
    * @return {Contact}
    */
   async GetContactByPaymail(paymail: string): Promise<Contact> {
