@@ -179,7 +179,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a list of all contacts in the system, filtered by conditions, metadata, and queryParams
+   * Admin only: Get a list of all contacts in the system, filtered by conditions, metadata and queryParams
    *
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
