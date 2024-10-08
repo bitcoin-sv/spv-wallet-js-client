@@ -406,7 +406,6 @@ export class SpvWalletClient {
 
   /**
    * Admin only: Get a count of all paymails in the system, filtered by conditions, metadata and queryParams
-   * To get a count of not-deleted paymails, use the condition: { deleted_at: null }
    *
    * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
