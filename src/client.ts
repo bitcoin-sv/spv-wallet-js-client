@@ -347,7 +347,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a count of all xpubs in the system, filtered by conditions, metadata, and queryParams
+   * Admin only: Get a count of all xpubs in the system, filtered by conditions, metadata and queryParams
    *
    * @param {XpubFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
