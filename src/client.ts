@@ -241,7 +241,7 @@ export class SpvWalletClient {
    *
    * @param {DestinationFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {OldQueryParams} params Database query parameters for page, page size, and sorting
+   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
    * @return {OldDestinations}
    */
   async AdminGetDestinations(
