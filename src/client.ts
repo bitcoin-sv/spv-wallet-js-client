@@ -257,7 +257,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a count of all destinations in the system, filtered by conditions, metadata, and queryParams
+   * Admin only: Get a count of all destinations in the system, filtered by conditions, metadata and queryParams
    *
    * @param {DestinationFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
