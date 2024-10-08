@@ -361,7 +361,7 @@ export class SpvWalletClient {
   }
 
   /**
- * Admin only: Register a new xPub into the SPV Wallet
+ * Admin only: Register a new xPub in the SPV Wallet
  *
  * @param {string} rawXPub    XPub string
  * @param {Metadata} metadata Key value object to use to add to the xpub
