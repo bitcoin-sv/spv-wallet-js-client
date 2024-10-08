@@ -115,10 +115,14 @@ const mockedAPIResponseFn = (lastMerkleRoot: string, batchSize?: number): Exclus
     };
   }
 
-  const content = mockedSPVWalletData.slice(lastMerkleRootIdx + 1);
+  let content = mockedSPVWalletData.slice(lastMerkleRootIdx + 1);
+
+  if (batchSize) {
+    content = content.slice(0, batchSize);
+  }
 
   return {
-    content: batchSize ? content.slice(0, batchSize) : content,
+    content,
     page: {
       lastEvaluatedKey: content[content.length - 1].merkleRoot,
       totalElements: mockedSPVWalletData.length,
