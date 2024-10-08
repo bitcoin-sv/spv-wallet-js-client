@@ -1080,8 +1080,8 @@ export class SpvWalletClient {
 
     let merkleRootsResponse: ExclusiveStartKeyPage<MerkleRoot[]>;
     let lastEvaluatedKey = await repo.getLastMerkleRoot();
-    let previousLastEvaluatedKey = lastEvaluatedKey || '';
-    let requestPath = 'merkleroots';
+    let previousLastEvaluatedKey = lastEvaluatedKey || null;
+    const requestPath = 'merkleroots';
     let lastEvaluatedKeyQuery = '';
 
     if (lastEvaluatedKey) {
@@ -1095,7 +1095,7 @@ export class SpvWalletClient {
       }
       merkleRootsResponse = await this.http.request(`${requestPath}${lastEvaluatedKeyQuery}`, 'GET');
 
-      if (previousLastEvaluatedKey !== '' && previousLastEvaluatedKey === merkleRootsResponse.page.lastEvaluatedKey) {
+      if (previousLastEvaluatedKey === merkleRootsResponse.page.lastEvaluatedKey) {
         this.logger.error(
           'The last evaluated key has not changed between requests, indicating a possible loop or synchronization issue.',
         );
@@ -1106,6 +1106,6 @@ export class SpvWalletClient {
 
       lastEvaluatedKeyQuery = `?lastEvaluatedKey=${merkleRootsResponse.page.lastEvaluatedKey}`;
       previousLastEvaluatedKey = merkleRootsResponse.page.lastEvaluatedKey;
-    } while (merkleRootsResponse.page.lastEvaluatedKey !== '');
+    } while (previousLastEvaluatedKey !== '');
   }
 }

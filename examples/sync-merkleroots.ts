@@ -42,7 +42,7 @@ const db: {
 
 // simulate repository
 const repository: MerkleRootsRepository = {
-  saveMerkleRoots: (syncedMerkleRoots: MerkleRoot[]) => {
+  saveMerkleRoots: async (syncedMerkleRoots: MerkleRoot[]) => {
     console.log('\nsaveMerkleRoots called\n');
     db.merkleRoots.push(...syncedMerkleRoots);
 
@@ -51,9 +51,8 @@ const repository: MerkleRootsRepository = {
   getLastMerkleRoot: async () => {
     if (db.merkleRoots.length < 1) {
       return undefined;
-    } else {
-      return db.merkleRoots[db.merkleRoots.length - 1].merkleRoot;
     }
+    return db.merkleRoots[db.merkleRoots.length - 1].merkleRoot;
   },
 };
 
