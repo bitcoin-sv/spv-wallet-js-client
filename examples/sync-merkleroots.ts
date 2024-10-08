@@ -46,7 +46,7 @@ const repository: MerkleRootsRepository = {
     console.log('\nsaveMerkleRoots called\n');
     db.merkleRoots.push(...syncedMerkleRoots);
 
-    return new Promise((resolve) => setTimeout(resolve, 1000));
+    return Promise.resolve();
   },
   getLastMerkleRoot: async () => {
     if (db.merkleRoots.length < 1) {
