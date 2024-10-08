@@ -145,7 +145,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a list of all access keys in the system, filtered by conditions, metadata, and queryParams
+   * Admin only: Get a list of all access keys in the system, filtered by conditions, metadata and queryParams
    *
    * @param {AdminAccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {OldMetadata} metadata       Key value object to use to filter the documents by the metadata
