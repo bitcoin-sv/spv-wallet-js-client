@@ -603,7 +603,7 @@ export class SpvWalletClient {
   /**
    * Remove a single contact by it's paymail address.
    *
-   * @param {string} paymail  Contact paymail to remove specific contact
+   * @param {string} paymail  Contact paymail to remove a specific contact
    * @return {Contact}
    */
   async RemoveContact(paymail: string): Promise<Contact> {
