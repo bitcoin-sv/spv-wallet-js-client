@@ -700,7 +700,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Get a list of all transactions for the current user, filtered by conditions, metadata, and queryParams
+   * Get a list of all transactions for the current user, filtered by conditions, metadata and queryParams
    *
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
