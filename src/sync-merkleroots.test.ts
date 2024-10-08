@@ -12,7 +12,7 @@ const createRepository = (merkleRoots: MerkleRoot[]): MerkleRootsRepository => {
     saveMerkleRoots: (syncedMerkleRoots: MerkleRoot[]) => {
       merkleRoots.push(...syncedMerkleRoots);
       return new Promise((resolve) => {
-        setTimeout(() => resolve(), 5);
+        setTimeout(() => resolve(), 50);
       });
     },
     getLastMerkleRoot: async () => {
@@ -89,7 +89,7 @@ const mockedSPVWalletData: MerkleRoot[] = [
 ];
 
 // mockedAPIResponseFn is a mock of SPV-Wallet it will return a paged response of merkle roots since last evaluated merkle root
-const mockedAPIResponseFn = (lastMerkleRoot: string, batchSize?: number): ExclusiveStartKeyPage<MerkleRoot[]> => {
+const mockedAPIResponseFn = (lastMerkleRoot: string): ExclusiveStartKeyPage<MerkleRoot[]> => {
   if (lastMerkleRoot === '') {
     return {
       content: [...mockedSPVWalletData],
@@ -117,10 +117,6 @@ const mockedAPIResponseFn = (lastMerkleRoot: string, batchSize?: number): Exclus
 
   let content = mockedSPVWalletData.slice(lastMerkleRootIdx + 1);
 
-  if (batchSize) {
-    content = content.slice(0, batchSize);
-  }
-
   return {
     content,
     page: {
@@ -139,13 +135,20 @@ function mockAPIResponse(type: MockedApiResponseType) {
 
       const lastEvaluatedKey = queryParams.get('lastEvaluatedKey') || '';
 
+      // it is to limit the result up to 3 merkle roots per request to ensure
+      // that the sync merkleroots will loop more than once and hit the timeout
+      const all = mockedAPIResponseFn(lastEvaluatedKey);
+      all.content = all.content.slice(0, 3);
+      all.page.size = 3;
+      all.page.lastEvaluatedKey = all.content[all.content.length - 1]?.merkleRoot || '';
+
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            body: JSON.stringify(mockedAPIResponseFn(lastEvaluatedKey, 3)),
+            body: JSON.stringify(all),
             headers: { 'Content-Type': 'application/json' },
           });
-        }, 5);
+        }, 50);
       });
     });
     return;
@@ -288,7 +291,7 @@ describe('Test sync merkle roots failure scenarios', () => {
     const repository = createRepository(clientDb);
 
     //then
-    await expect(client.SyncMerkleRoots(repository, 1)).rejects.toThrowError(new ErrorSyncMerkleRootsTimeout());
+    await expect(client.SyncMerkleRoots(repository, 10)).rejects.toThrowError(new ErrorSyncMerkleRootsTimeout());
   });
 
   test('Should fail sync database due to last evaluated key being the same in the response', async () => {
