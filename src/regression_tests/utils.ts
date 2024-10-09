@@ -1,7 +1,7 @@
 import { SpvWalletClient } from '../client';
 import { generateKeys } from '../utils/keys';
 import { TransactionFilter } from '../filters';
-import { QueryParams, Recipients, Tx, Txs } from '../types';
+import { QueryParams } from '../types';
 
 const CLIENT_ONE_URL_ENV_VAR = 'CLIENT_ONE_URL';
 const CLIENT_TWO_URL_ENV_VAR = 'CLIENT_TWO_URL';
@@ -9,7 +9,6 @@ const CLIENT_ONE_LEADER_XPRIV_ENV_VAR = 'CLIENT_ONE_LEADER_XPRIV';
 const CLIENT_TWO_LEADER_XPRIV_ENV_VAR = 'CLIENT_TWO_LEADER_XPRIV';
 const AT_SIGN = '@';
 const DOMAIN_PREFIX = 'https://';
-const API_VERSION = 'v1';
 const ERR_EMPTY_XPRIV_ENV_VARIABLES = 'missing xpriv variables';
 const EXPLICIT_HTTP_URL_REGEX = RegExp('^https?://');
 
@@ -47,9 +46,6 @@ export const getEnvVariables = () => {
   rtConfig.clientOneURL = addPrefixIfNeeded(rtConfig.clientOneURL);
   rtConfig.clientTwoURL = addPrefixIfNeeded(rtConfig.clientTwoURL);
 
-  rtConfig.clientOneURL = addApiVersionIfNeeded(rtConfig.clientOneURL, API_VERSION);
-  rtConfig.clientTwoURL = addApiVersionIfNeeded(rtConfig.clientTwoURL, API_VERSION);
-
   return rtConfig;
 };
 
@@ -60,12 +56,13 @@ export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
   });
 
   const sharedConfig = await wc.GetSharedConfig();
+  console.log(sharedConfig);
 
-  if (sharedConfig.paymail_domains.length != 1) {
-    throw new Error(`expected 1 paymail domain, got ${sharedConfig.paymail_domains.length}`);
+  if (sharedConfig.paymailDomains.length != 1) {
+    throw new Error(`expected 1 paymail domain, got ${sharedConfig.paymailDomains.length}`);
   }
 
-  return sharedConfig.paymail_domains[0];
+  return sharedConfig.paymailDomains[0];
 };
 
 // createUser creates a set of keys and new paymail in the SPV wallet
@@ -98,9 +95,9 @@ export const removeRegisteredPaymail = async (paymail: string, instanceURL: stri
 export const getBalance = async (fromInstance: string, fromXPriv: string) => {
   const client = new SpvWalletClient(fromInstance, { xPriv: fromXPriv });
 
-  const xpubInfo = await client.GetXPub();
+  const xpubInfo = await client.GetUserInfo();
 
-  return Number(xpubInfo.current_balance);
+  return Number(xpubInfo.currentBalance);
 };
 
 // getTransactions retrieves the transactions from the SPV Wallet.
@@ -125,12 +122,17 @@ export const sendFunds = async (fromInstance: string, fromXPriv: string, toPayma
     throw new Error(`Insufficient funds: ${balance}`);
   }
 
-  const recipients: Recipients = [{ to: toPaymail, satoshis: howMuch }];
+  const recipients = [{ to: toPaymail, satoshis: howMuch }];
   const metadata = { description: 'regression-test' };
 
-  const transaction = await client.SendToRecipients(recipients, metadata);
+  const transaction = await client.SendToRecipients(
+    {
+      outputs: recipients,
+    },
+    metadata,
+  );
 
-  const tx = await client.GetTransaction(transaction.id);
+  const tx = await client.GetTransactions({ id: transaction.id }, {}, {});
 
   return tx;
 };
@@ -156,14 +158,4 @@ const addPrefixIfNeeded = (url: string) => {
 // isValidURL validates the URL if it has http or https prefix.
 const isValidURL = (rawURL: string) => {
   return EXPLICIT_HTTP_URL_REGEX.test(rawURL);
-};
-
-// addApiVersionIfNeeded adds api version if it's not present in the url
-const addApiVersionIfNeeded = (url: string, apiVersion: string) => {
-  const apiVersionWithSlash = '/' + apiVersion;
-  if (url.includes(apiVersionWithSlash)) {
-    return url;
-  }
-
-  return url.endsWith('/') ? url + apiVersion : url + apiVersionWithSlash;
 };

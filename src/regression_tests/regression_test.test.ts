@@ -33,7 +33,7 @@ const sendAndVerifyFunds = async (
   targetXPriv: string,
 ) => {
   const transaction = await sendFunds(fromInstance, fromXPriv, toPaymail, howMuch);
-  expect(transaction.output_value).toBeLessThanOrEqual(-1);
+  expect(transaction.outputValue).toBeLessThanOrEqual(-1);
 
   const balance = await getBalance(targetURL, targetXPriv);
   expect(balance).toBeGreaterThanOrEqual(1);
@@ -125,7 +125,7 @@ describe('TestRegression', () => {
           userTwo.paymail,
           MINIMAL_FUNDS_PER_TRANSACTION,
         );
-        expect(transaction.output_value).toBeLessThanOrEqual(-1);
+        expect(transaction.outputValue).toBeLessThanOrEqual(-1);
 
         const balanceInstance2 = await getBalance(rtConfig.clientTwoURL, userTwo.xpriv);
         expect(balanceInstance2).toBeGreaterThanOrEqual(2);
