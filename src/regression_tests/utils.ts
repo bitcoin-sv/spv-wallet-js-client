@@ -56,7 +56,6 @@ export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
   });
 
   const sharedConfig = await wc.GetSharedConfig();
-  console.log(sharedConfig);
 
   if (sharedConfig.paymailDomains.length != 1) {
     throw new Error(`expected 1 paymail domain, got ${sharedConfig.paymailDomains.length}`);
