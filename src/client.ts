@@ -3,32 +3,38 @@ import {
   AccessKeys,
   AccessKeyWithSigning,
   AdminKey,
-  AdminStats,
   ClientOptions,
   Contact,
   Contacts,
-  Destination,
-  Destinations,
+  DraftTransactionConfig,
   DraftTx,
   ExclusiveStartKeyPage,
   MerkleRoot,
   Metadata,
-  PaymailAddress,
-  PaymailAddresses,
   QueryParams,
-  Recipients,
-  MerkleRootsRepository,
   SharedConfig,
-  TransactionConfigInput,
   Tx,
   Txs,
-  Utxo,
   Utxos,
-  Webhook,
   XprivWithSigning,
-  XPub,
-  XPubs,
+  User,
   XpubWithoutSigning,
+  AdminStats,
+  OldQueryParams,
+  OldAccessKeys,
+  OldContact,
+  OldDestinations,
+  OldContacts,
+  OldPaymailAddress,
+  OldTxs,
+  OldUtxos,
+  XPubs,
+  OldPaymailAddresses,
+  XPub,
+  OldTx,
+  Webhook,
+  PageModel,
+  Utxo,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -55,6 +61,7 @@ import {
   XpubFilter,
 } from './filters';
 import { DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD, generateTotpForContact, validateTotpForContact } from './totp';
+import { buildQueryPath } from './query/query-builder';
 
 /**
  * SpvWallet class
@@ -76,12 +83,23 @@ export class SpvWalletClient {
   constructor(serverUrl: string, options: XprivWithSigning, loggerConfig?: LoggerConfig);
   constructor(serverUrl: string, options: AdminKey, loggerConfig?: LoggerConfig);
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
+    if ('adminKey' in options) {
+      // When we move the admin API to more restful routes, we can remove this if/else condition
+      serverUrl = this.ensureSuffix(serverUrl, '/v1');
+    } else {
+      serverUrl = this.ensureSuffix(serverUrl, '/api/v1');
+    }
+
     this.logger = makeLogger(loggerConfig);
     this.http = this.makeRequester(options, serverUrl);
   }
 
   get xPrivKey(): HD | undefined {
     return this.xPriv;
+  }
+
+  private ensureSuffix(serverUrl: string, suffix: string): string {
+    return serverUrl.endsWith(suffix) ? serverUrl : serverUrl + suffix;
   }
 
   private makeRequester(options: ClientOptions, serverUrl: string): HttpClient {
@@ -115,10 +133,10 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Return whether the admin key is valid on the server
-   *
-   * @return {boolean}
-   */
+ * Admin only: Return whether the admin key is valid on the server
+ *
+ * @return {boolean}
+ */
   async AdminGetStatus(): Promise<boolean> {
     return await this.http.adminRequest(`admin/status`);
   }
@@ -136,15 +154,15 @@ export class SpvWalletClient {
    * Admin only: Get a list of all access keys in the system, filtered by conditions, metadata and queryParams
    *
    * @param {AdminAccessKeyFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {AccessKeys}
+   * @param {OldMetadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
+   * @return {OldAccessKeys}
    */
   async AdminGetAccessKeys(
     conditions: AdminAccessKeyFilter,
     metadata: Metadata,
-    params: QueryParams,
-  ): Promise<AccessKeys> {
+    params: OldQueryParams,
+  ): Promise<OldAccessKeys> {
     return await this.http.adminRequest(`admin/access-keys/search`, 'POST', {
       conditions,
       metadata,
@@ -171,10 +189,10 @@ export class SpvWalletClient {
    *
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {Contacts}
+   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
+   * @return {OldContacts}
    */
-  async AdminGetContacts(conditions: ContactFilter, metadata: Metadata, params: QueryParams): Promise<Contacts> {
+  async AdminGetContacts(conditions: ContactFilter, metadata: Metadata, params: OldQueryParams): Promise<OldContacts> {
     return await this.http.adminRequest(`admin/contact/search`, 'POST', {
       conditions,
       metadata,
@@ -188,9 +206,9 @@ export class SpvWalletClient {
    * @param {string} id              Contact ID to update
    * @param {string} fullName        New full name of the contact
    * @param {Metadata} metadata      Key value object to use to filter the documents by the metadata
-   * @constructor
+   * @return {OldContact}
    */
-  async AdminUpdateContact(id: string, fullName: string, metadata: Metadata): Promise<Contact> {
+  async AdminUpdateContact(id: string, fullName: string, metadata: Metadata): Promise<OldContact> {
     return await this.http.adminRequest(`admin/contact/${id}`, 'PATCH', { fullName, metadata });
   }
 
@@ -208,9 +226,9 @@ export class SpvWalletClient {
    * Admin only: Accept a contact request
    *
    * @param {string} id Contact ID to accept
-   * @return {Contact}
+   * @return {OldContact}
    */
-  async AdminAcceptContact(id: string): Promise<Contact> {
+  async AdminAcceptContact(id: string): Promise<OldContact> {
     return await this.http.adminRequest(`admin/contact/accepted/${id}`, 'PATCH', {});
   }
 
@@ -218,9 +236,9 @@ export class SpvWalletClient {
    * Admin only: Reject a contact request
    *
    * @param {string} id Contact ID to reject
-   * @return {Contact}
+   * @return {OldContact}
    */
-  async AdminRejectContact(id: string): Promise<Contact> {
+  async AdminRejectContact(id: string): Promise<OldContact> {
     return await this.http.adminRequest(`admin/contact/rejected/${id}`, 'PATCH', {});
   }
 
@@ -229,14 +247,14 @@ export class SpvWalletClient {
    *
    * @param {DestinationFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {Destinations}
+   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
+   * @return {OldDestinations}
    */
   async AdminGetDestinations(
     conditions: DestinationFilter,
     metadata: Metadata,
-    params: QueryParams,
-  ): Promise<Destinations> {
+    params: OldQueryParams,
+  ): Promise<OldDestinations> {
     return await this.http.adminRequest(`admin/destinations/search`, 'POST', {
       conditions,
       metadata,
@@ -259,92 +277,14 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a paymail by address
-   *
-   * @param address string Paymail address (i.e. alias@example.com)
-   * @return {PaymailAddress}
-   */
-  async AdminGetPaymail(address: string): Promise<PaymailAddress> {
-    return await this.http.adminRequest(`admin/paymail/get`, 'POST', { address });
-  }
-
-  /**
-   * Admin only: Get a list of all paymails in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {PaymailAddresses}
-   */
-  async AdminGetPaymails(
-    conditions: AdminPaymailFilter,
-    metadata: Metadata,
-    params: QueryParams,
-  ): Promise<PaymailAddresses> {
-    return await this.http.adminRequest(`admin/paymails/search`, 'POST', {
-      conditions,
-      metadata,
-      params,
-    });
-  }
-
-  /**
-   * Admin only: Get a count of all paymails in the system, filtered by conditions, metadata and queryParams
-   * To get a count of not-deleted paymails, use the condition: { deleted_at: null }
-   *
-   * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetPaymailsCount(conditions: AdminPaymailFilter, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/paymails/count`, 'POST', {
-      conditions,
-      metadata,
-    });
-  }
-
-  /**
-   * Admin only: Create a new paymail for an xPub
-   *
-   * @param {string} rawXPub Raw xPub to register the paymail to
-   * @param {string} address Paymail address (i.e. alias@example.com)
-   * @param {string} public_name Public name for the user to return in Paymail address resolution requests
-   * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
-   * @return {PaymailAddress}
-   */
-  async AdminCreatePaymail(
-    rawXPub: string,
-    address: string,
-    public_name: string,
-    avatar: string,
-  ): Promise<PaymailAddress> {
-    return await this.http.adminRequest(`admin/paymail/create`, 'POST', {
-      key: rawXPub,
-      address,
-      public_name,
-      avatar,
-    });
-  }
-
-  /**
-   * Admin only: Delete a paymail
-   *
-   * @param address string Paymail address (ie. example@spv-wallet.org)
-   * @return void
-   */
-  async AdminDeletePaymail(address: string): Promise<void> {
-    await this.http.adminRequest(`admin/paymail/delete`, 'DELETE', { address });
-  }
-
-  /**
    * Admin only: Get a list of all transactions in the system, filtered by conditions, metadata and queryParams
    *
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {Txs}
+   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
+   * @return {OldTxs}
    */
-  async AdminGetTransactions(conditions: TransactionFilter, metadata: Metadata, params: QueryParams): Promise<Txs> {
+  async AdminGetTransactions(conditions: TransactionFilter, metadata: Metadata, params: OldQueryParams): Promise<OldTxs> {
     return await this.http.adminRequest(`admin/transactions/search`, 'POST', {
       conditions,
       metadata,
@@ -353,7 +293,7 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a count of all transactions in the system, filtered by conditions, metadata and queryParams
+   * Admin only: Get a count of all transactions in the system, filtered by conditions, metadata, and queryParams
    *
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
@@ -371,10 +311,10 @@ export class SpvWalletClient {
    *
    * @param {AdminUtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {Utxos}
+   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
+   * @return {OldUtxos}
    */
-  async AdminGetUtxos(conditions: AdminUtxoFilter, metadata: Metadata, params: QueryParams): Promise<Utxos> {
+  async AdminGetUtxos(conditions: AdminUtxoFilter, metadata: Metadata, params: OldQueryParams): Promise<OldUtxos> {
     return await this.http.adminRequest(`admin/utxos/search`, 'POST', {
       conditions,
       metadata,
@@ -401,10 +341,10 @@ export class SpvWalletClient {
    *
    * @param {XpubFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
+   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
    * @return {XPubs}
    */
-  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: QueryParams): Promise<XPubs> {
+  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: OldQueryParams): Promise<XPubs> {
     return await this.http.adminRequest(`admin/xpubs/search`, 'POST', {
       conditions,
       metadata,
@@ -427,12 +367,12 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Register a new xPub into the SPV Wallet
-   *
-   * @param {string} rawXPub    XPub string
-   * @param {Metadata} metadata Key value object to use to add to the xpub
-   * @return {XPub}             The newly registered xpub
-   */
+ * Admin only: Register a new xPub in the SPV Wallet
+ *
+ * @param {string} rawXPub    XPub string
+ * @param {Metadata} metadata Key value object to use to add to the xpub
+ * @return {XPub}             The newly registered xpub
+ */
   async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.http.adminRequest(`admin/xpub`, 'POST', {
       key: rawXPub,
@@ -441,13 +381,89 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Record a transaction without any of the normal checks
+   * Admin only: Get a paymail by address
    *
-   * @param {string} hex  Hex string of the transaction
-   * @return {Tx}
+   * @param address string Paymail address (i.e. alias@example.com)
+   * @return {OldPaymailAddress}
    */
-  async AdminRecordTransaction(hex: string): Promise<Tx> {
-    return await this.http.adminRequest(`admin/transactions/record`, 'POST', { hex });
+  async AdminGetPaymail(address: string): Promise<OldPaymailAddress> {
+    return await this.http.adminRequest(`admin/paymail/get`, 'POST', { address });
+  }
+
+  /**
+   * Admin only: Get a list of all paymails in the system, filtered by conditions, metadata and queryParams
+   *
+   * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryParams} params Database query parameters for page, page size and sorting
+   * @return {OldPaymailAddresses}
+   */
+  async AdminGetPaymails(
+    conditions: AdminPaymailFilter,
+    metadata: Metadata,
+    params: QueryParams,
+  ): Promise<OldPaymailAddresses> {
+    return await this.http.adminRequest(`admin/paymails/search`, 'POST', {
+      conditions,
+      metadata,
+      params,
+    });
+  }
+
+  /**
+   * Admin only: Get a count of all paymails in the system, filtered by conditions, metadata and queryParams
+   *
+   * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @return {number}
+   */
+  async AdminGetPaymailsCount(conditions: AdminPaymailFilter, metadata: Metadata): Promise<number> {
+    return await this.http.adminRequest(`admin/paymails/count`, 'POST', {
+      conditions,
+      metadata,
+    });
+  }
+
+  /**
+   * Admin only: Create a new paymail for an xPub
+   *
+   * @param {string} rawXPub Raw xPub to register the paymail to
+   * @param {string} address Paymail address (i.e. alias@example.com)
+   * @param {string} public_name Public name for the user to return in Paymail address resolution requests
+   * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
+   * @return {OldPaymailAddress}
+   */
+  async AdminCreatePaymail(
+    rawXPub: string,
+    address: string,
+    public_name: string,
+    avatar: string,
+  ): Promise<OldPaymailAddress> {
+    return await this.http.adminRequest(`admin/paymail/create`, 'POST', {
+      key: rawXPub,
+      address,
+      public_name,
+      avatar,
+    });
+  }
+
+  /**
+   * Admin only: Delete a paymail
+   *
+   * @param {string} address Paymail address (ie. example@spv-wallet.org)
+   * @return void
+   */
+  async AdminDeletePaymail(address: string): Promise<void> {
+    await this.http.adminRequest(`admin/paymail/delete`, 'DELETE', { address });
+  }
+
+  /**
+   * Admin only: Get a list of all webhook subscriptions.
+   *
+   * @returns A Promise that resolves to an array of Webhook objects representing the current webhook subscriptions.
+   */
+  async AdminGetWebhooks(): Promise<Webhook[]> {
+    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'GET');
   }
 
   /**
@@ -463,15 +479,6 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a list of all webhook subscriptions.
-   *
-   * @returns A Promise that resolves to an array of Webhook objects representing the current webhook subscriptions.
-   */
-  async AdminGetWebhooks(): Promise<Webhook[]> {
-    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'GET');
-  }
-
-  /**
    * Admin only: Delete a webhook subscription by the given URL.
    *
    * @param url - The URL of the webhook subscription to delete.
@@ -482,12 +489,22 @@ export class SpvWalletClient {
   }
 
   /**
+   * Admin only: Record a transaction without any of the normal checks
+   *
+   * @param {string} hex  Hex string of the transaction
+   * @return {OldTx}
+   */
+  async AdminRecordTransaction(hex: string): Promise<OldTx> {
+    return await this.http.adminRequest(`admin/transactions/record`, 'POST', { hex });
+  }
+
+  /**
    * Get information about the xpub from the server of the current user
    *
-   * @return {XPub}
+   * @return {User}
    */
-  async GetXPub(): Promise<XPub> {
-    return await this.http.request(`xpub`);
+  async GetUserInfo(): Promise<User> {
+    return await this.http.request(`users/current`);
   }
 
   /**
@@ -496,10 +513,10 @@ export class SpvWalletClient {
    * Admin key should be set to use this method
    *
    * @param {Metadata} metadata Key value object to use to update the metadata. To delete keys add a key with null value
-   * @return {XPub}
+   * @return {User}
    */
-  async UpdateXPubMetadata(metadata: Metadata): Promise<XPub> {
-    return await this.http.request(`xpub`, 'PATCH', { metadata });
+  async UpdateUserMetadata(metadata: Metadata): Promise<User> {
+    return await this.http.request(`users/current`, 'PATCH', { metadata });
   }
 
   /**
@@ -508,8 +525,8 @@ export class SpvWalletClient {
    * @param {string} id The database ID of the access key
    * @return {AccessKey}
    */
-  async GetAccessKey(id: string): Promise<AccessKey> {
-    return await this.http.request(`access-key?id=${id}`);
+  async GetAccessKeyByID(id: string): Promise<AccessKey> {
+    return await this.http.request(`users/current/keys/${id}`);
   }
 
   /**
@@ -518,31 +535,19 @@ export class SpvWalletClient {
    * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {AccessKeys}
+   * @return {PageModel<AccessKey>}
    */
-  async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
-    return await this.http.request(`access-key/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+  async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<AccessKey>> {
+    const basePath = `users/current/keys`
+    const queryString = buildQueryPath({
+      filter: conditions,
+      metadata: metadata,
+      page: queryParams
     });
-  }
 
-  /**
-   * Get a count of all access keys for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async GetAccessKeysCount(conditions: AccessKeyFilter, metadata: Metadata): Promise<number> {
-    return await this.http.request(`access-key/count`, 'POST', {
-      conditions,
-      metadata,
-    });
+    const path = `${basePath}${queryString}`;
+
+    return await this.http.request(path, 'GET');
   }
 
   /**
@@ -554,7 +559,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async CreateAccessKey(metadata: Metadata): Promise<AccessKey> {
-    return await this.http.request(`access-key`, 'POST', { metadata });
+    return await this.http.request(`users/current/keys`, 'POST', { metadata });
   }
 
   /**
@@ -566,138 +571,7 @@ export class SpvWalletClient {
    * @return {AccessKey}
    */
   async RevokeAccessKey(id: string): Promise<AccessKey> {
-    return await this.http.request(`access-key?id=${id}`, 'DELETE');
-  }
-
-  /**
-   * Get a destination of the current user by database ID
-   *
-   * @param id string Database ID of destination (sha256 hash of locking script)
-   * @return {Destination}
-   */
-  async GetDestinationByID(id: string): Promise<Destination> {
-    return await this.http.request(`destination?id=${id}`);
-  }
-
-  /**
-   * Get a destination of the current user by locking script
-   *
-   * @param locking_script string Locking script (script pub key)
-   * @return {Destination}
-   */
-  async GetDestinationByLockingScript(locking_script: string): Promise<Destination> {
-    return await this.http.request(`destination?locking_script=${locking_script}`);
-  }
-
-  /**
-   * Get a destination of the current user by bitcoin address
-   *
-   * @param address string Bitcoin address
-   * @return {Destination}
-   */
-  async GetDestinationByAddress(address: string): Promise<Destination> {
-    return await this.http.request(`destination?address=${address}`);
-  }
-
-  /**
-   * Get a list of all destinations for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Destinations}
-   */
-  async GetDestinations(
-    conditions: DestinationFilter,
-    metadata: Metadata,
-    queryParams: QueryParams,
-  ): Promise<Destinations> {
-    return await this.http.request(`destination/search`, 'POST', {
-      conditions,
-      metadata,
-      params: {
-        page: queryParams?.page || 0,
-        page_size: queryParams?.page_size || 0,
-        order_by_field: queryParams?.order_by_field || '',
-        sort_direction: queryParams?.sort_direction || '',
-      },
-    });
-  }
-
-  /**
-   * Get a count of all destinations for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async GetDestinationsCount(conditions: DestinationFilter, metadata: Metadata): Promise<number> {
-    return await this.http.request(`destination/count`, 'POST', {
-      conditions,
-      metadata,
-    });
-  }
-
-  /**
-   * Create a new destination to receive bsv with and return that destination
-   *
-   * This function allows you to create a destination that will be monitored on-chain and will import any transactions
-   * related to that destination into SPV Wallet. This is legacy functionality in Bitcoin and should only be used if a p2p
-   * option (paymail) is not possible. Use sparingly.
-   *
-   * @param {Metadata} metadata Key value object to attach to the new destination
-   * @return {Destination}
-   */
-  async NewDestination(metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'POST', { metadata });
-  }
-
-  /**
-   * Updated the metadata object of the destination given by ID with new keys (does not overwrite the old object)
-   *
-   * To remove a key from the metadata object, add a key to set with a value of `null`
-   *
-   * @param {string} id Database ID of the destination
-   * @param {Metadata} metadata Key value object to append to the metadata of the destination
-   * @return {Destination}
-   */
-  async UpdateDestinationMetadataByID(id: string, metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'PATCH', {
-      id,
-      metadata,
-    });
-  }
-
-  /**
-   * Updated the metadata object of the destination given by locking script with new keys (does not overwrite the old object)
-   *
-   * To remove a key from the metadata object, add a key to set with a value of `null`
-   *
-   * @param {string} locking_script Locking script of the destination
-   * @param {Metadata} metadata Key value object to append to the metadata of the destination
-   * @return {Destination}
-   */
-  async UpdateDestinationMetadataByLockingScript(locking_script: string, metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'PATCH', {
-      locking_script,
-      metadata,
-    });
-  }
-
-  /**
-   * Updated the metadata object of the destination given by address with new keys (does not overwrite the old object)
-   *
-   * To remove a key from the metadata object, add a key to set with a value of `null`
-   *
-   * @param {string} address Address of the destination
-   * @param {Metadata} metadata Key value object to append to the metadata of the destination
-   * @return {Destination}
-   */
-  async UpdateDestinationMetadataByAddress(address: string, metadata: Metadata): Promise<Destination> {
-    return await this.http.request(`destination`, 'PATCH', {
-      address,
-      metadata,
-    });
+    return await this.http.request(`users/current/keys/${id}`, 'DELETE');
   }
 
   /**
@@ -706,17 +580,39 @@ export class SpvWalletClient {
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Contacts}
+   * @return {PageModel<Contact>}
    */
-  async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<Contacts> {
-    return await this.http.request(`contact/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+  async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Contact>> {
+    const basePath = 'contacts';
+    const queryString = buildQueryPath({
+      filter: conditions,
+      metadata: metadata,
+      page: queryParams
     });
+
+    const path = `${basePath}${queryString}`;
+
+    return await this.http.request(path, 'GET');
+  }
+
+  /**
+   * Get a single contact by it's paymail address.
+   *
+   * @param {string} paymail  Contact paymail to get a specific contact
+   * @return {Contact}
+   */
+  async GetContactByPaymail(paymail: string): Promise<Contact> {
+    return await this.http.request(`contacts/${paymail}`, 'GET');
+  }
+
+  /**
+   * Remove a single contact by it's paymail address.
+   *
+   * @param {string} paymail  Contact paymail to remove a specific contact
+   * @return {Contact}
+   */
+  async RemoveContact(paymail: string): Promise<Contact> {
+    return await this.http.request(`contacts/${paymail}`, 'DELETE');
   }
 
   /**
@@ -738,27 +634,27 @@ export class SpvWalletClient {
     if (requesterPaymail !== '') {
       payload['requesterPaymail'] = requesterPaymail;
     }
-    return await this.http.request(`contact/${paymail}`, 'PUT', payload);
+    return await this.http.request(`contacts/${paymail}`, 'PUT', payload);
   }
 
   /**
    * Accept a contact request
    *
-   * @param {string} paymail Contact paymail to modify
+   * @param {string} paymail Contact paymail to accept invitation
    * @return {void}
    */
-  async AcceptContact(paymail: string): Promise<void> {
-    return await this.http.request(`contact/accepted/${paymail}`, 'PATCH');
+  async AcceptContactInvitation(paymail: string): Promise<void> {
+    return await this.http.request(`invitations/${paymail}/contacts`, 'POST');
   }
 
   /**
    * Reject a contact request
    *
-   * @param {string} paymail Contact paymail to modify
+   * @param {string} paymail Contact paymail to reject invitation
    * @return {void}
    */
-  async RejectContact(paymail: string): Promise<void> {
-    return await this.http.request(`contact/rejected/${paymail}`, 'PATCH');
+  async RejectContactInvitation(paymail: string): Promise<void> {
+    return await this.http.request(`invitations/${paymail}/contacts`, 'DELETE');
   }
 
   /**
@@ -785,17 +681,27 @@ export class SpvWalletClient {
       throw new ErrorWrongTOTP();
     }
 
-    return await this.http.request(`contact/confirmed/${paymail}`, 'PATCH');
+    return await this.http.request(`contacts/${paymail}/confirmation`, 'POST');
   }
 
   /**
-   * Get all details of the transaction by the given ID
+   * Unconfirm previously confirmed contact using paymail
    *
-   * @param {string} txID Transaction ID
+   * @param {string} paymail Contact paymail to unconfirm
+   * @return {void}
+   */
+  async UnconfirmContact(paymail: string): Promise<void> {
+    return await this.http.request(`contacts/${paymail}/confirmation`, 'DELETE');
+  }
+
+  /**
+   * Get all details of the transaction by the given id
+   *
+   * @param {string} txId Transaction ID
    * @return {Tx}
    */
-  async GetTransaction(txID: string): Promise<Tx> {
-    return await this.http.request(`transaction?id=${txID}`, 'GET');
+  async GetTransactionById(txId: string): Promise<Tx> {
+    return await this.http.request(`transactions/${txId}`, 'GET');
   }
 
   /**
@@ -804,42 +710,19 @@ export class SpvWalletClient {
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Txs}
+   * @return {PageModel<Tx>}
    */
-  async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
-    return await this.http.request(`transaction/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+  async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Tx>> {
+    const basePath = 'transactions';
+    const queryString = buildQueryPath({
+      filter: conditions,
+      metadata: metadata,
+      page: queryParams
     });
-  }
 
-  /**
-   * Get a count of all transactions for the current user, filtered by conditions, metadata and queryParams
-   *
-   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async GetTransactionsCount(conditions: TransactionFilter, metadata: Metadata): Promise<number> {
-    return await this.http.request(`transaction/count`, 'POST', {
-      conditions,
-      metadata,
-    });
-  }
+    const path = `${basePath}${queryString}`;
 
-  /**
-   * Get all details of the utxo by the given ID
-   *
-   * @param {string} tx_id Transaction ID of the UTXO
-   * @param {number} output_index Index of output within the transaction of the UTXO
-   * @return {Utxo}
-   */
-  async GetUtxo(tx_id: string, output_index: number): Promise<Utxo> {
-    return await this.http.request(`utxo?tx_id=${tx_id}&output_index=${output_index}`);
+    return await this.http.request(path, 'GET');
   }
 
   /**
@@ -848,17 +731,20 @@ export class SpvWalletClient {
    * @param {UtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Utxos}
+   * @return {PageModel<Utxo>}
    */
-  async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
-    return await this.http.request(`utxo/search`, 'POST', {
-      conditions,
-      metadata,
-      page: queryParams?.page || 0,
-      page_size: queryParams?.page_size || 0,
-      order_by_field: queryParams?.order_by_field || '',
-      sort_direction: queryParams?.sort_direction || '',
+  async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Utxo>> {
+    const basePath = 'utxos';
+    const queryString = buildQueryPath({
+      filter: conditions,
+      metadata: metadata,
+      page: queryParams
     });
+
+    const path = `${basePath}${queryString}`;
+
+    return await this.http.request(path, 'GET');
+
   }
 
   /**
@@ -881,31 +767,13 @@ export class SpvWalletClient {
    * This is a helper function to easily create a new draft transaction to a list of recipients
    *
    * @see {@link SendToRecipients}
-   * @param {Recipients} recipients A list of recipients and a satoshi value to send to them
+   * @param {DraftTransactionConfig} config A config object with the recipients and the satoshi value to send to them
    * @param {Metadata} metadata     Key value object to use to add to the draft transaction
    * @return {DraftTx}     Complete draft transaction object from SPV Wallet, all configuration options filled in
    */
-  async DraftToRecipients(recipients: Recipients, metadata: Metadata): Promise<DraftTx> {
-    const transactionConfig: TransactionConfigInput = {
-      outputs: recipients,
-    };
-
-    return await this.http.request(`transaction`, 'POST', {
-      config: transactionConfig,
-      metadata,
-    });
-  }
-
-  /**
-   * Create a draft transaction using the given transaction config
-   *
-   * @param {TransactionConfigInput} transactionConfig Configuration of the new transaction
-   * @param {Metadata} metadata                        Key value object to use to add to the draft transaction
-   * @return {DraftTx}                        Complete draft transaction object from SPV Wallet, all configuration options filled in
-   */
-  async DraftTransaction(transactionConfig: TransactionConfigInput, metadata: Metadata): Promise<DraftTx> {
-    return await this.http.request(`transaction`, 'POST', {
-      config: transactionConfig,
+  async NewDraftTransaction(config: DraftTransactionConfig, metadata: Metadata): Promise<DraftTx> {
+    return await this.http.request(`transactions/drafts`, 'POST', {
+      config: config,
       metadata,
     });
   }
@@ -913,17 +781,17 @@ export class SpvWalletClient {
   /**
    * Helper function to create a draft, sign it and send it to a list of recipients
    *
-   * @param {Recipients} recipients A list of recipients and a satoshi value to send to them
+   * @param {DraftTransactionConfig} config A config object with the recipients and the satoshi value to send to them
    * @param {Metadata} metadata     Key value object to use to add to the (draft) transaction
    * @return {Tx}          The final transaction object, including the hex of the Bitcoin transaction
    * @example
    * // This function is a shorthand for:
-   * const draft = await spvWalletClient.DraftToRecipients(recipients, metadata);
+   * const draft = await spvWalletClient.NewDraftTransaction(recipients, metadata);
    * const finalized = await spvWalletClient.SignTransaction(draft);
    * const tx = await spvWalletClient.RecordTransaction(finalized, draft.id, metadata)
    */
-  async SendToRecipients(recipients: Recipients, metadata: Metadata): Promise<Tx> {
-    const draft = await this.DraftToRecipients(recipients, metadata);
+  async SendToRecipients(config: DraftTransactionConfig, metadata: Metadata): Promise<Tx> {
+    const draft = await this.NewDraftTransaction(config, metadata);
     const finalized = await this.SignTransaction(draft);
     return this.RecordTransaction(finalized, draft.id, metadata);
   }
@@ -951,15 +819,15 @@ export class SpvWalletClient {
       // derive private key (m/chain/num)
       let hdWallet = xPriv.deriveChild(destination.chain).deriveChild(destination.num);
 
-      if (destination.paymail_external_derivation_num != null) {
+      if (destination.paymailExternalDerivationNum != null) {
         // derive private key (m/chain/num/paymail_num)
-        hdWallet = hdWallet.deriveChild(destination.paymail_external_derivation_num);
+        hdWallet = hdWallet.deriveChild(destination.paymailExternalDerivationNum);
       }
 
       // small sanity check for the inputs
       if (
-        input.transaction_id != txDraft.inputs[index].sourceTXID ||
-        input.output_index != txDraft.inputs[index].sourceOutputIndex
+        input.transactionId != txDraft.inputs[index].sourceTXID ||
+        input.outputIndex != txDraft.inputs[index].sourceOutputIndex
       ) {
         throw new ErrorTxIdsDontMatchToDraft(this.logger, input, index, txDraft.inputs[index]);
       }
@@ -972,8 +840,8 @@ export class SpvWalletClient {
         new P2PKH().lock(destination.address),
       );
 
-      txDraft.inputs[index].sourceOutputIndex = input.output_index;
-      txDraft.inputs[index].sourceTXID = input.transaction_id;
+      txDraft.inputs[index].sourceOutputIndex = input.outputIndex;
+      txDraft.inputs[index].sourceTXID = input.transactionId;
     });
 
     await txDraft.sign();
@@ -993,9 +861,9 @@ export class SpvWalletClient {
    * @return {Tx}       The SPV Wallet transaction object
    */
   async RecordTransaction(hex: string, referenceID: string, metadata: Metadata): Promise<Tx> {
-    return await this.http.request(`transaction/record`, 'POST', {
+    return await this.http.request(`transactions`, 'POST', {
       hex,
-      reference_id: referenceID,
+      referenceId: referenceID,
       metadata,
     });
   }
@@ -1005,13 +873,12 @@ export class SpvWalletClient {
    *
    * To remove a key from the metadata object, add a key to set with a value of `null`
    *
-   * @param {string} txID       The ID of the transaction
+   * @param {string} txId       The ID of the transaction
    * @param {Metadata} metadata Key value object to use to add to the transaction
    * @return {Tx}      The complete SPV Wallet transaction object, with the new changes
    */
-  async UpdateTransactionMetadata(txID: string, metadata: Metadata): Promise<Tx> {
-    return await this.http.request(`transaction`, 'PATCH', {
-      id: txID,
+  async UpdateTransactionMetadata(txId: string, metadata: Metadata): Promise<Tx> {
+    return await this.http.request(`transactions/${txId}`, 'PATCH', {
       metadata,
     });
   }
@@ -1022,9 +889,9 @@ export class SpvWalletClient {
    */
   async GetSharedConfig(): Promise<SharedConfig> {
     if (this.http.hasAdminKey()) {
-      return await this.http.adminRequest(`shared-config`, 'GET');
+      return await this.http.adminRequest(`configs/shared`, 'GET');
     }
-    return await this.http.request(`shared-config`, 'GET');
+    return await this.http.request(`configs/shared`, 'GET');
   }
 
   /**

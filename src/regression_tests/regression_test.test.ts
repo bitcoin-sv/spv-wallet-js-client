@@ -33,12 +33,12 @@ const sendAndVerifyFunds = async (
   targetXPriv: string,
 ) => {
   const transaction = await sendFunds(fromInstance, fromXPriv, toPaymail, howMuch);
-  expect(transaction.output_value).toBeLessThanOrEqual(-1);
+  expect(transaction.outputValue).toBeLessThanOrEqual(-1);
 
   const balance = await getBalance(targetURL, targetXPriv);
   expect(balance).toBeGreaterThanOrEqual(1);
 
-  const transactions = await getTransactions(targetURL, targetXPriv);
+  const { content: transactions } = await getTransactions(targetURL, targetXPriv);
   expect(transactions.length).toBeGreaterThanOrEqual(1);
 };
 
@@ -125,18 +125,18 @@ describe('TestRegression', () => {
           userTwo.paymail,
           MINIMAL_FUNDS_PER_TRANSACTION,
         );
-        expect(transaction.output_value).toBeLessThanOrEqual(-1);
+        expect(transaction.outputValue).toBeLessThanOrEqual(-1);
 
         const balanceInstance2 = await getBalance(rtConfig.clientTwoURL, userTwo.xpriv);
         expect(balanceInstance2).toBeGreaterThanOrEqual(2);
 
-        const transactionsInstance2 = await getTransactions(rtConfig.clientTwoURL, userTwo.xpriv);
+        const { content: transactionsInstance2 } = await getTransactions(rtConfig.clientTwoURL, userTwo.xpriv);
         expect(transactionsInstance2.length).toBeGreaterThanOrEqual(2);
 
         const balanceInstance1 = await getBalance(rtConfig.clientOneURL, userOne.xpriv);
         expect(balanceInstance1).toBeGreaterThanOrEqual(0);
 
-        const transactionsInstance1 = await getTransactions(rtConfig.clientOneURL, userOne.xpriv);
+        const { content: transactionsInstance1 } = await getTransactions(rtConfig.clientOneURL, userOne.xpriv);
         expect(transactionsInstance1.length).toBeGreaterThanOrEqual(2);
       },
       TEST_TIMEOUT_MS,
