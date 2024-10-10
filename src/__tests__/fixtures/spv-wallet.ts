@@ -95,11 +95,16 @@ export const mockedMerkleRootsAPIResponseFn = (lastMerkleRoot: string): Exclusiv
   }
 
   let content = mockedSPVWalletData.slice(lastMerkleRootIdx + 1);
+  let lastEvaluatedKey = content[content.length - 1].merkleRoot;
+
+  if (lastEvaluatedKey === mockedSPVWalletData[mockedSPVWalletData.length - 1].merkleRoot) {
+    lastEvaluatedKey = '';
+  }
 
   return {
     content,
     page: {
-      lastEvaluatedKey: content[content.length - 1].merkleRoot,
+      lastEvaluatedKey: lastEvaluatedKey,
       totalElements: mockedSPVWalletData.length,
       size: content.length,
     },
