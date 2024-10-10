@@ -38,7 +38,7 @@ const sendAndVerifyFunds = async (
   const balance = await getBalance(targetURL, targetXPriv);
   expect(balance).toBeGreaterThanOrEqual(1);
 
-  const transactions = await getTransactions(targetURL, targetXPriv);
+  const { content: transactions } = await getTransactions(targetURL, targetXPriv);
   expect(transactions.length).toBeGreaterThanOrEqual(1);
 };
 
@@ -130,13 +130,13 @@ describe('TestRegression', () => {
         const balanceInstance2 = await getBalance(rtConfig.clientTwoURL, userTwo.xpriv);
         expect(balanceInstance2).toBeGreaterThanOrEqual(2);
 
-        const transactionsInstance2 = await getTransactions(rtConfig.clientTwoURL, userTwo.xpriv);
+        const { content: transactionsInstance2 } = await getTransactions(rtConfig.clientTwoURL, userTwo.xpriv);
         expect(transactionsInstance2.length).toBeGreaterThanOrEqual(2);
 
         const balanceInstance1 = await getBalance(rtConfig.clientOneURL, userOne.xpriv);
         expect(balanceInstance1).toBeGreaterThanOrEqual(0);
 
-        const transactionsInstance1 = await getTransactions(rtConfig.clientOneURL, userOne.xpriv);
+        const { content: transactionsInstance1 } = await getTransactions(rtConfig.clientOneURL, userOne.xpriv);
         expect(transactionsInstance1.length).toBeGreaterThanOrEqual(2);
       },
       TEST_TIMEOUT_MS,

@@ -131,7 +131,7 @@ export const sendFunds = async (fromInstance: string, fromXPriv: string, toPayma
     metadata,
   );
 
-  const tx = await client.GetTransactions({ id: transaction.id }, {}, {});
+  const tx = await client.GetTransactionById(transaction.id);
 
   return tx;
 };
