@@ -31,6 +31,8 @@ import {
   XPub,
   OldTx,
   Webhook,
+  PageModel,
+  Utxo,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -529,9 +531,9 @@ export class SpvWalletClient {
    * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {AccessKeys}
+   * @return {PageModel<AccessKey>}
    */
-  async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<AccessKeys> {
+  async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<AccessKey>> {
     const basePath = `users/current/keys`
     const queryString = buildQueryPath({
       filter: conditions,
@@ -574,9 +576,9 @@ export class SpvWalletClient {
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Contacts}
+   * @return {PageModel<Contact>}
    */
-  async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<Contacts> {
+  async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Contact>> {
     const basePath = 'contacts';
     const queryString = buildQueryPath({
       filter: conditions,
@@ -704,9 +706,9 @@ export class SpvWalletClient {
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Txs}
+   * @return {PageModel<Tx>}
    */
-  async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<Txs> {
+  async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Tx>> {
     const basePath = 'transactions';
     const queryString = buildQueryPath({
       filter: conditions,
@@ -725,9 +727,9 @@ export class SpvWalletClient {
    * @param {UtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
-   * @return {Utxos}
+   * @return {PageModel<Utxo>}
    */
-  async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<Utxos> {
+  async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Utxo>> {
     const basePath = 'utxos';
     const queryString = buildQueryPath({
       filter: conditions,

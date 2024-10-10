@@ -84,7 +84,7 @@ export interface Page {
  *
  * Holds the content and page information
  */
-export interface PagedResponse<T> {
+export interface PageModel<T> {
   content: Array<T>;
   page: Page;
 }
@@ -234,7 +234,7 @@ export interface Contact {
 /**
  * Array of Contacts for non-admin (User) endpoints.
  */
-export interface Contacts extends PagedResponse<Contact> {}
+export interface Contacts extends PageModel<Contact> {}
 
 /**
  * Old contact interface for Admin endpoints (Deprecated)
