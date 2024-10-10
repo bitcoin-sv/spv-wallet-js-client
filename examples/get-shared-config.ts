@@ -13,17 +13,5 @@ const client = new SpvWalletClient(server, {
   xPriv: exampleXPriv,
 });
 
-const txs = await client.GetTransactions({}, {}, {});
-console.log('GetTransactions response:', txs);
-
-const txsFiltered = await client.GetTransactions(
-  {
-    blockHeight: 839228,
-  },
-  {},
-  {
-    pageSize: 100,
-    page: 1,
-  },
-);
-console.log('Filtered GetTransactions response:', txsFiltered);
+const sharedConfig = await client.GetSharedConfig();
+console.log('Shared config:', sharedConfig);

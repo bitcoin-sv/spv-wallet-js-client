@@ -1,8 +1,8 @@
-import { OpReturn, SpvWalletClient, TransactionConfigInput } from '../dist/typescript-npm-package.cjs.js';
+import { DraftTransactionConfig, OpReturn, SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
-const server = 'http://localhost:3003/v1';
+const server = 'http://localhost:3003';
 
 if (!exampleXPriv) {
   console.log(errMessage('xPriv'));
@@ -14,18 +14,18 @@ const client = new SpvWalletClient(server, {
 });
 
 const opReturn: OpReturn = {
-  string_parts: ['hello', 'world'],
+  stringParts: ['hello', 'world'],
 };
 
-const transactionConfig: TransactionConfigInput = {
+const transactionConfig: DraftTransactionConfig = {
   outputs: [
     {
-      op_return: opReturn,
+      opReturn: opReturn,
     },
   ],
 };
 
-const draftTransaction = await client.DraftTransaction(transactionConfig, {});
+const draftTransaction = await client.NewDraftTransaction(transactionConfig, {});
 console.log('DraftTransaction response:', draftTransaction);
 
 const finalized = await client.SignTransaction(draftTransaction);
