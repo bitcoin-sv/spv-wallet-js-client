@@ -20,7 +20,8 @@
     "xpriv-from-mnemonic": "yarn run:example xpriv-from-mnemonic.ts",
     "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts",
     "generate-totp": "yarn run:example generate-totp.ts",
-    "get-handled-paymail-domains": "yarn run:example get-handled-paymail-domains.ts"
+    "get-handled-paymail-domains": "yarn run:example get-handled-paymail-domains.ts",
+    "sync-merkleroots": "yarn run:example sync-merkleroots.ts"
   },
   "version": "0.0.0",
   "devDependencies": {

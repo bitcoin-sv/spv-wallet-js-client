@@ -10,11 +10,14 @@ import {
   Destination,
   Destinations,
   DraftTx,
+  ExclusiveStartKeyPage,
+  MerkleRoot,
   Metadata,
   PaymailAddress,
   PaymailAddresses,
   QueryParams,
   Recipients,
+  MerkleRootsRepository,
   SharedConfig,
   TransactionConfigInput,
   Tx,
@@ -34,6 +37,8 @@ import {
   ErrorNoXPrivToGenerateTOTP,
   ErrorNoXPrivToSignTransaction,
   ErrorNoXPrivToValidateTOTP,
+  ErrorStaleLastEvaluatedKey,
+  ErrorSyncMerkleRootsTimeout,
   ErrorTxIdsDontMatchToDraft,
   ErrorWrongTOTP,
 } from './errors';
@@ -1062,5 +1067,45 @@ export class SpvWalletClient {
       throw new ErrorNoXPrivToValidateTOTP();
     }
     return validateTotpForContact(this.xPrivKey, contact, passcode, requesterPaymail, period, digits);
+  }
+
+  /**
+   * Syncs merkleroots from the client db to the last known block by SPV-Wallet
+   *
+   * @param {MerkleRootsRepository} repo - Repository interface capable of reading lastEvaluatedKey and saving to the database
+   * @returns void
+   */
+  async SyncMerkleRoots(repo: MerkleRootsRepository, timeoutMs?: number) {
+    const startTime = Date.now();
+
+    let merkleRootsResponse: ExclusiveStartKeyPage<MerkleRoot[]>;
+    let lastEvaluatedKey = await repo.getLastMerkleRoot();
+    let previousLastEvaluatedKey = lastEvaluatedKey || null;
+    const requestPath = 'merkleroots';
+    let lastEvaluatedKeyQuery = '';
+
+    if (lastEvaluatedKey) {
+      lastEvaluatedKeyQuery = `?lastEvaluatedKey=${lastEvaluatedKey}`;
+    }
+
+    do {
+      if (timeoutMs !== undefined && Date.now() - startTime >= timeoutMs) {
+        this.logger.error('SyncMerkleRoots operation timed out');
+        throw new ErrorSyncMerkleRootsTimeout();
+      }
+      merkleRootsResponse = await this.http.request(`${requestPath}${lastEvaluatedKeyQuery}`, 'GET');
+
+      if (previousLastEvaluatedKey === merkleRootsResponse.page.lastEvaluatedKey) {
+        this.logger.error(
+          'The last evaluated key has not changed between requests, indicating a possible loop or synchronization issue.',
+        );
+        throw new ErrorStaleLastEvaluatedKey();
+      }
+
+      await repo.saveMerkleRoots(merkleRootsResponse.content);
+
+      lastEvaluatedKeyQuery = `?lastEvaluatedKey=${merkleRootsResponse.page.lastEvaluatedKey}`;
+      previousLastEvaluatedKey = merkleRootsResponse.page.lastEvaluatedKey;
+    } while (previousLastEvaluatedKey !== '');
   }
 }
