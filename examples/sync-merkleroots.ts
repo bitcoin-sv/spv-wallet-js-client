@@ -8,7 +8,7 @@ import {
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
-const server = 'http://localhost:3003/api/v1';
+const server = 'http://localhost:3003';
 
 // perhaps change exmapleXPub to actual existing in db
 if (!exampleXPriv) {

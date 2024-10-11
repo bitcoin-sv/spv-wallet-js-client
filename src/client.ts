@@ -1,6 +1,5 @@
 import {
   AccessKey,
-  AccessKeys,
   AccessKeyWithSigning,
   AdminKey,
   ClientOptions,
@@ -14,8 +13,6 @@ import {
   QueryParams,
   SharedConfig,
   Tx,
-  Txs,
-  Utxos,
   XprivWithSigning,
   User,
   XpubWithoutSigning,
@@ -35,6 +32,7 @@ import {
   Webhook,
   PageModel,
   Utxo,
+  MerkleRootsRepository,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -133,10 +131,10 @@ export class SpvWalletClient {
   }
 
   /**
- * Admin only: Return whether the admin key is valid on the server
- *
- * @return {boolean}
- */
+   * Admin only: Return whether the admin key is valid on the server
+   *
+   * @return {boolean}
+   */
   async AdminGetStatus(): Promise<boolean> {
     return await this.http.adminRequest(`admin/status`);
   }
@@ -284,7 +282,11 @@ export class SpvWalletClient {
    * @param {OldQueryParams} params Database query parameters for page, page size and sorting
    * @return {OldTxs}
    */
-  async AdminGetTransactions(conditions: TransactionFilter, metadata: Metadata, params: OldQueryParams): Promise<OldTxs> {
+  async AdminGetTransactions(
+    conditions: TransactionFilter,
+    metadata: Metadata,
+    params: OldQueryParams,
+  ): Promise<OldTxs> {
     return await this.http.adminRequest(`admin/transactions/search`, 'POST', {
       conditions,
       metadata,
@@ -367,12 +369,12 @@ export class SpvWalletClient {
   }
 
   /**
- * Admin only: Register a new xPub in the SPV Wallet
- *
- * @param {string} rawXPub    XPub string
- * @param {Metadata} metadata Key value object to use to add to the xpub
- * @return {XPub}             The newly registered xpub
- */
+   * Admin only: Register a new xPub in the SPV Wallet
+   *
+   * @param {string} rawXPub    XPub string
+   * @param {Metadata} metadata Key value object to use to add to the xpub
+   * @return {XPub}             The newly registered xpub
+   */
   async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
     return await this.http.adminRequest(`admin/xpub`, 'POST', {
       key: rawXPub,
@@ -537,12 +539,16 @@ export class SpvWalletClient {
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<AccessKey>}
    */
-  async GetAccessKeys(conditions: AccessKeyFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<AccessKey>> {
-    const basePath = `users/current/keys`
+  async GetAccessKeys(
+    conditions: AccessKeyFilter,
+    metadata: Metadata,
+    queryParams: QueryParams,
+  ): Promise<PageModel<AccessKey>> {
+    const basePath = `users/current/keys`;
     const queryString = buildQueryPath({
       filter: conditions,
       metadata: metadata,
-      page: queryParams
+      page: queryParams,
     });
 
     const path = `${basePath}${queryString}`;
@@ -582,12 +588,16 @@ export class SpvWalletClient {
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<Contact>}
    */
-  async GetContacts(conditions: ContactFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Contact>> {
+  async GetContacts(
+    conditions: ContactFilter,
+    metadata: Metadata,
+    queryParams: QueryParams,
+  ): Promise<PageModel<Contact>> {
     const basePath = 'contacts';
     const queryString = buildQueryPath({
       filter: conditions,
       metadata: metadata,
-      page: queryParams
+      page: queryParams,
     });
 
     const path = `${basePath}${queryString}`;
@@ -712,12 +722,16 @@ export class SpvWalletClient {
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<Tx>}
    */
-  async GetTransactions(conditions: TransactionFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Tx>> {
+  async GetTransactions(
+    conditions: TransactionFilter,
+    metadata: Metadata,
+    queryParams: QueryParams,
+  ): Promise<PageModel<Tx>> {
     const basePath = 'transactions';
     const queryString = buildQueryPath({
       filter: conditions,
       metadata: metadata,
-      page: queryParams
+      page: queryParams,
     });
 
     const path = `${basePath}${queryString}`;
@@ -738,13 +752,12 @@ export class SpvWalletClient {
     const queryString = buildQueryPath({
       filter: conditions,
       metadata: metadata,
-      page: queryParams
+      page: queryParams,
     });
 
     const path = `${basePath}${queryString}`;
 
     return await this.http.request(path, 'GET');
-
   }
 
   /**
