@@ -33,6 +33,7 @@ import {
   PageModel,
   Utxo,
   MerkleRootsRepository,
+  Page,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -188,9 +189,13 @@ export class SpvWalletClient {
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {OldQueryParams} params Database query parameters for page, page size and sorting
-   * @return {OldContacts}
+   * @return {PageModel<OldContact>}
    */
-  async AdminGetContacts(conditions: ContactFilter, metadata: Metadata, params: OldQueryParams): Promise<OldContacts> {
+  async AdminGetContacts(
+    conditions: ContactFilter,
+    metadata: Metadata,
+    params: OldQueryParams,
+  ): Promise<PageModel<OldContact>> {
     return await this.http.adminRequest(`admin/contact/search`, 'POST', {
       conditions,
       metadata,
