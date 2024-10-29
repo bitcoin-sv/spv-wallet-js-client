@@ -4,7 +4,6 @@ import {
   AdminKey,
   ClientOptions,
   Contact,
-  Contacts,
   DraftTransactionConfig,
   DraftTx,
   ExclusiveStartKeyPage,
@@ -21,7 +20,6 @@ import {
   OldAccessKeys,
   OldContact,
   OldDestinations,
-  OldContacts,
   OldPaymailAddress,
   OldTxs,
   OldUtxos,
@@ -33,7 +31,6 @@ import {
   PageModel,
   Utxo,
   MerkleRootsRepository,
-  Page,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
