@@ -1,5 +1,5 @@
-import { AccessKeyFilter, ContactFilter, ModelFilter, TransactionFilter, UtxoFilter, XpubFilter } from "../filters";
-import { Metadata, QueryParams as Page } from "../types";
+import { AccessKeyFilter, ContactFilter, ModelFilter, TransactionFilter, UtxoFilter, XpubFilter } from '../filters';
+import { Metadata, QueryParams as Page } from '../types';
 
 export interface BuildPathOptions {
   filter: ModelFilter | TransactionFilter | UtxoFilter | XpubFilter | AccessKeyFilter | ContactFilter;
@@ -11,6 +11,10 @@ function flattenParams(params: Record<string, any>, parentKey?: string): Record<
   const flattened: Record<string, string> = {};
 
   Object.entries(params).forEach(([key, value]) => {
+    if (!value) {
+      return;
+    }
+
     const newKey = parentKey ? `${parentKey}[${key}]` : key;
 
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
