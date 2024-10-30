@@ -31,6 +31,7 @@ import {
   PageModel,
   Utxo,
   MerkleRootsRepository,
+  QueryPageParams,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -537,19 +538,14 @@ export class SpvWalletClient {
    * Get a list of all access keys for the current user, filtered by conditions, metadata and queryParams
    *
    * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<AccessKey>}
    */
-  async GetAccessKeys(
-    conditions: AccessKeyFilter,
-    metadata: Metadata,
-    queryParams: QueryParams,
-  ): Promise<PageModel<AccessKey>> {
+  async GetAccessKeys(conditions: AccessKeyFilter, queryParams: QueryPageParams): Promise<PageModel<AccessKey>> {
     const basePath = `users/current/keys`;
     const queryString = buildQueryPath({
       filter: conditions,
-      metadata: metadata,
+      metadata: {},
       page: queryParams,
     });
 

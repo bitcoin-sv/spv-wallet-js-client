@@ -64,50 +64,50 @@ export interface MerkleRootsRepository {
     "next_external_num": 229
   }
  */
-  export interface XPub {
-    /**
-     * metadata object
-     */
-    metadata?: Metadata;
-    /**
-     * xpub id
-     */
-    id: string;
-    /**
-     * Current balance in sats of the xpub
-     */
-    current_balance: number;
-    /**
-     * Next internal (change address) number to use for a new destination
-     *
-     * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
-     */
-    next_internal_num: number;
-    /**
-     * Next external number to use for a new destination
-     *
-     * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
-     */
-    next_external_num: number;
-    /**
-     * Date when this object was created
-     */
-    created_at?: Date;
-    /**
-     * Date when this object was last updated
-     */
-    updated_at?: Date;
-    /**
-     * If this object has been deleted, this date will be set
-     */
-    deleted_at?: Date;
-  }
-  
+export interface XPub {
   /**
-   * Array of xpubs
-   * @see {@link XPub}
+   * metadata object
    */
-  export interface XPubs extends Array<XPub> {}
+  metadata?: Metadata;
+  /**
+   * xpub id
+   */
+  id: string;
+  /**
+   * Current balance in sats of the xpub
+   */
+  current_balance: number;
+  /**
+   * Next internal (change address) number to use for a new destination
+   *
+   * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
+   */
+  next_internal_num: number;
+  /**
+   * Next external number to use for a new destination
+   *
+   * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
+   */
+  next_external_num: number;
+  /**
+   * Date when this object was created
+   */
+  created_at?: Date;
+  /**
+   * Date when this object was last updated
+   */
+  updated_at?: Date;
+  /**
+   * If this object has been deleted, this date will be set
+   */
+  deleted_at?: Date;
+}
+
+/**
+ * Array of xpubs
+ * @see {@link XPub}
+ */
+export interface XPubs extends Array<XPub> {}
 
 /**
  * Page interface
@@ -444,7 +444,6 @@ export interface OldUtxo {
  */
 export interface OldUtxos extends Array<OldUtxo> {}
 
-
 /**
  * Old paymail address interface for Admin endpoints (Deprecated)
  */
@@ -717,6 +716,16 @@ export interface QueryParams {
   pageSize?: number;
   orderByField?: string;
   sortDirection?: string;
+}
+
+/**
+ * Query page params to limit and order database list results.
+ */
+export interface QueryPageParams {
+  page?: number;
+  size?: number;
+  sort?: string;
+  sortBy?: string;
 }
 
 /**
