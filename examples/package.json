@@ -6,7 +6,7 @@
     "build": "tsc",
     "build:client": "cd .. && yarn build",
     "_print_starting_label": "echo '' && echo '========== Starting ==========' && echo ''",
-    "run:example": "yarn build:client && yarn _print_starting_label && node --loader ts-node/esm",
+    "run:example": "yarn build:client && yarn _print_starting_label && node --loader ts-node/esm --no-warnings=ExperimentalWarning",
     "access-key": "yarn run:example access-key.ts",
     "admin-add-user": "yarn run:example admin-add-user.ts",
     "admin-webhooks": "yarn run:example admin-webhooks.ts",
@@ -24,11 +24,16 @@
     "sync-merkleroots": "yarn run:example sync-merkleroots.ts",
     "update-user-xpub-metadata": "yarn run:example update-user-xpub-metadata.ts",
     "xpriv-from-mnemonic": "yarn run:example xpriv-from-mnemonic.ts",
-    "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts"
+    "xpub-from-xpriv": "yarn run:example xpub-from-xpriv.ts",
+    "webhook": "yarn run:example webhook.ts"
   },
   "version": "0.0.0",
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "express": "^4.21.1"
   }
 }

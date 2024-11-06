@@ -737,3 +737,28 @@ export interface SharedConfig {
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE';
+
+// StringEvent - event with string value; can be used for generic messages and it's used for testing
+export interface StringEvent {
+  value: string;
+}
+
+// UserEvent - event with user identifier
+export interface UserEvent {
+  xpubId: string;
+}
+
+// TransactionEvent - event for transaction changes
+export interface TransactionEvent extends UserEvent {
+  transactionId: string;
+  status: string;
+  xpubOutputValue: Record<string, number>;
+}
+
+// export type Events = StringEvent | TransactionEvent;
+
+export type Events = {
+  StringEvent: StringEvent;
+  UserEvent: UserEvent;
+  TransactionEvent: TransactionEvent;
+};
