@@ -1,4 +1,4 @@
-import { registerHandler, SpvWalletClient, WebhookManager, StringEvent } from '../dist/typescript-npm-package.cjs.js';
+import { SpvWalletClient, WebhookManager } from '../dist/typescript-npm-package.cjs.js';
 import { exampleAdminKey } from './example-keys.js';
 import { errMessage } from './utils.js';
 import http from 'http';
@@ -18,7 +18,6 @@ const client = new SpvWalletClient(server, {
 const wh = new WebhookManager(client, 'http://localhost:5005/notification', {
   tokenValue: 'Authorization',
   tokenHeader: 'this-is-the-token',
-  processors: 3,
 });
 
 try {
@@ -36,18 +35,16 @@ try {
     console.log(`URL: ${w.url}, banned: ${w.banned}\n`);
   }
 
-  registerHandler(wh, 'StringEvent', (event) => {
-    setTimeout(() => {
-      console.log(`\n\nProcessing event-string: ${event.value}\n\n`);
-    }, 50);
+  wh.registerHandler('StringEvent', (event) => {
+    console.log(`\n\nProcessing event-string: ${event.value}\n\n`);
+    return Promise.resolve();
   });
 
-  registerHandler(wh, 'TransactionEvent', (event) => {
-    setTimeout(() => {
-      console.log(
-        `\n\nProcessing event-transaction: xpubId: ${event.xpubId}, txId: ${event.transactionId}, status: ${event.status}\n\n`,
-      );
-    }, 50);
+  wh.registerHandler('TransactionEvent', (event) => {
+    console.log(
+      `\n\nProcessing event-transaction: xpubId: ${event.xpubId}, txId: ${event.transactionId}, status: ${event.status}\n\n`,
+    );
+    return Promise.resolve();
   });
 
   server.listen(5005, () => {
@@ -66,25 +63,3 @@ try {
 } catch (error) {
   console.log(error);
 }
-
-// func main() {
-//
-//
-//
-// 	// wait for signal to shutdown
-// 	sigChan := make(chan os.Signal, 1)
-// 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-// 	<-sigChan
-//
-// 	fmt.Printf("Unsubscribing...\n")
-// 	if err = wh.Unsubscribe(context.Background()); err != nil {
-// 		examples.GetFullErrorMessage(err)
-// 		os.Exit(1)
-// 	}
-//
-// 	fmt.Printf("Shutting down...\n")
-// 	if err = server.Shutdown(context.Background()); err != nil {
-// 		examples.GetFullErrorMessage(err)
-// 		os.Exit(1)
-// 	}
-// }

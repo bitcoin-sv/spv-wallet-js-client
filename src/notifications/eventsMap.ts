@@ -6,12 +6,18 @@ export class EventsMap {
   constructor() {
     this.registered = new Map();
   }
-  store(eventName: string, handler: (...args: any[]) => void) {
+  store(eventName: string, handler: (...args: any[]) => Promise<void>) {
     if (!this.registered.has(eventName)) {
       this.registered.set(eventName, new EventEmitter());
     }
 
-    this.registered.get(eventName)?.on(eventName, handler);
+    this.registered.get(eventName)?.on(eventName, async (...args: any[]) => {
+      try {
+        await handler(...args);
+      } catch (error) {
+        console.error(`Error in handler for event ${eventName}`, error);
+      }
+    });
   }
 
   load(eventName: string): EventEmitter | undefined {

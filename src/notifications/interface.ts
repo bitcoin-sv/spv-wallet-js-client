@@ -6,9 +6,6 @@ export interface RawEvent {
 export interface WebhookOptions {
   tokenHeader?: string;
   tokenValue?: string;
-  bufferSize?: number;
-  rootContext?: any;
-  processors?: number;
 }
 
-export type EventHandler<T> = (event: T) => void;
+export type EventHandler<T> = (event: T) => Promise<void>;
