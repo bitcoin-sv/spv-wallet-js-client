@@ -755,8 +755,6 @@ export interface TransactionEvent extends UserEvent {
   xpubOutputValue: Record<string, number>;
 }
 
-// export type Events = StringEvent | TransactionEvent;
-
 export type Events = {
   StringEvent: StringEvent;
   UserEvent: UserEvent;
