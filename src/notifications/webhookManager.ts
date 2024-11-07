@@ -1,8 +1,7 @@
 import { SpvWalletClient } from '../client';
 import { Events } from '../types';
 import { EventsMap } from './eventsMap';
-import { EventHandler, RawEvent, WebhookOptions } from './interface';
-import { Request, Response } from 'express';
+import { EventHandler, RawEvent, WebhookHttpHandler, WebhookOptions } from './interface';
 
 export class WebhookManager {
   public url: string;
@@ -28,15 +27,15 @@ export class WebhookManager {
     return this.subscriber.AdminDeleteWebhook(this.url);
   }
 
-  async httpHandler(req: Request, res: Response) {
-    const token = req.headers[this.options.tokenHeader!.toLowerCase()];
+  async handleIncomingEvents(httpHandler: WebhookHttpHandler) {
+    const token = httpHandler.getHeader(this.options.tokenHeader!);
     if (this.options.tokenHeader !== '' && token !== this.options.tokenValue) {
-      res.status(401).json({ message: 'Unauthorized' });
+      httpHandler.handleResponse(401, { message: 'Unauthorized' });
       return;
     }
 
     try {
-      const events: RawEvent[] = req.body;
+      const events: RawEvent[] = httpHandler.getBody();
 
       events.forEach((event) => {
         const handler = this.handlers.load(event.type);
@@ -47,10 +46,10 @@ export class WebhookManager {
         }
       });
 
-      res.sendStatus(200);
+      httpHandler.handleResponse(200);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: 'error processing events' });
+      httpHandler.handleResponse(500, { message: 'error processing events' });
     }
   }
 
