@@ -67,16 +67,14 @@ try {
     console.log(`URL: ${w.url}, banned: ${w.banned}\n`);
   }
 
-  wh.registerHandler('StringEvent', (event) => {
+  wh.registerHandler('StringEvent', async (event) => {
     console.log(`\n\nProcessing event-string: ${event.value}\n\n`);
-    return Promise.resolve();
   });
 
-  wh.registerHandler('TransactionEvent', (event) => {
+  wh.registerHandler('TransactionEvent', async (event) => {
     console.log(
       `\n\nProcessing event-transaction: xpubId: ${event.xpubId}, txId: ${event.transactionId}, status: ${event.status}\n\n`,
     );
-    return Promise.resolve();
   });
 
   const start = async () => {

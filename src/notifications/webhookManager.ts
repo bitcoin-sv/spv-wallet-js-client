@@ -42,13 +42,18 @@ export class WebhookManager {
         if (handler) {
           handler.emit(event.type, event.content);
         } else {
-          this.subscriber.logger.warn(`No handler registered for event type: ${event.type}`);
+          this.subscriber.logger.debug(`No handler registered for event type: ${event.type}`);
         }
       });
 
       httpHandler.handleResponse(200);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        this.subscriber.logger.error(error.message);
+      } else {
+        this.subscriber.logger.error('Unknown error during event handling');
+      }
+
       httpHandler.handleResponse(500, { message: 'error processing events' });
     }
   }
