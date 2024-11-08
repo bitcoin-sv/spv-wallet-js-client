@@ -16,7 +16,7 @@ export class WebhookManager {
       tokenValue: options.tokenValue || '',
       tokenHeader: options.tokenHeader || '',
     };
-    this.handlers = new EventsMap();
+    this.handlers = new EventsMap(subscriber.logger);
   }
 
   subscribe() {
@@ -42,13 +42,13 @@ export class WebhookManager {
         if (handler) {
           handler.emit(event.type, event.content);
         } else {
-          console.warn(`No handler registered for event type: ${event.type}`);
+          this.subscriber.logger.warn(`No handler registered for event type: ${event.type}`);
         }
       });
 
       httpHandler.handleResponse(200);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       httpHandler.handleResponse(500, { message: 'error processing events' });
     }
   }

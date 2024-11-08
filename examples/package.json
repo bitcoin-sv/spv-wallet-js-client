@@ -34,7 +34,6 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "express": "^4.21.1",
     "fastify": "^5.1.0"
   }
 }

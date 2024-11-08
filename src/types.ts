@@ -755,6 +755,9 @@ export interface TransactionEvent extends UserEvent {
   xpubOutputValue: Record<string, number>;
 }
 
+// Events - a mapping of event names to their respective event types.
+// This enables strict typing for event handling across different event types.
+// If one adds new Event it should also be mapped here.
 export type Events = {
   StringEvent: StringEvent;
   UserEvent: UserEvent;
