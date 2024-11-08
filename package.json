@@ -45,7 +45,7 @@
     "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
-    "@rollup/plugin-typescript": "^12.1.0",
+    "@rollup/plugin-typescript": "12.1.0",
     "@types/bsv": "github:chainbow/bsv-types",
     "@types/jest": "^29.0.0",
     "@types/node": "^22.1.0",
