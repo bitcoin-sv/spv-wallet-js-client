@@ -51,7 +51,7 @@ The [webhook.ts](./webhook.ts) example demonstrates how to set up a webhook noti
 #### Registering Event Handlers
 
 In this setup, we can register handlers only for specific event types, and these events mirror those defined in the `spv-wallet`.
-To add a new event type for handling, it must first be implemented in `spv-wallet`, then mapped within the `Events` object in this client. This setup ensures that event handling in the client is synchronized with available events from the `spv-wallet`.
+To add a new event type for handling, it must first be implemented in `spv-wallet`, then mapped within the [`Events`](../src/types.ts) object in this client. This setup ensures that event handling in the client is synchronized with available events from the `spv-wallet`.
 
 #### Example Use Cases
 
