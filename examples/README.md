@@ -44,6 +44,23 @@ In addition to the above, there are additional examples showing how to use the c
 2. `xpub-from-xpriv` - allows you to generate an xPub key from an xPriv key. To you use it you just need to replace the `xPriv` variable with your own xPriv key.
 3. `generate-totp` - allows you to generate and check validity of a TOTP code for client xPriv and a contact's PKI
 
+## Webhook example and Use Cases
+
+The [webhook.ts](./webhook.ts) example demonstrates how to set up a webhook notifier with the spv-wallet-js-client library, utilizing Fastify as the server to handle incoming webhook events. This setup allows developers to handle real-time updates from the spv-wallet system, such as transaction notifications, status updates, and custom events. The example is designed to be adaptable; any server framework can be substituted to handle these notifications, as it follows a flexible handler interface.
+
+#### Registering Event Handlers
+
+In this setup, we can register handlers only for specific event types, and these events mirror those defined in the `spv-wallet`.
+To add a new event type for handling, it must first be implemented in `spv-wallet`, then mapped within the [`Events`](../src/types.ts) object in this client. This setup ensures that event handling in the client is synchronized with available events from the `spv-wallet`.
+
+#### Example Use Cases
+
+1. `Transaction Updates`: Automatically receive and process updates when transactions are sent or received by a wallet, such as logging or alerting users.
+2. `Custom Event Processing`: Customize and extend handling for specific events (e.g., StringEvent or TransactionEvent) to perform actions like updating a database or notifying other systems.
+3. `Automated User Management`: Using webhooks, you can manage user accounts, detect suspicious activity, or trigger alerts based on predefined conditions in real time.
+
+To run this example, ensure you have spv-wallet configured and running to receive webhook events at the specified Fastify server endpoint.
+
 ## How to run an example
 
 The examples are written in TypeScript and can be run by:

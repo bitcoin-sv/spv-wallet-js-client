@@ -5,3 +5,4 @@ export * from './client';
 export * from './authentication';
 export * from './types';
 export * from './errors';
+export * from './notifications';
