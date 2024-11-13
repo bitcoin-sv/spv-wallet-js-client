@@ -457,6 +457,7 @@ export interface OldPaymailAddress {
   created_at: Date;
   updated_at?: Date;
   deleted_at?: Date;
+  address: string;
 }
 
 /**
