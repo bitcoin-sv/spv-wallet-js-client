@@ -572,9 +572,9 @@ export class SpvWalletClient {
    * After this function is successfully called, the access key cannot be used anymore on an SPV Wallet server
    *
    * @param id string The database ID of the access key to revoke
-   * @return {AccessKey}
+   * @return void
    */
-  async RevokeAccessKey(id: string): Promise<AccessKey> {
+  async RevokeAccessKey(id: string): Promise<void> {
     return await this.http.request(`users/current/keys/${id}`, 'DELETE');
   }
 

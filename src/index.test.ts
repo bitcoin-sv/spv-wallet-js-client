@@ -53,27 +53,27 @@ describe('SPVWalletClient routing', () => {
   const spvWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });
 
   it.each`
-    spvWalletMethod                               | httpMethod  | path                                       | act
-    ${'GetUserInfo'}                              | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetUserInfo()}
-    ${'UpdateXPubMetadata'}                       | ${'patch'}  | ${'users/current'}                         | ${() => spvWalletClient.UpdateUserMetadata({})}
-    ${'GetAccessKeyByID'}                         | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKeyByID(accessKeyString)}
-    ${'GetAccessKeys'}                            | ${'get'}    | ${'users/current/keys'}                    | ${() => spvWalletClient.GetAccessKeys({}, {}, {})}
-    ${'CreateAccessKey'}                          | ${'post'}   | ${'users/current/keys'}                    | ${() => spvWalletClient.CreateAccessKey({})}
-    ${'RevokeAccessKey'}                          | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.RevokeAccessKey(accessKeyString)}
-    ${'GetContactByPaymail'}                      | ${'get'}    | ${'contacts/test'}                         | ${() => spvWalletClient.GetContactByPaymail('test')}
-    ${'GetContacts'}                              | ${'get'}    | ${'contacts'}                              | ${() => spvWalletClient.GetContacts({}, {}, {})}
-    ${'UpsertContact'}                            | ${'put'}    | ${'contacts/test'}                         | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
-    ${'RemoveContact'}                            | ${'delete'} | ${'contacts/test'}                         | ${() => spvWalletClient.RemoveContact('test')}
-    ${'AcceptContactInvitation'}                  | ${'post'}   | ${'invitations/test/contacts'}             | ${() => spvWalletClient.AcceptContactInvitation('test')}
-    ${'RejectContactInvitation'}                  | ${'delete'} | ${'invitations/test/contacts'}             | ${() => spvWalletClient.RejectContactInvitation('test')}
-    ${'UnconfirmContact'}                         | ${'delete'} | ${'contacts/test/confirmation'}            | ${() => spvWalletClient.UnconfirmContact('test')}
-    ${'GetTransactionById'}                       | ${'get'}    | ${'transactions/id'}                       | ${() => spvWalletClient.GetTransactionById('id')}
-    ${'GetTransactions'}                          | ${'get'}    | ${'transactions'}                          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
-    ${'NewDraftTransaction'}                      | ${'post'}   | ${'transactions/drafts'}                   | ${() => spvWalletClient.NewDraftTransaction({} as DraftTransactionConfig, {})}
-    ${'RecordTransaction'}                        | ${'post'}   | ${'transactions'}                          | ${() => spvWalletClient.RecordTransaction('', '', {})}
-    ${'UpdateTransactionMetadata'}                | ${'patch'}  | ${'transactions/id'}                       | ${() => spvWalletClient.UpdateTransactionMetadata('id', {})}
-    ${'GetUtxos'}                                 | ${'get'}    | ${'utxos'}                                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
-    ${'GetSharedConfig'}                          | ${'get'}    | ${'configs/shared'}                        | ${() => spvWalletClient.GetSharedConfig()}
+    spvWalletMethod                | httpMethod  | path                                       | act
+    ${'GetUserInfo'}               | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetUserInfo()}
+    ${'UpdateXPubMetadata'}        | ${'patch'}  | ${'users/current'}                         | ${() => spvWalletClient.UpdateUserMetadata({})}
+    ${'GetAccessKeyByID'}          | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKeyByID(accessKeyString)}
+    ${'GetAccessKeys'}             | ${'get'}    | ${'users/current/keys'}                    | ${() => spvWalletClient.GetAccessKeys({}, {})}
+    ${'CreateAccessKey'}           | ${'post'}   | ${'users/current/keys'}                    | ${() => spvWalletClient.CreateAccessKey({})}
+    ${'RevokeAccessKey'}           | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.RevokeAccessKey(accessKeyString)}
+    ${'GetContactByPaymail'}       | ${'get'}    | ${'contacts/test'}                         | ${() => spvWalletClient.GetContactByPaymail('test')}
+    ${'GetContacts'}               | ${'get'}    | ${'contacts'}                              | ${() => spvWalletClient.GetContacts({}, {}, {})}
+    ${'UpsertContact'}             | ${'put'}    | ${'contacts/test'}                         | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
+    ${'RemoveContact'}             | ${'delete'} | ${'contacts/test'}                         | ${() => spvWalletClient.RemoveContact('test')}
+    ${'AcceptContactInvitation'}   | ${'post'}   | ${'invitations/test/contacts'}             | ${() => spvWalletClient.AcceptContactInvitation('test')}
+    ${'RejectContactInvitation'}   | ${'delete'} | ${'invitations/test/contacts'}             | ${() => spvWalletClient.RejectContactInvitation('test')}
+    ${'UnconfirmContact'}          | ${'delete'} | ${'contacts/test/confirmation'}            | ${() => spvWalletClient.UnconfirmContact('test')}
+    ${'GetTransactionById'}        | ${'get'}    | ${'transactions/id'}                       | ${() => spvWalletClient.GetTransactionById('id')}
+    ${'GetTransactions'}           | ${'get'}    | ${'transactions'}                          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
+    ${'NewDraftTransaction'}       | ${'post'}   | ${'transactions/drafts'}                   | ${() => spvWalletClient.NewDraftTransaction({} as DraftTransactionConfig, {})}
+    ${'RecordTransaction'}         | ${'post'}   | ${'transactions'}                          | ${() => spvWalletClient.RecordTransaction('', '', {})}
+    ${'UpdateTransactionMetadata'} | ${'patch'}  | ${'transactions/id'}                       | ${() => spvWalletClient.UpdateTransactionMetadata('id', {})}
+    ${'GetUtxos'}                  | ${'get'}    | ${'utxos'}                                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
+    ${'GetSharedConfig'}           | ${'get'}    | ${'configs/shared'}                        | ${() => spvWalletClient.GetSharedConfig()}
   `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
     setupHttpMock(httpMethod, path);
