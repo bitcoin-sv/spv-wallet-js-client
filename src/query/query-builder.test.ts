@@ -151,7 +151,7 @@ describe('buildQueryPath', () => {
 });
 
 describe('buildQueryPath with all supported filters', () => {
-  
+
   test('should build query string with TransactionFilter', () => {
     const options: BuildPathOptions = {
       filter: {
@@ -224,5 +224,50 @@ describe('buildQueryPath with all supported filters', () => {
 
     const result = buildQueryPath(options);
     expect(result).toBe('?revokedRange%5Bfrom%5D=2022-01-01T00%3A00%3A00Z&revokedRange%5Bto%5D=2022-12-31T23%3A59%3A59Z');
+  });
+
+  test('should build query string with special chars in metadata keys', () => {
+    const options: BuildPathOptions = {
+      filter: {
+        blockHeight: 859864,
+      },
+      metadata: {
+        "hey=123&522": 'example',
+        "test": 'value=123'
+      },
+      page: {
+        page: 1,
+        pageSize: 1,
+        sortDirection: 'desc',
+      },
+    };
+
+    const result = buildQueryPath(options);
+
+    const p = new URLSearchParams(result);
+    expect(p.get("metadata[hey=123&522]")).toBe('example');
+    expect(p.get("metadata[test]")).toBe('value=123');
+  });
+
+  test('should build query string with array in metadata', () => {
+    const options: BuildPathOptions = {
+      filter: {
+        blockHeight: 859864,
+      },
+      metadata: {
+        key1: ['a', 'b', 'c']
+      },
+      page: {
+        page: 1,
+        pageSize: 1,
+        sortDirection: 'desc',
+      },
+    };
+
+    const result = buildQueryPath(options);
+
+    const p = new URLSearchParams(result);
+    expect(p.getAll("key1")).toEqual(['a', 'b', 'c']);
+    expect(result).toBe('?page=1&pageSize=1&sortDirection=desc&blockHeight=859864&metadata%5Bkey1%5D=a&metadata%5Bkey1%5D=b&metadata%5Bkey1%5D=c');
   });
 });
