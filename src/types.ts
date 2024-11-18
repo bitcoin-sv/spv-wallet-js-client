@@ -452,6 +452,7 @@ export interface OldPaymailAddress {
   xpub_id: string;
   alias: string;
   domain: string;
+  address: string;
   public_name: string;
   avatar: string;
   created_at: Date;

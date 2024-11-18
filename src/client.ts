@@ -572,9 +572,9 @@ export class SpvWalletClient {
    * After this function is successfully called, the access key cannot be used anymore on an SPV Wallet server
    *
    * @param id string The database ID of the access key to revoke
-   * @return {AccessKey}
+   * @return void
    */
-  async RevokeAccessKey(id: string): Promise<AccessKey> {
+  async RevokeAccessKey(id: string): Promise<void> {
     return await this.http.request(`users/current/keys/${id}`, 'DELETE');
   }
 
@@ -617,9 +617,9 @@ export class SpvWalletClient {
    * Remove a single contact by it's paymail address.
    *
    * @param {string} paymail  Contact paymail to remove a specific contact
-   * @return {Contact}
+   * @return void
    */
-  async RemoveContact(paymail: string): Promise<Contact> {
+  async RemoveContact(paymail: string): Promise<void> {
     return await this.http.request(`contacts/${paymail}`, 'DELETE');
   }
 
