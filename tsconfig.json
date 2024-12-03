@@ -14,7 +14,8 @@
     "declarationDir": "dist/dts/",
     "emitDeclarationOnly": true,
     "sourceMap": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "importHelpers": true
   },
   "exclude": [
     "examples"

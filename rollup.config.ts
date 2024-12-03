@@ -33,6 +33,7 @@ const config: RollupOptions[] = [
         skip: ['bsv'],
         browser: true,
         preferBuiltins: true,
+        moduleDirectories: ['node_modules'],
       }),
       commonjs(),
       json(),
