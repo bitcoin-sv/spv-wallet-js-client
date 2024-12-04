@@ -85,7 +85,7 @@ const config: RollupOptions[] = [
 
   {
     // path to your declaration files root
-    input: './dist/dts/src/index.d.ts',
+    input: "src/index.ts",
     output: [
       { file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es' },
       { file: 'dist/typescript-npm-package.esm.d.ts', format: 'es' },

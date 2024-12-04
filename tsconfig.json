@@ -11,8 +11,8 @@
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
-    "declarationDir": "dist/dts/",
     "emitDeclarationOnly": true,
+    "outDir": "dist",
     "sourceMap": true,
     "resolveJsonModule": true,
     "importHelpers": true
