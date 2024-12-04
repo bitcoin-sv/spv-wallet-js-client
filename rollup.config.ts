@@ -33,15 +33,20 @@ const config: RollupOptions[] = [
         skip: ['bsv'],
         browser: true,
         preferBuiltins: true,
-        moduleDirectories: ['node_modules'],
       }),
       commonjs(),
       json(),
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
+      typescript({ 
+        tsconfig: "./tsconfig.json", 
+        sourceMap: false,
+        noEmitHelpers: true,
+        importHelpers: true
+      }),
       nodePolyfills(),
       externals({
         devDeps: true,
         peerDeps: true,
+        exclude: ['tslib']
       }),
     ],
   },
@@ -60,7 +65,12 @@ const config: RollupOptions[] = [
     ],
     external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
     plugins: [
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
+      typescript({
+        tsconfig: "./tsconfig.json",
+        sourceMap: false,
+        noEmitHelpers: true,
+        importHelpers: true
+      }),
       resolve({
       // @ts-ignore
         skip: ['bsv'],
@@ -68,6 +78,7 @@ const config: RollupOptions[] = [
       externals({
         devDeps: true,
         peerDeps: true,
+        exclude: ['tslib']
       }),
     ],
   },
