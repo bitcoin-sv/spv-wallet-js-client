@@ -1,0 +1,24 @@
+name: "Regression Tests"
+run-name: "Regression Tests for ${{ github.head_ref || github.ref }} | ID: ${{ github.run_id }}-${{ github.run_attempt }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      keep_instances:
+        description: 'When should it keep instances created during tests?'
+        required: true
+        default: 'never'
+        type: choice
+        options:
+          - 'always'
+          - 'failure'
+          - 'never'
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print
+        run: echo "Hello, World!"
