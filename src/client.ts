@@ -32,6 +32,7 @@ import {
   Utxo,
   MerkleRootsRepository,
   QueryPageParams,
+  ContactsConfirmationData,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -700,6 +701,16 @@ export class SpvWalletClient {
    */
   async UnconfirmContact(paymail: string): Promise<void> {
     return await this.http.request(`contacts/${paymail}/confirmation`, 'DELETE');
+  }
+
+  /**
+   * Admin only: Confirm list of contacts
+   *
+   * @param {ContactsConfirmationData} contacts
+   * @return {void}
+   */
+  async AdminConfirmContacts( contacts: ContactsConfirmationData ): Promise<void> {
+    return await this.http.adminRequest(`/admin/contacts/confirmations`, 'POST', contacts);
   }
 
   /**

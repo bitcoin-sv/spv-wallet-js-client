@@ -301,6 +301,20 @@ export interface OldContact {
 export interface OldContacts extends Array<OldContact> {}
 
 /**
+ * Contact confirmation data interface for admin confirmation contact.
+ */
+export interface ContactConfirmationData {
+  XPubID: string;
+  FullName: string;
+  Paymail: string;
+}
+
+/**
+ * Array of ContactConfirmationData for admin confirmation contacts.
+ */
+export interface ContactsConfirmationData extends Array<ContactConfirmationData> {}
+
+/**
  * Destination interface for non-admin (User) endpoints.
  */
 export interface Destination {
