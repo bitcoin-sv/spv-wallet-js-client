@@ -703,6 +703,17 @@ export class SpvWalletClient {
   }
 
   /**
+   * Admin only: Confirm list of contacts
+   *
+   * @param {string} paymailA ContactA paymail
+   * @param {string} paymailB ContactB paymail
+   * @return {void}
+   */
+  async AdminConfirmContacts( paymailA: string, paymailB: string ): Promise<void> {
+    return await this.http.adminRequest(`/admin/contacts/confirmations`, 'POST', { paymailA, paymailB });
+  }
+
+  /**
    * Get all details of the transaction by the given id
    *
    * @param {string} txId Transaction ID
