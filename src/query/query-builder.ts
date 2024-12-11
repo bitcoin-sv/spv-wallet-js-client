@@ -17,7 +17,7 @@ function flattenParams(params: Record<string, any>, parentKey?: string): Record<
 
     const newKey = parentKey ? `${parentKey}[${key}]` : key;
 
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    if (typeof value === 'object' && !Array.isArray(value)) {
       // Recursively flatten nested objects
       Object.assign(flattened, flattenParams(value, newKey));
     } else {
