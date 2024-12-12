@@ -202,15 +202,6 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Create new contact
-   *
-   * @param {string} paymail         Contact ID to update
-   * @param {string} fullName        New full name of the contact
-   * @param {Metadata} metadata      Key value object to use to filter the documents by the metadata
-   * @return {OldContact}
-   */
-
-  /**
    * Admin only: Update contact fullName and metadata
    *
    * @param {string} id              Contact ID to update
