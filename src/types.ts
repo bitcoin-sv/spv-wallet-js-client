@@ -261,6 +261,16 @@ export interface OldAccessKey {
 export interface OldAccessKeys extends Array<OldAccessKey> {}
 
 /**
+ * NewContact interface for adding a new contact by admin.
+ * creatorPaymail is the paymail of the user who will be owner of the contact and it's required for admin createContact action.
+ */
+export interface NewContact {
+  creatorPaymail: string;
+  fullName: string;
+  metadata?: Metadata;
+}
+
+/**
  * Contact interface for non-admin (User) endpoints.
  */
 export interface Contact {

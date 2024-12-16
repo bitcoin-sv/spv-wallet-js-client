@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
-import { SpvWalletClient } from './index';
+import {NewContact, SpvWalletClient} from './index';
 import { ClientOptions, DraftTx, DraftTransactionConfig } from './types';
 
 const xPrivString =
@@ -105,6 +105,7 @@ describe('SPVWalletClient admin routing', () => {
     ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}     | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
     ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}      | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
     ${'AdminGetContacts'}          | ${'post'}   | ${'admin/contact/search'}         | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
+    ${'AdminCreateContact'}        | ${'post'}   | ${'admin/contact/test'}           | ${() => adminSPVWalletClient.AdminCreateContact('test', {} as NewContact)}
     ${'AdminUpdateContact'}        | ${'patch'}  | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
     ${'AdminDeleteContact'}        | ${'delete'} | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
     ${'AdminAcceptContact'}        | ${'patch'}  | ${'admin/contact/accepted/1'}     | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
