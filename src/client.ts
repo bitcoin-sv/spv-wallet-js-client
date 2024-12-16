@@ -31,7 +31,8 @@ import {
   PageModel,
   Utxo,
   MerkleRootsRepository,
-  QueryPageParams, NewContact,
+  QueryPageParams,
+  NewContact,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
