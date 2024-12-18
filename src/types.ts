@@ -295,9 +295,9 @@ export interface Contacts extends PageModel<Contact> {}
  */
 export interface OldContact {
   id: string;
-  full_name: string;
+  fullName: string;
   paymail: string;
-  pub_key: string;
+  pubKey: string;
   status: string;
   created_at: Date;
   updated_at?: Date;
