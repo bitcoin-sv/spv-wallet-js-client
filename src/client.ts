@@ -50,6 +50,7 @@ import { HD, P2PKH, PrivateKey, Transaction } from '@bsv/sdk';
 import {
   AccessKeyFilter,
   AdminAccessKeyFilter,
+  AdminContactFilter,
   AdminPaymailFilter,
   AdminUtxoFilter,
   ContactFilter,
@@ -185,13 +186,13 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a list of all contacts in the system, filtered by conditions, metadata and queryParams
    *
-   * @param {ContactFilter} conditions   Key value object to use to filter the documents
+   * @param {AdminContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {OldQueryParams} params Database query parameters for page, page size and sorting
    * @return {PageModel<OldContact>}
    */
   async AdminGetContacts(
-    conditions: ContactFilter,
+    conditions: AdminContactFilter,
     metadata: Metadata,
     params: OldQueryParams,
   ): Promise<PageModel<OldContact>> {
