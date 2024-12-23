@@ -229,40 +229,6 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a list of all destinations in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
-   * @return {OldDestinations}
-   */
-  async AdminGetDestinations(
-    conditions: DestinationFilter,
-    metadata: Metadata,
-    params: OldQueryParams,
-  ): Promise<OldDestinations> {
-    return await this.http.adminRequest(`admin/destinations/search`, 'POST', {
-      conditions,
-      metadata,
-      params,
-    });
-  }
-
-  /**
-   * Admin only: Get a count of all destinations in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {DestinationFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetDestinationsCount(conditions: DestinationFilter, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/destinations/count`, 'POST', {
-      conditions,
-      metadata,
-    });
-  }
-
-  /**
    * Admin only: Get a list of all transactions in the system, filtered by conditions, metadata and queryParams
    *
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
