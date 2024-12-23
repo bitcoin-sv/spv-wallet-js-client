@@ -77,17 +77,8 @@ export class SpvWalletClient {
 
   private xPriv?: HD;
 
-  constructor(serverUrl: string, options: XpubWithoutSigning, loggerConfig?: LoggerConfig);
-  constructor(serverUrl: string, options: AccessKeyWithSigning, loggerConfig?: LoggerConfig);
-  constructor(serverUrl: string, options: XprivWithSigning, loggerConfig?: LoggerConfig);
-  constructor(serverUrl: string, options: AdminKey, loggerConfig?: LoggerConfig);
   constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
-    if ('adminKey' in options) {
-      // When we move the admin API to more restful routes, we can remove this if/else condition
-      serverUrl = this.ensureSuffix(serverUrl, '/v1');
-    } else {
-      serverUrl = this.ensureSuffix(serverUrl, '/api/v1');
-    }
+    serverUrl = this.ensureSuffix(serverUrl, '/api/v1');
 
     this.logger = makeLogger(loggerConfig);
     this.http = this.makeRequester(options, serverUrl);
@@ -153,34 +144,23 @@ export class SpvWalletClient {
    * Admin only: Get a list of all access keys in the system, filtered by conditions, metadata and queryParams
    *
    * @param {AdminAccessKeyFilter} conditions   Key value object to use to filter the documents
-   * @param {OldMetadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
-   * @return {OldAccessKeys}
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryPageParams} params Database query parameters for page, page size and sorting
+   * @return {AccessKey}
    */
   async AdminGetAccessKeys(
     conditions: AdminAccessKeyFilter,
     metadata: Metadata,
-    params: OldQueryParams,
-  ): Promise<OldAccessKeys> {
-    return await this.http.adminRequest(`admin/access-keys/search`, 'POST', {
-      conditions,
+    params: QueryPageParams,
+  ): Promise<AccessKey> {
+    const basePath = 'admin/users/keys';
+    const queryString = buildQueryPath({
       metadata,
-      params,
+      filter: conditions,
+      page: params,
     });
-  }
 
-  /**
-   * Admin only: Get a count of all access keys in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {AdminAccessKeyFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetAccessKeysCount(conditions: AdminAccessKeyFilter, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/access-keys/count`, 'POST', {
-      conditions,
-      metadata,
-    });
+    return await this.http.adminRequest(`${basePath}${queryString}`, 'GET');
   }
 
   /**
@@ -188,19 +168,22 @@ export class SpvWalletClient {
    *
    * @param {AdminContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
-   * @return {PageModel<OldContact>}
+   * @param {QueryPageParams} params Database query parameters for page, page size and sorting
+   * @return {PageModel<Contact>}
    */
   async AdminGetContacts(
     conditions: AdminContactFilter,
     metadata: Metadata,
-    params: OldQueryParams,
-  ): Promise<PageModel<OldContact>> {
-    return await this.http.adminRequest(`admin/contact/search`, 'POST', {
-      conditions,
+    params: QueryPageParams,
+  ): Promise<PageModel<Contact>> {
+    const basePath = 'admin/contacts';
+    const queryString = buildQueryPath({
       metadata,
-      params,
+      filter: conditions,
+      page: params,
     });
+
+    return await this.http.adminRequest(`${basePath}${queryString}`, 'GET');
   }
 
   /**
@@ -209,10 +192,10 @@ export class SpvWalletClient {
    * @param {string} id              Contact ID to update
    * @param {string} fullName        New full name of the contact
    * @param {Metadata} metadata      Key value object to use to filter the documents by the metadata
-   * @return {OldContact}
+   * @return {Contact}
    */
-  async AdminUpdateContact(id: string, fullName: string, metadata: Metadata): Promise<OldContact> {
-    return await this.http.adminRequest(`admin/contact/${id}`, 'PATCH', { fullName, metadata });
+  async AdminUpdateContact(id: string, fullName: string, metadata: Metadata): Promise<Contact> {
+    return await this.http.adminRequest(`admin/contacts/${id}`, 'PUT', { fullName, metadata });
   }
 
   /**
@@ -222,27 +205,27 @@ export class SpvWalletClient {
    * @return void
    */
   async AdminDeleteContact(id: string): Promise<void> {
-    await this.http.adminRequest(`admin/contact/${id}`, 'DELETE', {});
+    await this.http.adminRequest(`admin/contacts/${id}`, 'DELETE', {});
   }
 
   /**
    * Admin only: Accept a contact request
    *
    * @param {string} id Contact ID to accept
-   * @return {OldContact}
+   * @return {Contact}
    */
-  async AdminAcceptContact(id: string): Promise<OldContact> {
-    return await this.http.adminRequest(`admin/contact/accepted/${id}`, 'PATCH', {});
+  async AdminAcceptContact(id: string): Promise<Contact> {
+    return await this.http.adminRequest(`admin/invitations/${id}`, 'POST', {});
   }
 
   /**
    * Admin only: Reject a contact request
    *
    * @param {string} id Contact ID to reject
-   * @return {OldContact}
+   * @return void
    */
-  async AdminRejectContact(id: string): Promise<OldContact> {
-    return await this.http.adminRequest(`admin/contact/rejected/${id}`, 'PATCH', {});
+  async AdminRejectContact(id: string): Promise<void> {
+    return await this.http.adminRequest(`admin/invitations/${id}`, 'DELETE', {});
   }
 
   /**
@@ -712,7 +695,7 @@ export class SpvWalletClient {
    */
 
   async AdminCreateContact(contactPaymail: string, newContact: NewContact): Promise<Contact> {
-    return await this.http.adminRequest(`admin/contact/${contactPaymail}`, 'POST', newContact);
+    return await this.http.adminRequest(`admin/contacts/${contactPaymail}`, 'POST', newContact);
   }
 
   /**
@@ -722,7 +705,7 @@ export class SpvWalletClient {
    * @param {string} paymailB ContactB paymail
    * @return {void}
    */
-  async AdminConfirmContacts( paymailA: string, paymailB: string ): Promise<void> {
+  async AdminConfirmContacts(paymailA: string, paymailB: string): Promise<void> {
     return await this.http.adminRequest(`/admin/contacts/confirmations`, 'POST', { paymailA, paymailB });
   }
 
