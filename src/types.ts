@@ -455,25 +455,26 @@ export interface OldUtxo {
 export interface OldUtxos extends Array<OldUtxo> {}
 
 /**
- * Old paymail address interface for Admin endpoints (Deprecated)
+ * Paymail address interface for Admin endpoints
  */
-export interface OldPaymailAddress {
+export interface PaymailAddress {
   id: string;
-  xpub_id: string;
+  xpubId: string;
   alias: string;
   domain: string;
   address: string;
-  public_name: string;
+  publicName: string;
   avatar: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  metadata: Metadata;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 /**
- * Array of OldPaymailAddresses for Admin (Deprecated)
+ * Array of PaymailAddresses for Admin
  */
-export interface OldPaymailAddresses extends Array<OldPaymailAddress> {}
+export interface PaymailAddresses extends Array<PaymailAddress> {}
 
 /**
  * Webhook interface for non-admin (User) endpoints.

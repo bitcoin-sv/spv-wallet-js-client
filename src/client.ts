@@ -1,7 +1,5 @@
 import {
   AccessKey,
-  AccessKeyWithSigning,
-  AdminKey,
   ClientOptions,
   Contact,
   DraftTransactionConfig,
@@ -12,19 +10,13 @@ import {
   QueryParams,
   SharedConfig,
   Tx,
-  XprivWithSigning,
   User,
-  XpubWithoutSigning,
   AdminStats,
   OldQueryParams,
-  OldAccessKeys,
-  OldContact,
-  OldDestinations,
-  OldPaymailAddress,
+  PaymailAddress,
   OldTxs,
   OldUtxos,
   XPubs,
-  OldPaymailAddresses,
   XPub,
   OldTx,
   Webhook,
@@ -33,6 +25,7 @@ import {
   MerkleRootsRepository,
   QueryPageParams,
   NewContact,
+  PaymailAddresses,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -339,11 +332,11 @@ export class SpvWalletClient {
   /**
    * Admin only: Get a paymail by address
    *
-   * @param address string Paymail address (i.e. alias@example.com)
-   * @return {OldPaymailAddress}
+   * @param id string Paymail address ID
+   * @return {PaymailAddress}
    */
-  async AdminGetPaymail(address: string): Promise<OldPaymailAddress> {
-    return await this.http.adminRequest(`admin/paymail/get`, 'POST', { address });
+  async AdminGetPaymail(id: string): Promise<PaymailAddress> {
+    return await this.http.adminRequest(`admin/paymails/${id}`, 'GET');
   }
 
   /**
@@ -352,32 +345,21 @@ export class SpvWalletClient {
    * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryParams} params Database query parameters for page, page size and sorting
-   * @return {OldPaymailAddresses}
+   * @return {PaymailAddresses}
    */
   async AdminGetPaymails(
     conditions: AdminPaymailFilter,
     metadata: Metadata,
-    params: QueryParams,
-  ): Promise<OldPaymailAddresses> {
-    return await this.http.adminRequest(`admin/paymails/search`, 'POST', {
-      conditions,
+    params: QueryPageParams,
+  ): Promise<PaymailAddresses> {
+    const basePath = 'admin/paymails';
+    const queryString = buildQueryPath({
       metadata,
-      params,
+      page: params,
+      filter: conditions,
     });
-  }
 
-  /**
-   * Admin only: Get a count of all paymails in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetPaymailsCount(conditions: AdminPaymailFilter, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/paymails/count`, 'POST', {
-      conditions,
-      metadata,
-    });
+    return await this.http.adminRequest(`${basePath}${queryString}`, 'GET');
   }
 
   /**
@@ -387,15 +369,17 @@ export class SpvWalletClient {
    * @param {string} address Paymail address (i.e. alias@example.com)
    * @param {string} public_name Public name for the user to return in Paymail address resolution requests
    * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
-   * @return {OldPaymailAddress}
+   * @return {PaymailAddress}
    */
   async AdminCreatePaymail(
     rawXPub: string,
     address: string,
     public_name: string,
     avatar: string,
-  ): Promise<OldPaymailAddress> {
-    return await this.http.adminRequest(`admin/paymail/create`, 'POST', {
+    metadata: Metadata,
+  ): Promise<PaymailAddress> {
+    return await this.http.adminRequest(`admin/paymails`, 'POST', {
+      metadata,
       key: rawXPub,
       address,
       public_name,
@@ -406,11 +390,12 @@ export class SpvWalletClient {
   /**
    * Admin only: Delete a paymail
    *
-   * @param {string} address Paymail address (ie. example@spv-wallet.org)
+   * @param {string} id Paymail address ID
+   * @param {string} address Paymail address
    * @return void
    */
-  async AdminDeletePaymail(address: string): Promise<void> {
-    await this.http.adminRequest(`admin/paymail/delete`, 'DELETE', { address });
+  async AdminDeletePaymail(id: string, address: string): Promise<void> {
+    await this.http.adminRequest(`admin/paymails/${id}`, 'DELETE', { address });
   }
 
   /**

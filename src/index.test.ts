@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
-import {NewContact, SpvWalletClient} from './index';
+import { NewContact, SpvWalletClient } from './index';
 import { ClientOptions, DraftTx, DraftTransactionConfig } from './types';
 
 const xPrivString =
@@ -103,20 +103,16 @@ describe('SPVWalletClient admin routing', () => {
     ${'AdminGetStatus'}            | ${'get'}    | ${'admin/status'}                 | ${() => adminSPVWalletClient.AdminGetStatus()}
     ${'AdminGetStats'}             | ${'get'}    | ${'admin/stats'}                  | ${() => adminSPVWalletClient.AdminGetStats()}
     ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}     | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
-    ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}      | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
     ${'AdminGetContacts'}          | ${'post'}   | ${'admin/contact/search'}         | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
     ${'AdminCreateContact'}        | ${'post'}   | ${'admin/contact/test'}           | ${() => adminSPVWalletClient.AdminCreateContact('test', {} as NewContact)}
     ${'AdminUpdateContact'}        | ${'patch'}  | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
     ${'AdminDeleteContact'}        | ${'delete'} | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
     ${'AdminAcceptContact'}        | ${'patch'}  | ${'admin/contact/accepted/1'}     | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
     ${'AdminRejectContact'}        | ${'patch'}  | ${'admin/contact/rejected/1'}     | ${() => adminSPVWalletClient.AdminRejectContact('1')}
-    ${'AdminGetDestinations'}      | ${'post'}   | ${'admin/destinations/search'}    | ${() => adminSPVWalletClient.AdminGetDestinations({}, {}, {})}
-    ${'AdminGetDestinationsCount'} | ${'post'}   | ${'admin/destinations/count'}     | ${() => adminSPVWalletClient.AdminGetDestinationsCount({}, {})}
     ${'AdminGetPaymail'}           | ${'post'}   | ${'admin/paymail/get'}            | ${() => adminSPVWalletClient.AdminGetPaymail('')}
     ${'AdminGetPaymails'}          | ${'post'}   | ${'admin/paymails/search'}        | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
-    ${'AdminGetPaymailsCount'}     | ${'post'}   | ${'admin/paymails/count'}         | ${() => adminSPVWalletClient.AdminGetPaymailsCount({}, {})}
-    ${'AdminCreatePaymail'}        | ${'post'}   | ${'admin/paymail/create'}         | ${() => adminSPVWalletClient.AdminCreatePaymail('', '', '', '')}
-    ${'AdminDeletePaymail'}        | ${'delete'} | ${'admin/paymail/delete'}         | ${() => adminSPVWalletClient.AdminDeletePaymail('')}
+    ${'AdminCreatePaymail'}        | ${'post'}   | ${'admin/paymail/create'}         | ${() => adminSPVWalletClient.AdminCreatePaymail('', '', '', '', {})}
+    ${'AdminDeletePaymail'}        | ${'delete'} | ${'admin/paymail/delete'}         | ${() => adminSPVWalletClient.AdminDeletePaymail('', '')}
     ${'AdminGetTransactions'}      | ${'post'}   | ${'admin/transactions/search'}    | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
     ${'AdminGetTransactionsCount'} | ${'post'}   | ${'admin/transactions/count'}     | ${() => adminSPVWalletClient.AdminGetTransactionsCount({}, {})}
     ${'AdminGetUtxos'}             | ${'post'}   | ${'admin/utxos/search'}           | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
