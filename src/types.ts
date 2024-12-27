@@ -197,7 +197,7 @@ export interface AdminStats {
   /**
    * Number of paymail addresses in the database
    */
-  paymail_addresses: number;
+  paymailAddresses: number;
   /**
    * Number of utxos in the database
    */
@@ -209,11 +209,11 @@ export interface AdminStats {
   /**
    * A key value object of dates and number of transactions on that date (YYYYMMDD)
    */
-  transactions_per_day: { [key: string]: any };
+  transactionsPerDay: { [key: string]: any };
   /**
    * Number of utxos per output type
    */
-  utxos_per_type: { [key: string]: any };
+  utxosPerType: { [key: string]: any };
 }
 
 /**

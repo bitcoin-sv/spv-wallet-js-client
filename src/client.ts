@@ -47,7 +47,6 @@ import {
   AdminPaymailFilter,
   AdminUtxoFilter,
   ContactFilter,
-  DestinationFilter,
   TransactionFilter,
   UtxoFilter,
   XpubFilter,
@@ -427,16 +426,6 @@ export class SpvWalletClient {
    */
   async AdminDeleteWebhook(url: string): Promise<void> {
     return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'DELETE', { url });
-  }
-
-  /**
-   * Admin only: Record a transaction without any of the normal checks
-   *
-   * @param {string} hex  Hex string of the transaction
-   * @return {OldTx}
-   */
-  async AdminRecordTransaction(hex: string): Promise<OldTx> {
-    return await this.http.adminRequest(`admin/transactions/record`, 'POST', { hex });
   }
 
   /**
