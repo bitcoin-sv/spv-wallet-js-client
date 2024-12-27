@@ -426,7 +426,7 @@ export interface OldTx {
 export interface OldTxs extends Array<OldTx> {}
 
 /**
- * Utxo interface for non-admin (User) endpoints.
+ * Utxo interface.
  */
 export interface Utxo {
   id: string;
@@ -441,10 +441,11 @@ export interface Utxo {
   createdAt: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+  metadata?: Metadata;
 }
 
 /**
- * Array of Utxos for non-admin (User) endpoints.
+ * Array of Utxos.
  */
 export interface Utxos extends Array<Utxo> {}
 

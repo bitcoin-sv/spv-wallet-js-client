@@ -29,6 +29,7 @@ import {
   Txs,
   AdminTx,
   AdminTxs,
+  Utxos,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -260,29 +261,18 @@ export class SpvWalletClient {
    *
    * @param {AdminUtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
-   * @return {OldUtxos}
+   * @param {QueryPageParams} params Database query parameters for page, page size and sorting
+   * @return {Utxos}
    */
-  async AdminGetUtxos(conditions: AdminUtxoFilter, metadata: Metadata, params: OldQueryParams): Promise<OldUtxos> {
-    return await this.http.adminRequest(`admin/utxos/search`, 'POST', {
-      conditions,
+  async AdminGetUtxos(conditions: AdminUtxoFilter, metadata: Metadata, params: QueryPageParams): Promise<Utxos> {
+    const basePath = 'admin/utxos';
+    const queryString = buildQueryPath({
+      filter: conditions,
       metadata,
-      params,
+      page: params,
     });
-  }
 
-  /**
-   * Admin only: Get a count of all utxos in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {AdminUtxoFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetUtxosCount(conditions: AdminUtxoFilter, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/utxos/count`, 'POST', {
-      conditions,
-      metadata,
-    });
+    return await this.http.adminRequest(`${basePath}${queryString}`, 'GET');
   }
 
   /**
