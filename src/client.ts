@@ -26,6 +26,9 @@ import {
   QueryPageParams,
   NewContact,
   PaymailAddresses,
+  Txs,
+  AdminTx,
+  AdminTxs,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -221,37 +224,35 @@ export class SpvWalletClient {
   }
 
   /**
+   * Admin only: Get a transaction in the system by its ID
+   *
+   * @param {string} id ID of the transaction
+   * @return {AdminTx}
+   */
+  async AdminGetTransaction(id: string): Promise<AdminTx> {
+    return await this.http.adminRequest(`admin/transactions/${id}`, 'GET');
+  }
+
+  /**
    * Admin only: Get a list of all transactions in the system, filtered by conditions, metadata and queryParams
    *
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
-   * @return {OldTxs}
+   * @param {QueryPageParams} params Database query parameters for page, page size and sorting
+   * @return {AdminTxs}
    */
   async AdminGetTransactions(
     conditions: TransactionFilter,
     metadata: Metadata,
-    params: OldQueryParams,
-  ): Promise<OldTxs> {
-    return await this.http.adminRequest(`admin/transactions/search`, 'POST', {
-      conditions,
+    params: QueryPageParams,
+  ): Promise<AdminTxs> {
+    const basePath = 'admin/transactions';
+    const queryString = buildQueryPath({
+      filter: conditions,
       metadata,
-      params,
+      page: params,
     });
-  }
-
-  /**
-   * Admin only: Get a count of all transactions in the system, filtered by conditions, metadata, and queryParams
-   *
-   * @param {TransactionFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetTransactionsCount(conditions: TransactionFilter, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/transactions/count`, 'POST', {
-      conditions,
-      metadata,
-    });
+    return await this.http.adminRequest(`${basePath}${queryString}`, 'GET');
   }
 
   /**

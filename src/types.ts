@@ -384,6 +384,23 @@ export interface Tx {
 export interface Txs extends Array<Tx> {}
 
 /**
+ * Transaction interface for Admin endpoints.
+ */
+export interface AdminTx extends Tx {
+  draftId: string;
+  xpubsInIds: string[];
+  xpubOutIds: string[];
+  outputs: Record<string, number>;
+  status: string;
+  outputValue: number;
+}
+
+/**
+ * Array of Txs for Admin  endpoints.
+ */
+export interface AdminTxs extends Array<AdminTx> {}
+
+/**
  * Old transaction interface for Admin endpoints (Deprecated)
  */
 export interface OldTx {
