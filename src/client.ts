@@ -12,7 +12,6 @@ import {
   Tx,
   User,
   AdminStats,
-  OldQueryParams,
   PaymailAddress,
   XPubs,
   XPub,
@@ -318,7 +317,7 @@ export class SpvWalletClient {
    *
    * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} params Database query parameters for page, page size and sorting
+   * @param {QueryPageParams} params Database query parameters for page, page size and sorting
    * @return {PaymailAddresses}
    */
   async AdminGetPaymails(
@@ -429,7 +428,7 @@ export class SpvWalletClient {
    * Get a list of all access keys for the current user, filtered by conditions, metadata and queryParams
    *
    * @param {AccessKeyFilter} conditions   Key value object to use to filter the documents
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryPageParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<AccessKey>}
    */
   async GetAccessKeys(conditions: AccessKeyFilter, queryParams: QueryPageParams): Promise<PageModel<AccessKey>> {
