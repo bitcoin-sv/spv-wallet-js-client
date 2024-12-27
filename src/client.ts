@@ -389,15 +389,6 @@ export class SpvWalletClient {
   }
 
   /**
-   * Admin only: Get a list of all webhook subscriptions.
-   *
-   * @returns A Promise that resolves to an array of Webhook objects representing the current webhook subscriptions.
-   */
-  async AdminGetWebhooks(): Promise<Webhook[]> {
-    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'GET');
-  }
-
-  /**
    * Admin only: Subscribe to a webhook with the given URL, token header, and token value.
    *
    * @param url - The URL to subscribe the webhook to.
