@@ -76,31 +76,31 @@ export interface XPub {
   /**
    * Current balance in sats of the xpub
    */
-  current_balance: number;
+  currentBalance: number;
   /**
    * Next internal (change address) number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_internal_num: number;
+  nextInternalNum: number;
   /**
    * Next external number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_external_num: number;
+  nextExternalNum: number;
   /**
    * Date when this object was created
    */
-  created_at?: Date;
+  createdAt?: Date;
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updatedAt?: Date;
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 /**

@@ -14,19 +14,14 @@ import {
   AdminStats,
   OldQueryParams,
   PaymailAddress,
-  OldTxs,
-  OldUtxos,
   XPubs,
   XPub,
-  OldTx,
-  Webhook,
   PageModel,
   Utxo,
   MerkleRootsRepository,
   QueryPageParams,
   NewContact,
   PaymailAddresses,
-  Txs,
   AdminTx,
   AdminTxs,
   Utxos,
@@ -280,29 +275,18 @@ export class SpvWalletClient {
    *
    * @param {XpubFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {OldQueryParams} params Database query parameters for page, page size and sorting
+   * @param {QueryPageParams} params Database query parameters for page, page size and sorting
    * @return {XPubs}
    */
-  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: OldQueryParams): Promise<XPubs> {
-    return await this.http.adminRequest(`admin/xpubs/search`, 'POST', {
-      conditions,
+  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: QueryPageParams): Promise<XPubs> {
+    const basePath = 'admin/users';
+    const queryString = buildQueryPath({
+      filter: conditions,
       metadata,
-      params,
+      page: params,
     });
-  }
 
-  /**
-   * Admin only: Get a count of all xpubs in the system, filtered by conditions, metadata and queryParams
-   *
-   * @param {XpubFilter} conditions   Key value object to use to filter the documents
-   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @return {number}
-   */
-  async AdminGetXPubsCount(conditions: XpubFilter, metadata: Metadata): Promise<number> {
-    return await this.http.adminRequest(`admin/xpubs/count`, 'POST', {
-      conditions,
-      metadata,
-    });
+    return await this.http.adminRequest(`${basePath}${queryString}`, 'GET');
   }
 
   /**
@@ -313,7 +297,7 @@ export class SpvWalletClient {
    * @return {XPub}             The newly registered xpub
    */
   async AdminNewXpub(rawXPub: string, metadata: Metadata): Promise<XPub> {
-    return await this.http.adminRequest(`admin/xpub`, 'POST', {
+    return await this.http.adminRequest(`admin/users`, 'POST', {
       key: rawXPub,
       metadata,
     });
