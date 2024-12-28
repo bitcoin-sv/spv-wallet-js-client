@@ -98,31 +98,26 @@ describe('SPVWalletClient admin routing', () => {
   const adminSPVWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });
 
   it.each`
-    spvWalletMethod                | httpMethod  | path                              | act
-    ${'AdminNewXpub'}              | ${'post'}   | ${'admin/xpub'}                   | ${() => adminSPVWalletClient.AdminNewXpub('', {})}
-    ${'AdminGetStatus'}            | ${'get'}    | ${'admin/status'}                 | ${() => adminSPVWalletClient.AdminGetStatus()}
-    ${'AdminGetStats'}             | ${'get'}    | ${'admin/stats'}                  | ${() => adminSPVWalletClient.AdminGetStats()}
-    ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}     | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
-    ${'AdminGetContacts'}          | ${'post'}   | ${'admin/contact/search'}         | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
-    ${'AdminCreateContact'}        | ${'post'}   | ${'admin/contact/test'}           | ${() => adminSPVWalletClient.AdminCreateContact('test', {} as NewContact)}
-    ${'AdminUpdateContact'}        | ${'patch'}  | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
-    ${'AdminDeleteContact'}        | ${'delete'} | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
-    ${'AdminAcceptContact'}        | ${'patch'}  | ${'admin/contact/accepted/1'}     | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
-    ${'AdminRejectContact'}        | ${'patch'}  | ${'admin/contact/rejected/1'}     | ${() => adminSPVWalletClient.AdminRejectContact('1')}
-    ${'AdminGetPaymail'}           | ${'post'}   | ${'admin/paymail/get'}            | ${() => adminSPVWalletClient.AdminGetPaymail('')}
-    ${'AdminGetPaymails'}          | ${'post'}   | ${'admin/paymails/search'}        | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
-    ${'AdminCreatePaymail'}        | ${'post'}   | ${'admin/paymail/create'}         | ${() => adminSPVWalletClient.AdminCreatePaymail('', '', '', '', {})}
-    ${'AdminDeletePaymail'}        | ${'delete'} | ${'admin/paymail/delete'}         | ${() => adminSPVWalletClient.AdminDeletePaymail('', '')}
-    ${'AdminGetTransactions'}      | ${'post'}   | ${'admin/transactions/search'}    | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
-    ${'AdminGetTransactionsCount'} | ${'post'}   | ${'admin/transactions/count'}     | ${() => adminSPVWalletClient.AdminGetTransactionsCount({}, {})}
-    ${'AdminGetUtxos'}             | ${'post'}   | ${'admin/utxos/search'}           | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
-    ${'AdminGetUtxosCount'}        | ${'post'}   | ${'admin/utxos/count'}            | ${() => adminSPVWalletClient.AdminGetUtxosCount({}, {})}
-    ${'AdminGetXPubs'}             | ${'post'}   | ${'admin/xpubs/search'}           | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
-    ${'AdminGetXPubsCount'}        | ${'post'}   | ${'admin/xpubs/count'}            | ${() => adminSPVWalletClient.AdminGetXPubsCount({}, {})}
-    ${'AdminRecordTransaction'}    | ${'post'}   | ${'admin/transactions/record'}    | ${() => adminSPVWalletClient.AdminRecordTransaction('')}
-    ${'AdminSubscribeWebhook'}     | ${'post'}   | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminSubscribeWebhook('', '', '')}
-    ${'AdminGetWebhooks'}          | ${'get'}    | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminGetWebhooks()}
-    ${'AdminDeleteWebhook'}        | ${'delete'} | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminDeleteWebhook('')}
+    spvWalletMethod            | httpMethod  | path                              | act
+    ${'AdminNewXpub'}          | ${'post'}   | ${'admin/users'}                  | ${() => adminSPVWalletClient.AdminNewXpub('', {})}
+    ${'AdminGetStatus'}        | ${'get'}    | ${'admin/status'}                 | ${() => adminSPVWalletClient.AdminGetStatus()}
+    ${'AdminGetStats'}         | ${'get'}    | ${'admin/stats'}                  | ${() => adminSPVWalletClient.AdminGetStats()}
+    ${'AdminGetAccessKeys'}    | ${'get'}    | ${'admin/users/keys'}             | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
+    ${'AdminGetContacts'}      | ${'get'}    | ${'admin/contacts'}               | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
+    ${'AdminCreateContact'}    | ${'post'}   | ${'admin/contacts/test'}          | ${() => adminSPVWalletClient.AdminCreateContact('test', {} as NewContact)}
+    ${'AdminUpdateContact'}    | ${'patch'}  | ${'admin/contacts/1'}             | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
+    ${'AdminDeleteContact'}    | ${'delete'} | ${'admin/contacts/1'}             | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
+    ${'AdminAcceptContact'}    | ${'patch'}  | ${'admin/invitations/1'}          | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
+    ${'AdminRejectContact'}    | ${'patch'}  | ${'admin/invitations/1'}          | ${() => adminSPVWalletClient.AdminRejectContact('1')}
+    ${'AdminGetPaymail'}       | ${'get'}    | ${'admin/paymails/test'}          | ${() => adminSPVWalletClient.AdminGetPaymail('test')}
+    ${'AdminGetPaymails'}      | ${'get'}    | ${'admin/paymails'}               | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
+    ${'AdminCreatePaymail'}    | ${'post'}   | ${'admin/paymails'}               | ${() => adminSPVWalletClient.AdminCreatePaymail('', '', '', '', {})}
+    ${'AdminDeletePaymail'}    | ${'delete'} | ${'admin/paymails/test'}          | ${() => adminSPVWalletClient.AdminDeletePaymail('test', 'test')}
+    ${'AdminGetTransactions'}  | ${'get'}    | ${'admin/transactions'}           | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
+    ${'AdminGetUtxos'}         | ${'get'}    | ${'admin/utxos'}                  | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
+    ${'AdminGetXPubs'}         | ${'get'}    | ${'admin/users'}                  | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
+    ${'AdminSubscribeWebhook'} | ${'post'}   | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminSubscribeWebhook('', '', '')}
+    ${'AdminDeleteWebhook'}    | ${'delete'} | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminDeleteWebhook('')}
   `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
     setupHttpMock(httpMethod, path);
