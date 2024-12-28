@@ -16,6 +16,7 @@ export interface RegressionTestUser {
   xpriv: string;
   xpub: string;
   paymail: string;
+  paymailId: string;
 }
 
 export interface RegressionTestConfig {
@@ -72,6 +73,7 @@ export const createUser = async (paymail: string, paymailDomain: string, instanc
     xpriv: keys.xPriv(),
     xpub: keys.xPub.toString(),
     paymail: preparePaymail(paymail, paymailDomain),
+    paymailId: '',
   };
 
   const adminClient = new SpvWalletClient(instanceUrl, {
@@ -79,15 +81,21 @@ export const createUser = async (paymail: string, paymailDomain: string, instanc
   });
 
   await adminClient.AdminNewXpub(user.xpub, { some_metadata: 'remove' });
-  await adminClient.AdminCreatePaymail(user.xpub, user.paymail, 'Regression tests', '');
+  const paymailAddress = await adminClient.AdminCreatePaymail(user.xpub, user.paymail, 'Regression tests', '', {});
+  user.paymailId = paymailAddress.id;
 
   return user;
 };
 
 // removeRegisteredPaymail soft deletes paymail from the SPV Wallet.
-export const removeRegisteredPaymail = async (paymail: string, instanceURL: string, adminXPriv: string) => {
+export const removeRegisteredPaymail = async (
+  paymail: string,
+  paymailId: string,
+  instanceURL: string,
+  adminXPriv: string,
+) => {
   const adminClient = new SpvWalletClient(instanceURL, { adminKey: adminXPriv, xPriv: adminXPriv });
-  await adminClient.AdminDeletePaymail(paymail);
+  await adminClient.AdminDeletePaymail(paymailId, paymail);
 };
 
 // getBalance retrieves the balance from the SPV Wallet.
