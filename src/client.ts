@@ -55,6 +55,7 @@ import {
   AdminUtxoFilter,
   ContactFilter,
   DestinationFilter,
+  PaymailFilter,
   TransactionFilter,
   UtxoFilter,
   XpubFilter,
@@ -581,6 +582,29 @@ export class SpvWalletClient {
   }
 
   /**
+   * Get a list of all paymails for the current user, filtered by conditions, metadata and queryParams
+   *
+   * @param {PaymailFilter} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryPageParams} queryParams Database query parameters for page, page size and sorting
+   * @return {PageModel<PaymailAddress>}
+   */
+  async GetPaymails(
+    conditions: PaymailFilter,
+    metadata: Metadata,
+    queryParams: QueryPageParams,
+  ): Promise<PageModel<PaymailAddress>> {
+    const basePath = 'paymails';
+    const queryString = buildQueryPath({
+      filter: conditions,
+      metadata,
+      page: queryParams,
+    });
+
+    return await this.http.request(`${basePath}${queryString}`, 'GET');
+  }
+
+  /**
    * Get a list of all contacts for the current user, filtered by conditions, metadata and queryParams
    *
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
@@ -722,7 +746,7 @@ export class SpvWalletClient {
    * @param {string} paymailB ContactB paymail
    * @return {void}
    */
-  async AdminConfirmContacts( paymailA: string, paymailB: string ): Promise<void> {
+  async AdminConfirmContacts(paymailA: string, paymailB: string): Promise<void> {
     return await this.http.adminRequest(`/admin/contacts/confirmations`, 'POST', { paymailA, paymailB });
   }
 
