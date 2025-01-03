@@ -42,6 +42,13 @@ export interface AdminPaymailFilter extends ModelFilter {
   publicName?: string;
 }
 
+export interface PaymailFilter extends ModelFilter {
+  id?: string;
+  aliast?: string;
+  domain?: string;
+  publicName?: string;
+}
+
 export type TransactionStatus =
   | 'UNKNOWN'
   | 'QUEUED'
