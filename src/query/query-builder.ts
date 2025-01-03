@@ -7,9 +7,7 @@ export interface BuildPathOptions {
   page: Page;
 }
 
-function flattenParams(params: Record<string, any>, parentKey?: string): Record<string, string> {
-  const flattened: Record<string, string> = {};
-
+function addToURLSearchParams(urlSP: URLSearchParams, params: Record<string, any>, parentKey?: string): void {
   Object.entries(params).forEach(([key, value]) => {
     if (!value) {
       return;
@@ -19,28 +17,31 @@ function flattenParams(params: Record<string, any>, parentKey?: string): Record<
 
     if (typeof value === 'object' && !Array.isArray(value)) {
       // Recursively flatten nested objects
-      Object.assign(flattened, flattenParams(value, newKey));
+      addToURLSearchParams(urlSP, value, newKey);
+    } else if (Array.isArray(value)) {
+      value.forEach((element) => {
+        const arrayKey = `${newKey}[]`;
+        urlSP.append(arrayKey, element);
+      });
     } else {
-      flattened[newKey] = String(value); // Ensure value is a string
+      urlSP.append(newKey, String(value)); // ensure value is a string
     }
   });
-
-  return flattened;
 }
 
 export function buildQueryPath({ filter, metadata, page: queryParams }: BuildPathOptions): string {
-  const allParams: Record<string, string> = {};
+  const allParams = new URLSearchParams();
 
   if (queryParams) {
-    Object.assign(allParams, flattenParams(queryParams));
+    addToURLSearchParams(allParams, queryParams);
   }
 
   if (filter) {
-    Object.assign(allParams, flattenParams(filter));
+    addToURLSearchParams(allParams, filter);
   }
 
   if (metadata) {
-    Object.assign(allParams, flattenParams(metadata, 'metadata'));
+    addToURLSearchParams(allParams, metadata, 'metadata');
   }
 
   const params = new URLSearchParams(allParams);
