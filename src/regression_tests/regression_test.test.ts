@@ -50,11 +50,15 @@ beforeAll(() => {
 
 afterAll(async () => {
   if (userOne) {
-    await expect(removeRegisteredPaymail(userOne.paymail, rtConfig.clientOneURL, ADMIN_XPRIV)).resolves.not.toThrow();
+    await expect(
+      removeRegisteredPaymail(userOne.paymail, userOne.paymailId, rtConfig.clientOneURL, ADMIN_XPRIV),
+    ).resolves.not.toThrow();
   }
 
   if (userTwo) {
-    await expect(removeRegisteredPaymail(userTwo.paymail, rtConfig.clientTwoURL, ADMIN_XPRIV)).resolves.not.toThrow();
+    await expect(
+      removeRegisteredPaymail(userTwo.paymail, userTwo.paymailId, rtConfig.clientTwoURL, ADMIN_XPRIV),
+    ).resolves.not.toThrow();
   }
 });
 
