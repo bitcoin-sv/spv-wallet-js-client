@@ -45,6 +45,7 @@ import {
   AdminPaymailFilter,
   AdminUtxoFilter,
   ContactFilter,
+  PaymailFilter,
   TransactionFilter,
   UtxoFilter,
   XpubFilter,
