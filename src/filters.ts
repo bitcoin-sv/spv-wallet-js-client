@@ -103,3 +103,7 @@ export interface XpubFilter extends ModelFilter {
   id?: string;
   currentBalance?: number;
 }
+
+export interface AdminContactFilter extends ContactFilter {
+  xpubId?: string;
+}

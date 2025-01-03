@@ -76,31 +76,31 @@ export interface XPub {
   /**
    * Current balance in sats of the xpub
    */
-  current_balance: number;
+  currentBalance: number;
   /**
    * Next internal (change address) number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_internal_num: number;
+  nextInternalNum: number;
   /**
    * Next external number to use for a new destination
    *
    * NOTE: Do not use this to create new destinations, always let SPV Wallet create the destination
    */
-  next_external_num: number;
+  nextExternalNum: number;
   /**
    * Date when this object was created
    */
-  created_at?: Date;
+  createdAt?: Date;
   /**
    * Date when this object was last updated
    */
-  updated_at?: Date;
+  updatedAt?: Date;
   /**
    * If this object has been deleted, this date will be set
    */
-  deleted_at?: Date;
+  deletedAt?: Date;
 }
 
 /**
@@ -197,7 +197,7 @@ export interface AdminStats {
   /**
    * Number of paymail addresses in the database
    */
-  paymail_addresses: number;
+  paymailAddresses: number;
   /**
    * Number of utxos in the database
    */
@@ -209,11 +209,11 @@ export interface AdminStats {
   /**
    * A key value object of dates and number of transactions on that date (YYYYMMDD)
    */
-  transactions_per_day: { [key: string]: any };
+  transactionsPerDay: { [key: string]: any };
   /**
    * Number of utxos per output type
    */
-  utxos_per_type: { [key: string]: any };
+  utxosPerType: { [key: string]: any };
 }
 
 /**
@@ -242,23 +242,14 @@ export interface AccessKey {
 export interface AccessKeys extends Array<AccessKey> {}
 
 /**
- * Old access key interface for Admin endpoints (Deprecated)
+ * NewContact interface for adding a new contact by admin.
+ * creatorPaymail is the paymail of the user who will be owner of the contact and it's required for admin createContact action.
  */
-export interface OldAccessKey {
-  id: string;
-  xpub_id: string;
-  key?: string;
+export interface NewContact {
+  creatorPaymail: string;
+  fullName: string;
   metadata?: Metadata;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
-  revoked_at?: Date;
 }
-
-/**
- * Array of OldAccessKeys for Admin (Deprecated)
- */
-export interface OldAccessKeys extends Array<OldAccessKey> {}
 
 /**
  * Contact interface for non-admin (User) endpoints.
@@ -279,26 +270,6 @@ export interface Contact {
  * Array of Contacts for non-admin (User) endpoints.
  */
 export interface Contacts extends PageModel<Contact> {}
-
-/**
- * Old contact interface for Admin endpoints (Deprecated)
- */
-export interface OldContact {
-  id: string;
-  full_name: string;
-  paymail: string;
-  pub_key: string;
-  status: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
-  metadata?: Metadata;
-}
-
-/**
- * Array of OldContacts for Admin (Deprecated)
- */
-export interface OldContacts extends Array<OldContact> {}
 
 /**
  * Destination interface for non-admin (User) endpoints.
@@ -323,30 +294,6 @@ export interface Destination {
  * Array of Destinations for non-admin (User) endpoints.
  */
 export interface Destinations extends Array<Destination> {}
-
-/**
- * Old destination interface for Admin endpoints (Deprecated)
- */
-export interface OldDestination {
-  id: string;
-  xpub_id: string;
-  locking_script: string;
-  type: string;
-  chain: number;
-  num: number;
-  paymail_external_derivation_num?: number;
-  address: string;
-  draft_id: string;
-  metadata: Metadata;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
-}
-
-/**
- * Array of OldDestinations for Admin (Deprecated)
- */
-export interface OldDestinations extends Array<OldDestination> {}
 
 /**
  * Transaction interface for non-admin (User) endpoints.
@@ -374,32 +321,24 @@ export interface Tx {
 export interface Txs extends Array<Tx> {}
 
 /**
- * Old transaction interface for Admin endpoints (Deprecated)
+ * Transaction interface for Admin endpoints.
  */
-export interface OldTx {
-  id: string;
-  hex: string;
-  block_hash: string;
-  block_height: number;
-  fee: number;
-  number_of_inputs: number;
-  number_of_outputs: number;
-  output_value: number;
-  total_value: number;
-  metadata?: Metadata;
-  direction: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+export interface AdminTx extends Tx {
+  draftId: string;
+  xpubsInIds: string[];
+  xpubOutIds: string[];
+  outputs: Record<string, number>;
+  status: string;
+  outputValue: number;
 }
 
 /**
- * Array of OldTxs for Admin (Deprecated)
+ * Array of Txs for Admin  endpoints.
  */
-export interface OldTxs extends Array<OldTx> {}
+export interface AdminTxs extends Array<AdminTx> {}
 
 /**
- * Utxo interface for non-admin (User) endpoints.
+ * Utxo interface.
  */
 export interface Utxo {
   id: string;
@@ -414,55 +353,35 @@ export interface Utxo {
   createdAt: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+  metadata?: Metadata;
 }
 
 /**
- * Array of Utxos for non-admin (User) endpoints.
+ * Array of Utxos.
  */
 export interface Utxos extends Array<Utxo> {}
 
 /**
- * Old Utxo interface for Admin endpoints (Deprecated)
+ * Paymail address interface for Admin endpoints
  */
-export interface OldUtxo {
+export interface PaymailAddress {
   id: string;
-  xpub_id: string;
-  satoshis: number;
-  script_pub_key: string;
-  type: string;
-  draft_id?: string;
-  reserved_at?: Date;
-  spending_tx_id?: string;
-  transaction?: OldTx;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
-}
-
-/**
- * Array of OldUtxos for Admin (Deprecated)
- */
-export interface OldUtxos extends Array<OldUtxo> {}
-
-/**
- * Old paymail address interface for Admin endpoints (Deprecated)
- */
-export interface OldPaymailAddress {
-  id: string;
-  xpub_id: string;
+  xpubId: string;
   alias: string;
   domain: string;
-  public_name: string;
+  address: string;
+  publicName: string;
   avatar: string;
-  created_at: Date;
-  updated_at?: Date;
-  deleted_at?: Date;
+  metadata: Metadata;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 /**
- * Array of OldPaymailAddresses for Admin (Deprecated)
+ * Array of PaymailAddresses for Admin
  */
-export interface OldPaymailAddresses extends Array<OldPaymailAddress> {}
+export interface PaymailAddresses extends Array<PaymailAddress> {}
 
 /**
  * Webhook interface for non-admin (User) endpoints.
@@ -696,17 +615,6 @@ export interface AccessKeyWithSigning extends OptionalAdminKey {
 }
 
 export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning | AdminKey;
-
-/**
- * Old query params for Admin endpoints (Deprecated)
- * Deprecated - Will be removed when Admin API is refactored to be more restful
- */
-export interface OldQueryParams {
-  page?: number;
-  page_size?: number;
-  order_by_field?: string;
-  sort_direction?: string;
-}
 
 /**
  * Query params to limit and order database list results.

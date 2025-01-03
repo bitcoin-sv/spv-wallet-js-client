@@ -36,11 +36,17 @@ const config: RollupOptions[] = [
       }),
       commonjs(),
       json(),
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
+      typescript({ 
+        tsconfig: "./tsconfig.json", 
+        sourceMap: false,
+        noEmitHelpers: true,
+        importHelpers: true
+      }),
       nodePolyfills(),
       externals({
         devDeps: true,
         peerDeps: true,
+        exclude: ['tslib']
       }),
     ],
   },
@@ -59,7 +65,12 @@ const config: RollupOptions[] = [
     ],
     external: ['bsv', 'cross-fetch', 'cross-fetch/polyfill'],
     plugins: [
-      typescript({ tsconfig: "./tsconfig.json", sourceMap: false }),
+      typescript({
+        tsconfig: "./tsconfig.json",
+        sourceMap: false,
+        noEmitHelpers: true,
+        importHelpers: true
+      }),
       resolve({
       // @ts-ignore
         skip: ['bsv'],
@@ -67,13 +78,14 @@ const config: RollupOptions[] = [
       externals({
         devDeps: true,
         peerDeps: true,
+        exclude: ['tslib']
       }),
     ],
   },
 
   {
     // path to your declaration files root
-    input: './dist/dts/src/index.d.ts',
+    input: "src/index.ts",
     output: [
       { file: 'dist/typescript-npm-package.cjs.d.ts', format: 'es' },
       { file: 'dist/typescript-npm-package.esm.d.ts', format: 'es' },

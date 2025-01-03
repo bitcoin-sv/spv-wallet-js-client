@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
-import { SpvWalletClient } from './index';
+import { NewContact, SpvWalletClient } from './index';
 import { ClientOptions, DraftTx, DraftTransactionConfig } from './types';
 
 const xPrivString =
@@ -53,27 +53,27 @@ describe('SPVWalletClient routing', () => {
   const spvWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });
 
   it.each`
-    spvWalletMethod                               | httpMethod  | path                                       | act
-    ${'GetUserInfo'}                              | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetUserInfo()}
-    ${'UpdateXPubMetadata'}                       | ${'patch'}  | ${'users/current'}                         | ${() => spvWalletClient.UpdateUserMetadata({})}
-    ${'GetAccessKeyByID'}                         | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKeyByID(accessKeyString)}
-    ${'GetAccessKeys'}                            | ${'get'}    | ${'users/current/keys'}                    | ${() => spvWalletClient.GetAccessKeys({}, {}, {})}
-    ${'CreateAccessKey'}                          | ${'post'}   | ${'users/current/keys'}                    | ${() => spvWalletClient.CreateAccessKey({})}
-    ${'RevokeAccessKey'}                          | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.RevokeAccessKey(accessKeyString)}
-    ${'GetContactByPaymail'}                      | ${'get'}    | ${'contacts/test'}                         | ${() => spvWalletClient.GetContactByPaymail('test')}
-    ${'GetContacts'}                              | ${'get'}    | ${'contacts'}                              | ${() => spvWalletClient.GetContacts({}, {}, {})}
-    ${'UpsertContact'}                            | ${'put'}    | ${'contacts/test'}                         | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
-    ${'RemoveContact'}                            | ${'delete'} | ${'contacts/test'}                         | ${() => spvWalletClient.RemoveContact('test')}
-    ${'AcceptContactInvitation'}                  | ${'post'}   | ${'invitations/test/contacts'}             | ${() => spvWalletClient.AcceptContactInvitation('test')}
-    ${'RejectContactInvitation'}                  | ${'delete'} | ${'invitations/test/contacts'}             | ${() => spvWalletClient.RejectContactInvitation('test')}
-    ${'UnconfirmContact'}                         | ${'delete'} | ${'contacts/test/confirmation'}            | ${() => spvWalletClient.UnconfirmContact('test')}
-    ${'GetTransactionById'}                       | ${'get'}    | ${'transactions/id'}                       | ${() => spvWalletClient.GetTransactionById('id')}
-    ${'GetTransactions'}                          | ${'get'}    | ${'transactions'}                          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
-    ${'NewDraftTransaction'}                      | ${'post'}   | ${'transactions/drafts'}                   | ${() => spvWalletClient.NewDraftTransaction({} as DraftTransactionConfig, {})}
-    ${'RecordTransaction'}                        | ${'post'}   | ${'transactions'}                          | ${() => spvWalletClient.RecordTransaction('', '', {})}
-    ${'UpdateTransactionMetadata'}                | ${'patch'}  | ${'transactions/id'}                       | ${() => spvWalletClient.UpdateTransactionMetadata('id', {})}
-    ${'GetUtxos'}                                 | ${'get'}    | ${'utxos'}                                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
-    ${'GetSharedConfig'}                          | ${'get'}    | ${'configs/shared'}                        | ${() => spvWalletClient.GetSharedConfig()}
+    spvWalletMethod                | httpMethod  | path                                       | act
+    ${'GetUserInfo'}               | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetUserInfo()}
+    ${'UpdateXPubMetadata'}        | ${'patch'}  | ${'users/current'}                         | ${() => spvWalletClient.UpdateUserMetadata({})}
+    ${'GetAccessKeyByID'}          | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKeyByID(accessKeyString)}
+    ${'GetAccessKeys'}             | ${'get'}    | ${'users/current/keys'}                    | ${() => spvWalletClient.GetAccessKeys({}, {})}
+    ${'CreateAccessKey'}           | ${'post'}   | ${'users/current/keys'}                    | ${() => spvWalletClient.CreateAccessKey({})}
+    ${'RevokeAccessKey'}           | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.RevokeAccessKey(accessKeyString)}
+    ${'GetContactByPaymail'}       | ${'get'}    | ${'contacts/test'}                         | ${() => spvWalletClient.GetContactByPaymail('test')}
+    ${'GetContacts'}               | ${'get'}    | ${'contacts'}                              | ${() => spvWalletClient.GetContacts({}, {}, {})}
+    ${'UpsertContact'}             | ${'put'}    | ${'contacts/test'}                         | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
+    ${'RemoveContact'}             | ${'delete'} | ${'contacts/test'}                         | ${() => spvWalletClient.RemoveContact('test')}
+    ${'AcceptContactInvitation'}   | ${'post'}   | ${'invitations/test/contacts'}             | ${() => spvWalletClient.AcceptContactInvitation('test')}
+    ${'RejectContactInvitation'}   | ${'delete'} | ${'invitations/test/contacts'}             | ${() => spvWalletClient.RejectContactInvitation('test')}
+    ${'UnconfirmContact'}          | ${'delete'} | ${'contacts/test/confirmation'}            | ${() => spvWalletClient.UnconfirmContact('test')}
+    ${'GetTransactionById'}        | ${'get'}    | ${'transactions/id'}                       | ${() => spvWalletClient.GetTransactionById('id')}
+    ${'GetTransactions'}           | ${'get'}    | ${'transactions'}                          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
+    ${'NewDraftTransaction'}       | ${'post'}   | ${'transactions/drafts'}                   | ${() => spvWalletClient.NewDraftTransaction({} as DraftTransactionConfig, {})}
+    ${'RecordTransaction'}         | ${'post'}   | ${'transactions'}                          | ${() => spvWalletClient.RecordTransaction('', '', {})}
+    ${'UpdateTransactionMetadata'} | ${'patch'}  | ${'transactions/id'}                       | ${() => spvWalletClient.UpdateTransactionMetadata('id', {})}
+    ${'GetUtxos'}                  | ${'get'}    | ${'utxos'}                                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
+    ${'GetSharedConfig'}           | ${'get'}    | ${'configs/shared'}                        | ${() => spvWalletClient.GetSharedConfig()}
   `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
     setupHttpMock(httpMethod, path);
@@ -98,34 +98,26 @@ describe('SPVWalletClient admin routing', () => {
   const adminSPVWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });
 
   it.each`
-    spvWalletMethod                | httpMethod  | path                              | act
-    ${'AdminNewXpub'}              | ${'post'}   | ${'admin/xpub'}                   | ${() => adminSPVWalletClient.AdminNewXpub('', {})}
-    ${'AdminGetStatus'}            | ${'get'}    | ${'admin/status'}                 | ${() => adminSPVWalletClient.AdminGetStatus()}
-    ${'AdminGetStats'}             | ${'get'}    | ${'admin/stats'}                  | ${() => adminSPVWalletClient.AdminGetStats()}
-    ${'AdminGetAccessKeys'}        | ${'post'}   | ${'admin/access-keys/search'}     | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
-    ${'AdminGetAccessKeysCount'}   | ${'post'}   | ${'admin/access-keys/count'}      | ${() => adminSPVWalletClient.AdminGetAccessKeysCount({}, {})}
-    ${'AdminGetContacts'}          | ${'post'}   | ${'admin/contact/search'}         | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
-    ${'AdminUpdateContact'}        | ${'patch'}  | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
-    ${'AdminDeleteContact'}        | ${'delete'} | ${'admin/contact/1'}              | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
-    ${'AdminAcceptContact'}        | ${'patch'}  | ${'admin/contact/accepted/1'}     | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
-    ${'AdminRejectContact'}        | ${'patch'}  | ${'admin/contact/rejected/1'}     | ${() => adminSPVWalletClient.AdminRejectContact('1')}
-    ${'AdminGetDestinations'}      | ${'post'}   | ${'admin/destinations/search'}    | ${() => adminSPVWalletClient.AdminGetDestinations({}, {}, {})}
-    ${'AdminGetDestinationsCount'} | ${'post'}   | ${'admin/destinations/count'}     | ${() => adminSPVWalletClient.AdminGetDestinationsCount({}, {})}
-    ${'AdminGetPaymail'}           | ${'post'}   | ${'admin/paymail/get'}            | ${() => adminSPVWalletClient.AdminGetPaymail('')}
-    ${'AdminGetPaymails'}          | ${'post'}   | ${'admin/paymails/search'}        | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
-    ${'AdminGetPaymailsCount'}     | ${'post'}   | ${'admin/paymails/count'}         | ${() => adminSPVWalletClient.AdminGetPaymailsCount({}, {})}
-    ${'AdminCreatePaymail'}        | ${'post'}   | ${'admin/paymail/create'}         | ${() => adminSPVWalletClient.AdminCreatePaymail('', '', '', '')}
-    ${'AdminDeletePaymail'}        | ${'delete'} | ${'admin/paymail/delete'}         | ${() => adminSPVWalletClient.AdminDeletePaymail('')}
-    ${'AdminGetTransactions'}      | ${'post'}   | ${'admin/transactions/search'}    | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
-    ${'AdminGetTransactionsCount'} | ${'post'}   | ${'admin/transactions/count'}     | ${() => adminSPVWalletClient.AdminGetTransactionsCount({}, {})}
-    ${'AdminGetUtxos'}             | ${'post'}   | ${'admin/utxos/search'}           | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
-    ${'AdminGetUtxosCount'}        | ${'post'}   | ${'admin/utxos/count'}            | ${() => adminSPVWalletClient.AdminGetUtxosCount({}, {})}
-    ${'AdminGetXPubs'}             | ${'post'}   | ${'admin/xpubs/search'}           | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
-    ${'AdminGetXPubsCount'}        | ${'post'}   | ${'admin/xpubs/count'}            | ${() => adminSPVWalletClient.AdminGetXPubsCount({}, {})}
-    ${'AdminRecordTransaction'}    | ${'post'}   | ${'admin/transactions/record'}    | ${() => adminSPVWalletClient.AdminRecordTransaction('')}
-    ${'AdminSubscribeWebhook'}     | ${'post'}   | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminSubscribeWebhook('', '', '')}
-    ${'AdminGetWebhooks'}          | ${'get'}    | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminGetWebhooks()}
-    ${'AdminDeleteWebhook'}        | ${'delete'} | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminDeleteWebhook('')}
+    spvWalletMethod            | httpMethod  | path                              | act
+    ${'AdminNewXpub'}          | ${'post'}   | ${'admin/users'}                  | ${() => adminSPVWalletClient.AdminNewXpub('', {})}
+    ${'AdminGetStatus'}        | ${'get'}    | ${'admin/status'}                 | ${() => adminSPVWalletClient.AdminGetStatus()}
+    ${'AdminGetStats'}         | ${'get'}    | ${'admin/stats'}                  | ${() => adminSPVWalletClient.AdminGetStats()}
+    ${'AdminGetAccessKeys'}    | ${'get'}    | ${'admin/users/keys'}             | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
+    ${'AdminGetContacts'}      | ${'get'}    | ${'admin/contacts'}               | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
+    ${'AdminCreateContact'}    | ${'post'}   | ${'admin/contacts/test'}          | ${() => adminSPVWalletClient.AdminCreateContact('test', {} as NewContact)}
+    ${'AdminUpdateContact'}    | ${'patch'}  | ${'admin/contacts/1'}             | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
+    ${'AdminDeleteContact'}    | ${'delete'} | ${'admin/contacts/1'}             | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
+    ${'AdminAcceptContact'}    | ${'patch'}  | ${'admin/invitations/1'}          | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
+    ${'AdminRejectContact'}    | ${'patch'}  | ${'admin/invitations/1'}          | ${() => adminSPVWalletClient.AdminRejectContact('1')}
+    ${'AdminGetPaymail'}       | ${'get'}    | ${'admin/paymails/test'}          | ${() => adminSPVWalletClient.AdminGetPaymail('test')}
+    ${'AdminGetPaymails'}      | ${'get'}    | ${'admin/paymails'}               | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
+    ${'AdminCreatePaymail'}    | ${'post'}   | ${'admin/paymails'}               | ${() => adminSPVWalletClient.AdminCreatePaymail('', '', '', '', {})}
+    ${'AdminDeletePaymail'}    | ${'delete'} | ${'admin/paymails/test'}          | ${() => adminSPVWalletClient.AdminDeletePaymail('test', 'test')}
+    ${'AdminGetTransactions'}  | ${'get'}    | ${'admin/transactions'}           | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
+    ${'AdminGetUtxos'}         | ${'get'}    | ${'admin/utxos'}                  | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
+    ${'AdminGetXPubs'}         | ${'get'}    | ${'admin/users'}                  | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
+    ${'AdminSubscribeWebhook'} | ${'post'}   | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminSubscribeWebhook('', '', '')}
+    ${'AdminDeleteWebhook'}    | ${'delete'} | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminDeleteWebhook('')}
   `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
     setupHttpMock(httpMethod, path);
