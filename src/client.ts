@@ -45,6 +45,7 @@ import {
   AdminPaymailFilter,
   AdminUtxoFilter,
   ContactFilter,
+  PaymailFilter,
   TransactionFilter,
   UtxoFilter,
   XpubFilter,
@@ -466,6 +467,29 @@ export class SpvWalletClient {
    */
   async RevokeAccessKey(id: string): Promise<void> {
     return await this.http.request(`users/current/keys/${id}`, 'DELETE');
+  }
+
+  /**
+   * Get a list of all paymails for the current user, filtered by conditions, metadata and queryParams
+   *
+   * @param {PaymailFilter} conditions   Key value object to use to filter the documents
+   * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
+   * @param {QueryPageParams} queryParams Database query parameters for page, page size and sorting
+   * @return {PageModel<PaymailAddress>}
+   */
+  async GetPaymails(
+    conditions: PaymailFilter,
+    metadata: Metadata,
+    queryParams: QueryPageParams,
+  ): Promise<PageModel<PaymailAddress>> {
+    const basePath = 'paymails';
+    const queryString = buildQueryPath({
+      filter: conditions,
+      metadata,
+      page: queryParams,
+    });
+
+    return await this.http.request(`${basePath}${queryString}`, 'GET');
   }
 
   /**
