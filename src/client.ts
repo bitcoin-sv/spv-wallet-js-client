@@ -341,14 +341,14 @@ export class SpvWalletClient {
    *
    * @param {string} rawXPub Raw xPub to register the paymail to
    * @param {string} address Paymail address (i.e. alias@example.com)
-   * @param {string} public_name Public name for the user to return in Paymail address resolution requests
+   * @param {string} publicName Public name for the user to return in Paymail address resolution requests
    * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
    * @return {PaymailAddress}
    */
   async AdminCreatePaymail(
     rawXPub: string,
     address: string,
-    public_name: string,
+    publicName: string,
     avatar: string,
     metadata: Metadata,
   ): Promise<PaymailAddress> {
@@ -356,7 +356,7 @@ export class SpvWalletClient {
       metadata,
       key: rawXPub,
       address,
-      public_name,
+      publicName,
       avatar,
     });
   }
