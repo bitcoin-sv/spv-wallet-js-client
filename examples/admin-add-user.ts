@@ -16,5 +16,5 @@ const adminClient = new SpvWalletClient(server, {
 const newXPubRes = await adminClient.AdminNewXpub(exampleXPub, { some_metadata: 'example' });
 console.log('AdminNewXpub response:', newXPubRes);
 
-const createPaymailRes = await adminClient.AdminCreatePaymail(exampleXPub, examplePaymail, 'Some public name', '');
+const createPaymailRes = await adminClient.AdminCreatePaymail(exampleXPub, examplePaymail, 'Some public name', '', {});
 console.log('AdminCreatePaymail response:', createPaymailRes);
