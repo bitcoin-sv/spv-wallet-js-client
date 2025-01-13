@@ -20,6 +20,7 @@ import {
   QueryPageParams,
   NewContact,
   AdminTx,
+  Webhook,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -370,6 +371,15 @@ export class SpvWalletClient {
    */
   async AdminDeletePaymail(id: string, address: string): Promise<void> {
     await this.http.adminRequest(`admin/paymails/${id}`, 'DELETE', { address });
+  }
+
+  /**
+   * Admin only: Get a list of all webhook subscriptions.
+   *
+   * @returns A Promise that resolves to an array of Webhook objects representing the current webhook subscriptions.
+   */
+  async AdminGetWebhooks(): Promise<Webhook[]> {
+    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'GET');
   }
 
   /**

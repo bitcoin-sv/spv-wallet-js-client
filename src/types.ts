@@ -531,6 +531,14 @@ export interface AdminKey {
   adminKey: string;
 }
 
+/**
+ * Webhook interface for admin endpoints.
+ */
+export interface Webhook {
+  url: string;
+  banned: boolean;
+}
+
 export interface OptionalAdminKey extends Partial<AdminKey> {}
 
 export interface XpubWithoutSigning extends OptionalAdminKey {
