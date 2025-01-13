@@ -20,8 +20,5 @@ const webhookSuccessfullySubscribed = await adminClient.AdminSubscribeWebhook(
 );
 console.log('Webhook added:', webhookSuccessfullySubscribed);
 
-const webhooks = await adminClient.AdminGetWebhooks();
-console.log('Webhooks:', webhooks);
-
 const webhookSuccessfullyUnsubscribed = await adminClient.AdminDeleteWebhook('https://example.com');
 console.log('Webhook deleted:', webhookSuccessfullyUnsubscribed);
