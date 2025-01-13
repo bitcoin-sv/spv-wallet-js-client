@@ -61,6 +61,12 @@ try {
     wh.handleIncomingEvents(fastifyHttpHandler);
   });
 
+  const allWebhooks = await client.AdminGetWebhooks();
+  console.log('Subscribed webhooks list\n');
+  for (const w of allWebhooks) {
+    console.log(`URL: ${w.url}, banned: ${w.banned}\n`);
+  }
+
   wh.registerHandler('StringEvent', async (event) => {
     console.log(`\n\nProcessing event-string: ${event.value}\n\n`);
   });
