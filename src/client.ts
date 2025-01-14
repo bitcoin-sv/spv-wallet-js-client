@@ -13,17 +13,14 @@ import {
   User,
   AdminStats,
   PaymailAddress,
-  XPubs,
   XPub,
   PageModel,
   Utxo,
   MerkleRootsRepository,
   QueryPageParams,
   NewContact,
-  PaymailAddresses,
   AdminTx,
-  AdminTxs,
-  Utxos,
+  Webhook,
 } from './types';
 import { defaultLogger, Logger, LoggerConfig, makeLogger } from './logger';
 import { HttpClient } from './httpclient';
@@ -137,13 +134,13 @@ export class SpvWalletClient {
    * @param {AdminAccessKeyFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryPageParams} params Database query parameters for page, page size and sorting
-   * @return {AccessKey}
+   * @return {PageModel<AccessKey>}
    */
   async AdminGetAccessKeys(
     conditions: AdminAccessKeyFilter,
     metadata: Metadata,
     params: QueryPageParams,
-  ): Promise<AccessKey> {
+  ): Promise<PageModel<AccessKey>> {
     const basePath = 'admin/users/keys';
     const queryString = buildQueryPath({
       metadata,
@@ -235,13 +232,13 @@ export class SpvWalletClient {
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryPageParams} params Database query parameters for page, page size and sorting
-   * @return {AdminTxs}
+   * @return {PageModel<AdminTx>}
    */
   async AdminGetTransactions(
     conditions: TransactionFilter,
     metadata: Metadata,
     params: QueryPageParams,
-  ): Promise<AdminTxs> {
+  ): Promise<PageModel<AdminTx>> {
     const basePath = 'admin/transactions';
     const queryString = buildQueryPath({
       filter: conditions,
@@ -257,9 +254,13 @@ export class SpvWalletClient {
    * @param {AdminUtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryPageParams} params Database query parameters for page, page size and sorting
-   * @return {Utxos}
+   * @return {PageModel<Utxo>}
    */
-  async AdminGetUtxos(conditions: AdminUtxoFilter, metadata: Metadata, params: QueryPageParams): Promise<Utxos> {
+  async AdminGetUtxos(
+    conditions: AdminUtxoFilter,
+    metadata: Metadata,
+    params: QueryPageParams,
+  ): Promise<PageModel<Utxo>> {
     const basePath = 'admin/utxos';
     const queryString = buildQueryPath({
       filter: conditions,
@@ -276,9 +277,9 @@ export class SpvWalletClient {
    * @param {XpubFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryPageParams} params Database query parameters for page, page size and sorting
-   * @return {XPubs}
+   * @return {PageModel<XPub>}
    */
-  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: QueryPageParams): Promise<XPubs> {
+  async AdminGetXPubs(conditions: XpubFilter, metadata: Metadata, params: QueryPageParams): Promise<PageModel<XPub>> {
     const basePath = 'admin/users';
     const queryString = buildQueryPath({
       filter: conditions,
@@ -319,13 +320,13 @@ export class SpvWalletClient {
    * @param {AdminPaymailFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
    * @param {QueryPageParams} params Database query parameters for page, page size and sorting
-   * @return {PaymailAddresses}
+   * @return {PageModel<PaymailAddress>}
    */
   async AdminGetPaymails(
     conditions: AdminPaymailFilter,
     metadata: Metadata,
     params: QueryPageParams,
-  ): Promise<PaymailAddresses> {
+  ): Promise<PageModel<PaymailAddress>> {
     const basePath = 'admin/paymails';
     const queryString = buildQueryPath({
       metadata,
@@ -373,12 +374,21 @@ export class SpvWalletClient {
   }
 
   /**
+   * Admin only: Get a list of all webhook subscriptions.
+   *
+   * @returns A Promise that resolves to an array of Webhook objects representing the current webhook subscriptions.
+   */
+  async AdminGetWebhooks(): Promise<Webhook[]> {
+    return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'GET');
+  }
+
+  /**
    * Admin only: Subscribe to a webhook with the given URL, token header, and token value.
    *
    * @param url - The URL to subscribe the webhook to.
    * @param tokenHeader - The header name for the authentication token.
    * @param tokenValue - The value of the authentication token.
-   * @returns A Promise that resolves when the webhook subscription is complete.
+   * @returns void
    */
   async AdminSubscribeWebhook(url: string, tokenHeader: string, tokenValue: string): Promise<void> {
     return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'POST', { url, tokenHeader, tokenValue });
@@ -388,7 +398,7 @@ export class SpvWalletClient {
    * Admin only: Delete a webhook subscription by the given URL.
    *
    * @param url - The URL of the webhook subscription to delete.
-   * @returns A Promise that resolves when the webhook subscription is deleted.
+   * @returns void
    */
   async AdminDeleteWebhook(url: string): Promise<void> {
     return await this.http.adminRequest(`admin/webhooks/subscriptions`, 'DELETE', { url });

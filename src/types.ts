@@ -104,12 +104,6 @@ export interface XPub {
 }
 
 /**
- * Array of xpubs
- * @see {@link XPub}
- */
-export interface XPubs extends Array<XPub> {}
-
-/**
  * Page interface
  *
  * Holds information about the pagination state
@@ -217,12 +211,6 @@ export interface AdminStats {
 }
 
 /**
- * Array of xpubs
- * @see {@link User}
- */
-export interface Users extends Array<User> {}
-
-/**
  * Access key interface for non-admin (User) endpoints.
  */
 export interface AccessKey {
@@ -235,11 +223,6 @@ export interface AccessKey {
   deletedAt?: Date;
   revokedAt?: Date;
 }
-
-/**
- * Array of AccessKeys for non-admin (User) endpoints.
- */
-export interface AccessKeys extends Array<AccessKey> {}
 
 /**
  * NewContact interface for adding a new contact by admin.
@@ -267,11 +250,6 @@ export interface Contact {
 }
 
 /**
- * Array of Contacts for non-admin (User) endpoints.
- */
-export interface Contacts extends PageModel<Contact> {}
-
-/**
  * Destination interface for non-admin (User) endpoints.
  */
 export interface Destination {
@@ -289,11 +267,6 @@ export interface Destination {
   updatedAt?: Date;
   deletedAt?: Date;
 }
-
-/**
- * Array of Destinations for non-admin (User) endpoints.
- */
-export interface Destinations extends Array<Destination> {}
 
 /**
  * Transaction interface for non-admin (User) endpoints.
@@ -316,11 +289,6 @@ export interface Tx {
 }
 
 /**
- * Array of Txs for non-admin (User) endpoints.
- */
-export interface Txs extends Array<Tx> {}
-
-/**
  * Transaction interface for Admin endpoints.
  */
 export interface AdminTx extends Tx {
@@ -331,11 +299,6 @@ export interface AdminTx extends Tx {
   status: string;
   outputValue: number;
 }
-
-/**
- * Array of Txs for Admin  endpoints.
- */
-export interface AdminTxs extends Array<AdminTx> {}
 
 /**
  * Utxo interface.
@@ -357,11 +320,6 @@ export interface Utxo {
 }
 
 /**
- * Array of Utxos.
- */
-export interface Utxos extends Array<Utxo> {}
-
-/**
  * Paymail address interface for Admin endpoints
  */
 export interface PaymailAddress {
@@ -377,33 +335,6 @@ export interface PaymailAddress {
   updatedAt?: Date;
   deletedAt?: Date;
 }
-
-/**
- * Array of PaymailAddresses for Admin
- */
-export interface PaymailAddresses extends Array<PaymailAddress> {}
-
-/**
- * Webhook interface for non-admin (User) endpoints.
- */
-export interface Webhook {
-  url: string;
-  banned: boolean;
-}
-
-/**
- * Output interface for non-admin (User) endpoints.
- */
-export interface Output {
-  to: string;
-  satoshis: number;
-  opReturn?: OpReturn;
-}
-
-/**
- * Array of Outputs for non-admin (User) endpoints.
- */
-export interface Outputs extends Array<Output> {}
 
 /**
  * OP_RETURN data for transactions.
@@ -598,6 +529,14 @@ export interface PubKey {
 
 export interface AdminKey {
   adminKey: string;
+}
+
+/**
+ * Webhook interface for admin endpoints.
+ */
+export interface Webhook {
+  url: string;
+  banned: boolean;
 }
 
 export interface OptionalAdminKey extends Partial<AdminKey> {}
