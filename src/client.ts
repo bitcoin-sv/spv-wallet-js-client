@@ -7,7 +7,6 @@ import {
   ExclusiveStartKeyPage,
   MerkleRoot,
   Metadata,
-  QueryParams,
   SharedConfig,
   Tx,
   User,
@@ -344,6 +343,7 @@ export class SpvWalletClient {
    * @param {string} address Paymail address (i.e. alias@example.com)
    * @param {string} publicName Public name for the user to return in Paymail address resolution requests
    * @param {string} avatar Avatar of the user to return in Paymail address resolution requests
+   * @param {Metadata} metadata      Key value object to use to filter the documents by the metadata
    * @return {PaymailAddress}
    */
   async AdminCreatePaymail(
@@ -507,13 +507,13 @@ export class SpvWalletClient {
    *
    * @param {ContactFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryPageParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<Contact>}
    */
   async GetContacts(
     conditions: ContactFilter,
     metadata: Metadata,
-    queryParams: QueryParams,
+    queryParams: QueryPageParams,
   ): Promise<PageModel<Contact>> {
     const basePath = 'contacts';
     const queryString = buildQueryPath({
@@ -663,13 +663,13 @@ export class SpvWalletClient {
    *
    * @param {TransactionFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryPageParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<Tx>}
    */
   async GetTransactions(
     conditions: TransactionFilter,
     metadata: Metadata,
-    queryParams: QueryParams,
+    queryParams: QueryPageParams,
   ): Promise<PageModel<Tx>> {
     const basePath = 'transactions';
     const queryString = buildQueryPath({
@@ -688,10 +688,10 @@ export class SpvWalletClient {
    *
    * @param {UtxoFilter} conditions   Key value object to use to filter the documents
    * @param {Metadata} metadata       Key value object to use to filter the documents by the metadata
-   * @param {QueryParams} queryParams Database query parameters for page, page size and sorting
+   * @param {QueryPageParams} queryParams Database query parameters for page, page size and sorting
    * @return {PageModel<Utxo>}
    */
-  async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryParams): Promise<PageModel<Utxo>> {
+  async GetUtxos(conditions: UtxoFilter, metadata: Metadata, queryParams: QueryPageParams): Promise<PageModel<Utxo>> {
     const basePath = 'utxos';
     const queryString = buildQueryPath({
       filter: conditions,

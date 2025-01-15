@@ -15,14 +15,14 @@ describe('buildQueryPath', () => {
       },
       page: {
         page: 1,
-        pageSize: 1,
-        sortDirection: 'desc',
+        size: 1,
+        sort: 'desc',
       },
     };
 
     const result = buildQueryPath(options);
     expect(result).toBe(
-      '?page=1&pageSize=1&sortDirection=desc&blockHeight=859864&metadata%5Bdomain%5D=domain.example.com&metadata%5Bp2p_tx_metadata%5D%5Bnote%5D=test&metadata%5Bp2p_tx_metadata%5D%5Bsender%5D=14816%40domain.example.com',
+      '?page=1&size=1&sort=desc&blockHeight=859864&metadata%5Bdomain%5D=domain.example.com&metadata%5Bp2p_tx_metadata%5D%5Bnote%5D=test&metadata%5Bp2p_tx_metadata%5D%5Bsender%5D=14816%40domain.example.com',
     );
   });
 
@@ -34,13 +34,13 @@ describe('buildQueryPath', () => {
       metadata: {},
       page: {
         page: 1,
-        pageSize: 10,
-        sortDirection: 'asc',
+        size: 10,
+        sort: 'asc',
       },
     };
 
     const result = buildQueryPath(options);
-    expect(result).toBe('?page=1&pageSize=10&sortDirection=asc&blockHeight=123456');
+    expect(result).toBe('?page=1&size=10&sort=asc&blockHeight=123456');
   });
 
   test('should build query string with page and metadata, no filter', () => {
@@ -52,12 +52,12 @@ describe('buildQueryPath', () => {
       },
       page: {
         page: 2,
-        pageSize: 5,
+        size: 5,
       },
     };
 
     const result = buildQueryPath(options);
-    expect(result).toBe('?page=2&pageSize=5&metadata%5Bdomain%5D=example.com&metadata%5Btype%5D=payment');
+    expect(result).toBe('?page=2&size=5&metadata%5Bdomain%5D=example.com&metadata%5Btype%5D=payment');
   });
 
   test('should build query string with only page', () => {
@@ -66,13 +66,13 @@ describe('buildQueryPath', () => {
       metadata: {},
       page: {
         page: 3,
-        pageSize: 15,
-        sortDirection: 'asc',
+        size: 15,
+        sort: 'asc',
       },
     };
 
     const result = buildQueryPath(options);
-    expect(result).toBe('?page=3&pageSize=15&sortDirection=asc');
+    expect(result).toBe('?page=3&size=15&sort=asc');
   });
 
   test('should build query string with filter and metadata, no page', () => {
@@ -236,8 +236,8 @@ describe('buildQueryPath with all supported filters', () => {
       },
       page: {
         page: 1,
-        pageSize: 1,
-        sortDirection: 'desc',
+        size: 1,
+        sort: 'desc',
       },
     };
 
@@ -258,8 +258,8 @@ describe('buildQueryPath with all supported filters', () => {
       },
       page: {
         page: 1,
-        pageSize: 1,
-        sortDirection: 'desc',
+        size: 1,
+        sort: 'desc',
       },
     };
 
@@ -268,7 +268,7 @@ describe('buildQueryPath with all supported filters', () => {
     const p = new URLSearchParams(result);
     expect(p.getAll('metadata[key1][]')).toEqual(['a', 'b', 'c']);
     expect(result).toBe(
-      '?page=1&pageSize=1&sortDirection=desc&blockHeight=859864&metadata%5Bkey1%5D%5B%5D=a&metadata%5Bkey1%5D%5B%5D=b&metadata%5Bkey1%5D%5B%5D=c',
+      '?page=1&size=1&sort=desc&blockHeight=859864&metadata%5Bkey1%5D%5B%5D=a&metadata%5Bkey1%5D%5B%5D=b&metadata%5Bkey1%5D%5B%5D=c',
     );
   });
 
@@ -283,8 +283,8 @@ describe('buildQueryPath with all supported filters', () => {
       },
       page: {
         page: 1,
-        pageSize: 1,
-        sortDirection: 'desc',
+        size: 1,
+        sort: 'desc',
       },
     };
 
@@ -308,8 +308,8 @@ describe('buildQueryPath with all supported filters', () => {
       },
       page: {
         page: 1,
-        pageSize: 1,
-        sortDirection: 'desc',
+        size: 1,
+        sort: 'desc',
       },
     };
 
@@ -319,7 +319,7 @@ describe('buildQueryPath with all supported filters', () => {
     expect(p.getAll('metadata[key1][]')).toEqual(['a', 'b', 'c']);
     expect(p.getAll('metadata[key2][key3][]')).toEqual(['x', 'y', 'z']);
     expect(result).toBe(
-      '?page=1&pageSize=1&sortDirection=desc&blockHeight=859864&metadata%5Bkey1%5D%5B%5D=a&metadata%5Bkey1%5D%5B%5D=b&metadata%5Bkey1%5D%5B%5D=c&metadata%5Bkey2%5D%5Bkey3%5D%5B%5D=x&metadata%5Bkey2%5D%5Bkey3%5D%5B%5D=y&metadata%5Bkey2%5D%5Bkey3%5D%5B%5D=z',
+      '?page=1&size=1&sort=desc&blockHeight=859864&metadata%5Bkey1%5D%5B%5D=a&metadata%5Bkey1%5D%5B%5D=b&metadata%5Bkey1%5D%5B%5D=c&metadata%5Bkey2%5D%5Bkey3%5D%5B%5D=x&metadata%5Bkey2%5D%5Bkey3%5D%5B%5D=y&metadata%5Bkey2%5D%5Bkey3%5D%5B%5D=z',
     );
   });
 });
