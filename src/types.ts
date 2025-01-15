@@ -556,16 +556,6 @@ export interface AccessKeyWithSigning extends OptionalAdminKey {
 export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning | AdminKey;
 
 /**
- * Query params to limit and order database list results.
- */
-export interface QueryParams {
-  page?: number;
-  pageSize?: number;
-  orderByField?: string;
-  sortDirection?: string;
-}
-
-/**
  * Query page params to limit and order database list results.
  */
 export interface QueryPageParams {

@@ -1,5 +1,5 @@
 import { AccessKeyFilter, ContactFilter, ModelFilter, TransactionFilter, UtxoFilter, XpubFilter } from '../filters';
-import { Metadata, QueryParams as Page } from '../types';
+import { Metadata, QueryPageParams as Page } from '../types';
 
 export interface BuildPathOptions {
   filter: ModelFilter | TransactionFilter | UtxoFilter | XpubFilter | AccessKeyFilter | ContactFilter;

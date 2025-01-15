@@ -1,7 +1,7 @@
 import { SpvWalletClient } from '../client';
 import { generateKeys } from '../utils/keys';
 import { TransactionFilter } from '../filters';
-import { QueryParams } from '../types';
+import { QueryPageParams } from '../types';
 
 const CLIENT_ONE_URL_ENV_VAR = 'CLIENT_ONE_URL';
 const CLIENT_TWO_URL_ENV_VAR = 'CLIENT_TWO_URL';
@@ -113,7 +113,7 @@ export const getTransactions = async (fromInstance: string, fromXPriv: string) =
 
   const metadata = new Map<string, any>();
   const conditions: TransactionFilter = {};
-  const queryParams: QueryParams = {};
+  const queryParams: QueryPageParams = {};
 
   const txs = await client.GetTransactions(conditions, metadata, queryParams);
 
