@@ -72,7 +72,7 @@ describe('buildQueryPath', () => {
     };
 
     const result = buildQueryPath(options);
-    expect(result).toBe('?page=3&size=15&sortDirection=asc');
+    expect(result).toBe('?page=3&size=15&sort=asc');
   });
 
   test('should build query string with filter and metadata, no page', () => {
@@ -268,7 +268,7 @@ describe('buildQueryPath with all supported filters', () => {
     const p = new URLSearchParams(result);
     expect(p.getAll('metadata[key1][]')).toEqual(['a', 'b', 'c']);
     expect(result).toBe(
-      '?page=1&soze=1&sort=desc&blockHeight=859864&metadata%5Bkey1%5D%5B%5D=a&metadata%5Bkey1%5D%5B%5D=b&metadata%5Bkey1%5D%5B%5D=c',
+      '?page=1&size=1&sort=desc&blockHeight=859864&metadata%5Bkey1%5D%5B%5D=a&metadata%5Bkey1%5D%5B%5D=b&metadata%5Bkey1%5D%5B%5D=c',
     );
   });
 
