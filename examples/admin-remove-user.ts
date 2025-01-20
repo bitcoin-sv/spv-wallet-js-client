@@ -1,5 +1,5 @@
 import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
-import { exampleAdminKey, examplePaymail } from './example-keys.js';
+import { exampleAdminKey } from './example-keys.js';
 import { errMessage } from './utils.js';
 
 const server = 'http://localhost:3003';
@@ -13,4 +13,4 @@ const adminClient = new SpvWalletClient(server, {
   adminKey: exampleAdminKey,
 });
 
-await adminClient.AdminDeletePaymail(examplePaymail, examplePaymail);
+await adminClient.AdminDeletePaymail('d43ed481ba08aae1db02d880ebefe962f9796168387bb293a95024cb02b953ef');
