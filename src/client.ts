@@ -366,11 +366,10 @@ export class SpvWalletClient {
    * Admin only: Delete a paymail
    *
    * @param {string} id Paymail address ID
-   * @param {string} address Paymail address
    * @return void
    */
-  async AdminDeletePaymail(id: string, address: string): Promise<void> {
-    await this.http.adminRequest(`admin/paymails/${id}`, 'DELETE', { address });
+  async AdminDeletePaymail(id: string): Promise<void> {
+    await this.http.adminRequest(`admin/paymails/${id}`, 'DELETE');
   }
 
   /**
