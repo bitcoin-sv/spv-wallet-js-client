@@ -366,7 +366,6 @@ export class SpvWalletClient {
    * Admin only: Delete a paymail
    *
    * @param {string} id Paymail address ID
-   * @param {string} address Paymail address
    * @return void
    */
   async AdminDeletePaymail(id: string): Promise<void> {
