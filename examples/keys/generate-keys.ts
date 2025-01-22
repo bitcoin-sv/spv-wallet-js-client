@@ -1,4 +1,4 @@
-import { generateKeys } from '../dist/typescript-npm-package.cjs.js';
+import { generateKeys } from '../../dist/typescript-npm-package.cjs.js';
 
 const keys = generateKeys();
 const exampleXPriv = keys.xPriv();

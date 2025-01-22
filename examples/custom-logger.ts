@@ -1,11 +1,11 @@
-import { SpvWalletClient, generateKeys } from '../dist/typescript-npm-package.cjs.js';
+import { UserAPI, generateKeys } from '../dist/typescript-npm-package.cjs.js';
 
 const server = 'http://localhost:3003';
 
 const newXPub = generateKeys().xPub.toString();
 
 // Option 1 - control console log level
-const clientWithCustomLogLevel = new SpvWalletClient(
+const clientWithCustomLogLevel = new UserAPI(
   server,
   {
     xPub: newXPub,
@@ -17,7 +17,7 @@ const clientWithCustomLogLevel = new SpvWalletClient(
 );
 
 //this will log that the request is being made
-await clientWithCustomLogLevel.GetTransactions({}, {}, {});
+await clientWithCustomLogLevel.transactions({}, {}, {});
 
 // Option 2 - provide your custom logger
 class CustomLogger {
@@ -29,11 +29,11 @@ class CustomLogger {
   error(msg: string, ...args: any[]) {}
 }
 
-const clientWithCustomLogger = new SpvWalletClient(
+const clientWithCustomLogger = new UserAPI(
   server,
   {
     xPub: newXPub,
   },
   new CustomLogger(),
 );
-await clientWithCustomLogger.GetTransactions({}, {}, {});
+await clientWithCustomLogger.transactions({}, {}, {});
