@@ -1,5 +1,5 @@
 import { SpvWalletClient, WebhookManager, WebhookHttpHandler, RawEvent } from '../dist/typescript-npm-package.cjs.js';
-import { exampleAdminKey } from './keys/example-keys.js';
+import { exampleAdminKey } from './example-keys.js';
 import { errMessage } from './utils.js';
 import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
 

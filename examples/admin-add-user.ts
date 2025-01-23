@@ -1,6 +1,6 @@
-import { AdminAPI } from '../../dist/typescript-npm-package.cjs.js';
-import { exampleAdminKey, exampleXPub, examplePaymail } from '../keys/example-keys.js';
-import { errMessage } from '../utils.js';
+import { SPVWalletAdminAPI } from '../dist/typescript-npm-package.cjs.js';
+import { exampleAdminKey, exampleXPub, examplePaymail } from './example-keys.js';
+import { errMessage } from './utils.js';
 
 const server = 'http://localhost:3003';
 
@@ -9,7 +9,7 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const adminClient = new AdminAPI(server, exampleAdminKey);
+const adminClient = new SPVWalletAdminAPI(server, exampleAdminKey);
 
 const newXPubRes = await adminClient.createXPub(exampleXPub, { some_metadata: 'example' });
 console.log('AdminNewXpub response:', newXPubRes);

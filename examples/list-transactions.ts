@@ -1,16 +1,16 @@
-import { UserAPI } from '../../dist/typescript-npm-package.cjs.js';
-import { exampleXPriv, exampleXPub } from '../keys/example-keys.js';
-import { errMessage } from '../utils.js';
+import { SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPub } from './example-keys.js';
+import { errMessage } from './utils.js';
 
 const server = 'http://localhost:3003';
 
-if (!exampleXPriv) {
-  console.log(errMessage('xPriv'));
+if (!exampleXPub) {
+  console.log(errMessage('xPub'));
   process.exit(1);
 }
 
-const client = new UserAPI(server, {
-  xPriv: exampleXPriv,
+const client = new SPVWalletUserAPI(server, {
+  
   xPub: exampleXPub,
 });
 

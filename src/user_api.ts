@@ -14,6 +14,7 @@ import {
     Utxo,
     MerkleRootsRepository,
     QueryPageParams,
+    ClientOptions,
   } from './types';
   
   import { AccessKeyFilter, ContactFilter, PaymailFilter, TransactionFilter, UtxoFilter } from './filters';
@@ -34,23 +35,23 @@ import {
   import { DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD, generateTotpForContact, validateTotpForContact } from './totp';
   
   /**
-   * UserAPI class for handling user-specific operations
+   * SPVWalletUserAPI class for handling user-specific operations
    *
-   * @class UserAPI
+   * @class SPVWalletUserAPI
    */
-  export class UserAPI {
+  export class SPVWalletUserAPI {
     private logger: Logger;
     private http: HttpClient;
     private xPriv?: HD;
   
     /**
-     * Creates a new instance of UserAPI
+     * Creates a new instance of SPVWalletUserAPI
      *
      * @param {string} serverUrl - The base URL of the SPV Wallet server
-     * @param {any} options - Configuration options including xPub, xPriv, or accessKey
+     * @param {ClientOptions} options - Configuration options including xPub, xPriv, or accessKey
      * @param {LoggerConfig} loggerConfig - Logger configuration (optional)
      */
-    constructor(serverUrl: string, options: any, loggerConfig: LoggerConfig = defaultLogger) {
+    constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
       serverUrl = this.ensureSuffix(serverUrl, '/api/v1');
       this.logger = makeLogger(loggerConfig);
       this.http = new HttpClient(this.logger, serverUrl, options.xPub || options.xPriv || options.accessKey);

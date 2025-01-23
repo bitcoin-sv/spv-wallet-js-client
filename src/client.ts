@@ -1,6 +1,6 @@
 import {
   AccessKey,
-  ClientOptions,
+  ClientOptionsOld,
   Contact,
   DraftTransactionConfig,
   DraftTx,
@@ -64,7 +64,7 @@ export class SpvWalletClient {
 
   private xPriv?: HD;
 
-  constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
+  constructor(serverUrl: string, options: ClientOptionsOld, loggerConfig: LoggerConfig = defaultLogger) {
     serverUrl = this.ensureSuffix(serverUrl, '/api/v1');
 
     this.logger = makeLogger(loggerConfig);
@@ -79,7 +79,7 @@ export class SpvWalletClient {
     return serverUrl.endsWith(suffix) ? serverUrl : serverUrl + suffix;
   }
 
-  private makeRequester(options: ClientOptions, serverUrl: string): HttpClient {
+  private makeRequester(options: ClientOptionsOld, serverUrl: string): HttpClient {
     if (options.adminKey) {
       this.logger.info('Using adminKey to sign admin requests');
     }

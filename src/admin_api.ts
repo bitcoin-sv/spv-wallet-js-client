@@ -28,19 +28,19 @@ import {
   import { buildQueryPath } from './query/query-builder';
   
   /**
-   * AdminAPI class for handling administrative operations
+   * SPVWalletAdminAPI class for handling administrative operations
    *
-   * @class AdminAPI
+   * @class SPVWalletAdminAPI
    */
-  export class AdminAPI {
+  export class SPVWalletAdminAPI {
     private logger: Logger;
     private http: HttpClient;
   
     /**
-     * Creates a new instance of AdminAPI
+     * Creates a new instance of SPVWalletAdminAPI
      *
      * @param {string} serverUrl - The base URL of the SPV Wallet server
-     * @param {string} adminKey - Admin authentication key
+     * @param {string} adminKey - Admin xPriv key
      * @param {LoggerConfig} loggerConfig - Logger configuration (optional)
      */
     constructor(serverUrl: string, adminKey: string, loggerConfig: LoggerConfig = defaultLogger) {

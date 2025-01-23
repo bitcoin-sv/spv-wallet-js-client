@@ -1,14 +1,13 @@
-import { UserAPI, generateKeys } from '../dist/typescript-npm-package.cjs.js';
+import { SPVWalletUserAPI, generateKeys } from '../dist/typescript-npm-package.cjs.js';
 
 const server = 'http://localhost:3003';
 
-const newXPub = generateKeys().xPub.toString();
-
+const newXpriv = generateKeys().xPriv();
 // Option 1 - control console log level
-const clientWithCustomLogLevel = new UserAPI(
+const clientWithCustomLogLevel = new SPVWalletUserAPI(
   server,
   {
-    xPub: newXPub,
+    xPriv: newXpriv,
   },
   {
     //default level is 'info'
@@ -29,10 +28,10 @@ class CustomLogger {
   error(msg: string, ...args: any[]) {}
 }
 
-const clientWithCustomLogger = new UserAPI(
+const clientWithCustomLogger = new SPVWalletUserAPI(
   server,
   {
-    xPub: newXPub,
+    xPriv: newXpriv,
   },
   new CustomLogger(),
 );

@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
 import { NewContact, SpvWalletClient } from './index';
-import { ClientOptions, DraftTx, DraftTransactionConfig } from './types';
+import { ClientOptionsOld, DraftTx, DraftTransactionConfig } from './types';
 
 const xPrivString =
   'xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A';
@@ -37,7 +37,7 @@ afterAll(() => {
 
 describe('SPVWalletClient class', () => {
   test('instantiate with options', () => {
-    const options: ClientOptions = {
+    const options: ClientOptionsOld = {
       adminKey: xPrivString,
       xPriv: xPrivString,
     };
@@ -47,7 +47,7 @@ describe('SPVWalletClient class', () => {
 });
 
 describe('SPVWalletClient routing', () => {
-  const options: ClientOptions = {
+  const options: ClientOptionsOld = {
     xPriv: testClient.xPrivString,
   };
   const spvWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });
@@ -92,7 +92,7 @@ describe('SPVWalletClient routing', () => {
 });
 
 describe('SPVWalletClient admin routing', () => {
-  const options: ClientOptions = {
+  const options: ClientOptionsOld = {
     adminKey: testClient.xPrivString,
   };
   const adminSPVWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });

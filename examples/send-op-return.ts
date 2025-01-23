@@ -1,6 +1,6 @@
-import { DraftTransactionConfig, OpReturn, UserAPI } from '../../dist/typescript-npm-package.cjs.js';
-import { exampleXPriv, exampleXPub } from '../keys/example-keys.js';
-import { errMessage } from '../utils.js';
+import { DraftTransactionConfig, OpReturn, SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPriv } from './example-keys.js';
+import { errMessage } from './utils.js';
 
 const server = 'http://localhost:3003';
 
@@ -9,9 +9,8 @@ if (!exampleXPriv) {
   process.exit(1);
 }
 
-const client = new UserAPI(server, {
+const client = new SPVWalletUserAPI(server, {
   xPriv: exampleXPriv,
-  xPub : exampleXPub,
 });
 
 const opReturn: OpReturn = {

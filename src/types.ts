@@ -541,19 +541,39 @@ export interface Webhook {
 
 export interface OptionalAdminKey extends Partial<AdminKey> {}
 
-export interface XpubWithoutSigning extends OptionalAdminKey {
+export interface XpubWithoutSigningOld extends OptionalAdminKey {
   xPub: string;
 }
 
-export interface XprivWithSigning extends OptionalAdminKey {
+export interface XprivWithSigningOld extends OptionalAdminKey {
   xPriv: string;
 }
 
-export interface AccessKeyWithSigning extends OptionalAdminKey {
+export interface AccessKeyWithSigningOld extends OptionalAdminKey {
   accessKey: string;
 }
 
-export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning | AdminKey;
+export type ClientOptionsOld = XpubWithoutSigningOld | XprivWithSigningOld | AccessKeyWithSigningOld | AdminKey;
+
+export interface XpubWithoutSigning {
+  xPriv?: never;
+  xPub: string;
+  accessKey?: never;
+}
+
+export interface XprivWithSigning {
+  xPriv?: string;
+  xPub?: never;
+  accessKey?: never;
+}
+
+export interface AccessKeyWithSigning {
+  xPriv?: never;
+  xPub?: never;
+  accessKey: string;
+}
+
+export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning;
 
 /**
  * Query page params to limit and order database list results.

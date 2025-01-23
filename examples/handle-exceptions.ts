@@ -1,9 +1,14 @@
-import { ErrorNoAdminKey, ErrorResponse, AdminAPI, SpvWalletError } from '../dist/typescript-npm-package.cjs.js';
-import { exampleXPub } from './keys/example-keys.js';
+import {
+  ErrorNoAdminKey,
+  ErrorResponse,
+  SPVWalletAdminAPI,
+  SpvWalletError,
+} from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPriv } from './example-keys.js';
 const server = 'http://localhost:3003';
 
 try {
-  const client = new AdminAPI(server, exampleXPub);
+  const client = new SPVWalletAdminAPI(server, exampleXPriv);
 
   //we're trying to make an admin request without adminKey
   //the following line will throw ErrorResponse

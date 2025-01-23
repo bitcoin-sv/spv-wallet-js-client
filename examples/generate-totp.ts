@@ -1,4 +1,4 @@
-import { UserAPI } from '../../dist/typescript-npm-package.cjs.js';
+import { SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
 
 const server = 'http://localhost:3003';
 
@@ -8,7 +8,7 @@ const aliceXPriv =
 //pubKey - PKI can be obtained from the contact's paymail capability
 const bobPKI = '03a48e13dc598dce5fda9b14ea13f32d5dbc4e8d8a34447dda84f9f4c457d57fe7';
 
-const client = new UserAPI(server, {
+const client = new SPVWalletUserAPI(server, {
   xPriv: aliceXPriv,
 });
 
