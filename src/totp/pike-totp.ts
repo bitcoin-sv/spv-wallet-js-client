@@ -38,7 +38,7 @@ export const generateTotpForContact = (
  * Validates a TOTP for a given contact
  *
  * @param clientXPriv - The client xpriv
- * @param contact - The Contact
+ * @param generatorContact - The Contact of the person who generated the TOTP
  * @param passcode - The TOTP passcode to validate
  * @param requesterPaymail - The paymail of the requester
  * @param period - The TOTP period (default: 30)
@@ -47,14 +47,14 @@ export const generateTotpForContact = (
  */
 export const validateTotpForContact = (
   clientXPriv: HD,
-  contact: Contact,
+  generatorContact: Contact,  // Contact of the person who generated the TOTP
   passcode: string,
-  requesterPaymail: string,
+  generatorPaymail: string,  // Paymail of the person who generated the TOTP
   period: number = DEFAULT_TOTP_PERIOD,
   digits: number = DEFAULT_TOTP_DIGITS,
 ): boolean => {
-  const sharedSecret = makeSharedSecret(contact, clientXPriv);
-  const secret = directedSecret(sharedSecret, requesterPaymail);
+  const sharedSecret = makeSharedSecret(generatorContact, clientXPriv);
+  const secret = directedSecret(sharedSecret, generatorPaymail);
 
   return TOTP.validate(secret, passcode, getTotpOps(period, digits));
 };
