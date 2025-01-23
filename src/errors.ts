@@ -1,6 +1,6 @@
 import { TransactionInput } from '@bsv/sdk';
 import { Logger } from './logger';
-import { ClientOptionsOld, TxInput } from './types';
+import { ClientOptionsOld, ClientOptions, TxInput } from './types';
 
 export class SpvWalletError extends Error {
   constructor(message: string) {
@@ -13,7 +13,7 @@ export class SpvWalletError extends Error {
 }
 
 export class ErrorInvalidOptions extends SpvWalletError {
-  constructor(logger: Logger, options: ClientOptionsOld) {
+  constructor(logger: Logger, options: ClientOptionsOld | ClientOptions) {
     super('Invalid options. None of xPub, xPriv, accessKey nor adminKey is set');
     logger.debug('Invalid options: ', options);
   }

@@ -30,8 +30,9 @@ import {
     ErrorSyncMerkleRootsTimeout,
     ErrorTxIdsDontMatchToDraft,
     ErrorWrongTOTP,
+    ErrorInvalidOptions,
   } from './errors';
-  import { HD, P2PKH, Transaction } from '@bsv/sdk';
+  import { HD, P2PKH, Transaction, PrivateKey } from '@bsv/sdk';
   import { DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD, generateTotpForContact, validateTotpForContact } from './totp';
   
   /**
@@ -54,15 +55,32 @@ import {
     constructor(serverUrl: string, options: ClientOptions, loggerConfig: LoggerConfig = defaultLogger) {
       serverUrl = this.ensureSuffix(serverUrl, '/api/v1');
       this.logger = makeLogger(loggerConfig);
-      this.http = new HttpClient(this.logger, serverUrl, options.xPub || options.xPriv || options.accessKey);
-  
-      if (options.xPriv) {
-        this.xPriv = new HD().fromString(options.xPriv);
-      }
+      this.http = this.makeRequester(options, serverUrl);
     }
   
     private ensureSuffix(serverUrl: string, suffix: string): string {
       return serverUrl.endsWith(suffix) ? serverUrl : serverUrl + suffix;
+    }
+  
+    private makeRequester(options: ClientOptions, serverUrl: string): HttpClient {
+      if (options.xPub) {
+        this.logger.info('Using XPub. SendToRecipients function will not be available.');
+        return new HttpClient(this.logger, serverUrl, options.xPub);
+      }
+  
+      if (options.xPriv) {
+        this.logger.info('Using xPriv to sign requests');
+        this.xPriv = new HD().fromString(options.xPriv);
+        return new HttpClient(this.logger, serverUrl, this.xPriv);
+      }
+  
+      if (options.accessKey) {
+        this.logger.info('Using accessKey to sign requests. SendToRecipients will not be available.');
+        const signingKey = PrivateKey.fromString(options.accessKey, 'hex');
+        return new HttpClient(this.logger, serverUrl, signingKey);
+      }
+  
+      throw new ErrorInvalidOptions(this.logger, options);
     }
   
     /**
