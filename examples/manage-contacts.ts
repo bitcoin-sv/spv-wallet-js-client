@@ -114,7 +114,7 @@ async function main() {
   try {
     console.log('We assume that the users: Alice and Bob are already registered.\n');
     console.log("If they're not, please uncomment the setupUsers() call below.");
-    await setupUsers();
+    // await setupUsers();
     const verificationResults = await verificationFlow();
     await finalizeAndCleanup(verificationResults);
   } catch (error) {
