@@ -11,7 +11,7 @@ const CONFIG = {
   TOTP_PERIOD: 1200,
   server: 'http://localhost:3003',
   // Replace this with your own domain - where you host your paymail server.
-  paymailDomain: 'wojtek.test.4chain.space'
+  paymailDomain: 'example.com'
 };
 
 if (!CONFIG.paymailDomain || CONFIG.paymailDomain === 'example.com') {
