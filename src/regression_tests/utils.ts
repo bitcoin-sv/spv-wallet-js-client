@@ -88,14 +88,9 @@ export const createUser = async (paymail: string, paymailDomain: string, instanc
 };
 
 // removeRegisteredPaymail soft deletes paymail from the SPV Wallet.
-export const removeRegisteredPaymail = async (
-  paymail: string,
-  paymailId: string,
-  instanceURL: string,
-  adminXPriv: string,
-) => {
+export const removeRegisteredPaymail = async (paymailId: string, instanceURL: string, adminXPriv: string) => {
   const adminClient = new SpvWalletClient(instanceURL, { adminKey: adminXPriv, xPriv: adminXPriv });
-  await adminClient.AdminDeletePaymail(paymailId, paymail);
+  await adminClient.AdminDeletePaymail(paymailId);
 };
 
 // getBalance retrieves the balance from the SPV Wallet.
