@@ -366,11 +366,10 @@ export class SpvWalletClient {
    * Admin only: Delete a paymail
    *
    * @param {string} id Paymail address ID
-   * @param {string} address Paymail address
    * @return void
    */
-  async AdminDeletePaymail(id: string, address: string): Promise<void> {
-    await this.http.adminRequest(`admin/paymails/${id}`, 'DELETE', { address });
+  async AdminDeletePaymail(id: string): Promise<void> {
+    await this.http.adminRequest(`admin/paymails/${id}`, 'DELETE');
   }
 
   /**
@@ -873,24 +872,25 @@ export class SpvWalletClient {
   /**
    * Validates a TOTP for a given contact
    *
+   * @param generatorContact - The Contact that generated the TOTP
    * @param passcode - The TOTP passcode to validate
-   * @param requesterPaymail - The paymail of the requester
+   * @param validatorPaymail - The paymail of the validator
    * @param period - The TOTP period (default: 30)
    * @param digits - The number of TOTP digits (default: 2)
    * @returns A boolean indicating whether the TOTP is valid
    * @throws {ErrorNoXPrivToValidateTOTP} If the xPrivKey is not set
    */
   ValidateTotpForContact(
-    contact: Contact,
+    generatorContact: Contact,
     passcode: string,
-    requesterPaymail: string,
+    validatorPaymail: string,
     period: number = DEFAULT_TOTP_PERIOD,
     digits: number = DEFAULT_TOTP_DIGITS,
   ): boolean {
     if (!this.xPrivKey) {
       throw new ErrorNoXPrivToValidateTOTP();
     }
-    return validateTotpForContact(this.xPrivKey, contact, passcode, requesterPaymail, period, digits);
+    return validateTotpForContact(this.xPrivKey, generatorContact, passcode, validatorPaymail, period, digits);
   }
 
   /**
