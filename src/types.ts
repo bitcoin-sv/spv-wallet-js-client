@@ -56,7 +56,7 @@ export interface MerkleRootsRepository {
     "metadata": [
       {
         "k": "user_agent",
-        "v": "SpvWalletClient v1.0.0"
+        "v": "SPVWalletUserAPI v1.0.0"
       },
     ],
     "current_balance": 99848517,
@@ -153,7 +153,7 @@ export interface Metadata {
     "metadata": [
       {
         "k": "user_agent",
-        "v": "SpvWalletClient v1.0.0"
+        "v": "SPVWalletUserAPI v1.0.0"
       },
     ],
     "currentBalance": 99848517,

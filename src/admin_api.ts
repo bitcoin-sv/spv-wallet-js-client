@@ -33,8 +33,8 @@ import {
    * @class SPVWalletAdminAPI
    */
   export class SPVWalletAdminAPI {
-    private logger: Logger;
-    private http: HttpClient;
+    logger: Logger;
+    http: HttpClient;
   
     /**
      * Creates a new instance of SPVWalletAdminAPI

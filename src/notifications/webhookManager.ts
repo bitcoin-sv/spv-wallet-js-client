@@ -1,4 +1,4 @@
-import { SpvWalletClient } from '../client';
+import { SPVWalletAdminAPI } from './../admin_api';
 import { Events } from '../types';
 import { EventsMap } from './eventsMap';
 import { EventHandler, RawEvent, WebhookHttpHandler, WebhookOptions } from './interface';
@@ -6,10 +6,10 @@ import { EventHandler, RawEvent, WebhookHttpHandler, WebhookOptions } from './in
 export class WebhookManager {
   public url: string;
   public options: WebhookOptions;
-  public subscriber: SpvWalletClient;
+  public subscriber: SPVWalletAdminAPI;
   public handlers: EventsMap;
 
-  constructor(subscriber: SpvWalletClient, url: string, options: WebhookOptions = {}) {
+  constructor(subscriber: SPVWalletAdminAPI, url: string, options: WebhookOptions = {}) {
     this.url = url;
     this.subscriber = subscriber;
     this.options = {
@@ -20,11 +20,11 @@ export class WebhookManager {
   }
 
   subscribe() {
-    return this.subscriber.AdminSubscribeWebhook(this.url, this.options.tokenHeader!, this.options.tokenValue!);
+    return this.subscriber.subscribeWebhook(this.url, this.options.tokenHeader!, this.options.tokenValue!);
   }
 
   unsubscribe() {
-    return this.subscriber.AdminDeleteWebhook(this.url);
+    return this.subscriber.unsubscribeWebhook(this.url);
   }
 
   async handleIncomingEvents(httpHandler: WebhookHttpHandler) {

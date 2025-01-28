@@ -1,5 +1,5 @@
+import { SPVWalletUserAPI } from './user_api';
 import fetchMock from 'jest-fetch-mock';
-import { SpvWalletClient } from './client';
 import { MerkleRoot } from './types';
 import { ErrorStaleLastEvaluatedKey, ErrorSyncMerkleRootsTimeout } from './errors';
 import { mockedSPVWalletData, server } from './__tests__/fixtures/spv-wallet';
@@ -29,7 +29,7 @@ describe('Test SyncMerkleRoots', () => {
       mockMerkleRootsAPIResponseNormal();
 
       // given
-      const client = new SpvWalletClient(server, {
+      const client = new SPVWalletUserAPI(server, {
         xPriv:
           'xprv9s21ZrQH143K3axKPtYBDKsrAvN3J85z6nZuW5ihYK8JpDWfqHdjswvUnbXzUpMBne1WD6FQmTzymB4Pt3u3UVSauxzq5PswBWr3vYtowmW',
       });
@@ -37,7 +37,7 @@ describe('Test SyncMerkleRoots', () => {
       const repository = createRepository(clientDb);
 
       // when
-      await client.SyncMerkleRoots(repository);
+      await client.syncMerkleRoots(repository);
 
       //then
       expect(clientDb.length).toBe(mockedSPVWalletData.length);
@@ -54,7 +54,7 @@ describe('Test SyncMerkleRoots', () => {
       mockMerkleRootsAPIResponseNormal();
 
       // given
-      const client = new SpvWalletClient(server, {
+      const client = new SPVWalletUserAPI(server, {
         xPriv:
           'xprv9s21ZrQH143K3axKPtYBDKsrAvN3J85z6nZuW5ihYK8JpDWfqHdjswvUnbXzUpMBne1WD6FQmTzymB4Pt3u3UVSauxzq5PswBWr3vYtowmW',
       });
@@ -75,7 +75,7 @@ describe('Test SyncMerkleRoots', () => {
       const repository = createRepository(clientDb);
 
       // when
-      await client.SyncMerkleRoots(repository);
+      await client.syncMerkleRoots(repository);
 
       //then
       expect(clientDb.length).toBe(mockedSPVWalletData.length);
@@ -94,7 +94,7 @@ describe('Test SyncMerkleRoots', () => {
       mockMerkleRootsAPIResponseDelayed();
 
       // given
-      const client = new SpvWalletClient(server, {
+      const client = new SPVWalletUserAPI(server, {
         xPriv:
           'xprv9s21ZrQH143K3axKPtYBDKsrAvN3J85z6nZuW5ihYK8JpDWfqHdjswvUnbXzUpMBne1WD6FQmTzymB4Pt3u3UVSauxzq5PswBWr3vYtowmW',
       });
@@ -103,7 +103,7 @@ describe('Test SyncMerkleRoots', () => {
       const repository = createRepository(clientDb);
 
       //then
-      await expect(client.SyncMerkleRoots(repository, 10)).rejects.toThrow(new ErrorSyncMerkleRootsTimeout());
+      await expect(client.syncMerkleRoots(repository, 10)).rejects.toThrow(new ErrorSyncMerkleRootsTimeout());
     });
 
     test('Should fail sync database due to last evaluated key being the same in the response', async () => {
@@ -111,7 +111,7 @@ describe('Test SyncMerkleRoots', () => {
       mockMerkleRootsAPIResponseStale();
 
       // given
-      const client = new SpvWalletClient(server, {
+      const client = new SPVWalletUserAPI(server, {
         xPriv:
           'xprv9s21ZrQH143K3axKPtYBDKsrAvN3J85z6nZuW5ihYK8JpDWfqHdjswvUnbXzUpMBne1WD6FQmTzymB4Pt3u3UVSauxzq5PswBWr3vYtowmW',
       });
@@ -119,7 +119,7 @@ describe('Test SyncMerkleRoots', () => {
       const repository = createRepository(clientDb);
 
       // when
-      const syncMerkleRoots = async () => await client.SyncMerkleRoots(repository);
+      const syncMerkleRoots = async () => await client.syncMerkleRoots(repository);
 
       //then
       await expect(syncMerkleRoots()).rejects.toThrow(new ErrorStaleLastEvaluatedKey());
