@@ -18,9 +18,8 @@ const webhookSuccessfullySubscribed = await adminClient.subscribeWebhook(
 );
 console.log('Webhook added:', webhookSuccessfullySubscribed);
 
-//TODO: Error missing route? - "message":"route not found"
-// const webhooks = await adminClient.getWebhooks();
-// console.log('Webhooks:', webhooks);
+const webhooks = await adminClient.getWebhooks();
+console.log('Webhooks:', webhooks);
 
 const webhookSuccessfullyUnsubscribed = await adminClient.unsubscribeWebhook('https://example.com');
 console.log('Webhook deleted:', webhookSuccessfullyUnsubscribed);
