@@ -8,7 +8,7 @@ import { exampleXPriv } from './example-keys.js';
 const server = 'http://localhost:3003';
 
 try {
-  const client = new SPVWalletAdminAPI(server, exampleXPriv);
+  const client = new SPVWalletAdminAPI(server, {adminKey : exampleXPriv});
 
   //we're trying to make an admin request without adminKey
   //the following line will throw ErrorResponse

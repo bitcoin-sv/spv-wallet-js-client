@@ -1,4 +1,4 @@
-import { SPVWalletAdminAPI } from './../admin_api';
+import { SPVWalletAdminAPI } from '../admin-api';
 import { Events } from '../types';
 import { EventsMap } from './eventsMap';
 import { EventHandler, RawEvent, WebhookHttpHandler, WebhookOptions } from './interface';

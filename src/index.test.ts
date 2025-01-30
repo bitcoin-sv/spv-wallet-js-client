@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
 import { NewContact, SPVWalletUserAPI, SPVWalletAdminAPI } from './index';
-import { ClientOptions, DraftTx, DraftTransactionConfig } from './types';
+import { ClientOptions, AdminClientOptions, DraftTx, DraftTransactionConfig } from './types';
 
 const xPrivString =
   'xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A';
@@ -91,10 +91,10 @@ describe('SPVWallet user routing', () => {
 });
 
 describe('SPVWallet admin routing', () => {
-  const options = {
+  const options : AdminClientOptions = {
     adminKey: testClient.xPrivString,
   };
-  const adminClient = new SPVWalletAdminAPI(testClient.serverURL, options.adminKey, { level: 'error' });
+  const adminClient = new SPVWalletAdminAPI(testClient.serverURL, options, { level: 'error' });
 
   it.each`
     spvWalletMethod         | httpMethod  | path                              | act
@@ -111,7 +111,7 @@ describe('SPVWallet admin routing', () => {
     ${'paymail'}            | ${'get'}    | ${'admin/paymails/test'}          | ${() => adminClient.paymail('test')}
     ${'paymails'}           | ${'get'}    | ${'admin/paymails'}               | ${() => adminClient.paymails({}, {}, {})}
     ${'createPaymail'}      | ${'post'}   | ${'admin/paymails'}               | ${() => adminClient.createPaymail('', '', '', '', {})}
-    ${'deletePaymail'}      | ${'delete'} | ${'admin/paymails/test'}          | ${() => adminClient.deletePaymail('test', 'test')}
+    ${'deletePaymail'}      | ${'delete'} | ${'admin/paymails/test'}          | ${() => adminClient.deletePaymail('test')}
     ${'transactions'}       | ${'get'}    | ${'admin/transactions'}           | ${() => adminClient.transactions({}, {}, {})}
     ${'utxos'}              | ${'get'}    | ${'admin/utxos'}                  | ${() => adminClient.utxos({}, {}, {})}
     ${'xPubs'}              | ${'get'}    | ${'admin/users'}                  | ${() => adminClient.xPubs({}, {}, {})}

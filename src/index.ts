@@ -1,10 +1,9 @@
 import 'cross-fetch/polyfill';
 
 export * from './utils/keys';
-export * from './client';
 export * from './authentication';
 export * from './types';
 export * from './errors';
 export * from './notifications';
-export * from './admin_api';
-export * from './user_api'
+export * from './admin-api';
+export * from './user-api';

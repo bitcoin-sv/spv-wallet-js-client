@@ -9,7 +9,7 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const adminClient = new SPVWalletAdminAPI(server, exampleAdminKey);
+const adminClient = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
 
 const webhookSuccessfullySubscribed = await adminClient.subscribeWebhook(
   'https://example.com',
@@ -18,7 +18,7 @@ const webhookSuccessfullySubscribed = await adminClient.subscribeWebhook(
 );
 console.log('Webhook added:', webhookSuccessfullySubscribed);
 
-const webhooks = await adminClient.getWebhooks();
+const webhooks = await adminClient.webhooks();
 console.log('Webhooks:', webhooks);
 
 const webhookSuccessfullyUnsubscribed = await adminClient.unsubscribeWebhook('https://example.com');

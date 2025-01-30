@@ -9,7 +9,7 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const client = new SPVWalletAdminAPI(server, exampleAdminKey);
+const client = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
 
 const sharedConfig = await client.sharedConfig();
 

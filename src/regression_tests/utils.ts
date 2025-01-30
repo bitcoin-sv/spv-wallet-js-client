@@ -1,5 +1,5 @@
-import { SPVWalletAdminAPI } from './../admin_api';
-import { SPVWalletUserAPI } from '../user_api';
+import { SPVWalletAdminAPI } from '../admin-api';
+import { SPVWalletUserAPI } from '../user-api';
 import { generateKeys } from '../utils/keys';
 import { TransactionFilter } from '../filters';
 import { QueryPageParams } from '../types';
@@ -77,7 +77,7 @@ export const createUser = async (paymail: string, paymailDomain: string, instanc
     paymailId: '',
   };
 
-  const adminClient = new SPVWalletAdminAPI(instanceUrl, adminXPriv);
+  const adminClient = new SPVWalletAdminAPI(instanceUrl, { adminKey: adminXPriv });
 
   await adminClient.createXPub(user.xpub, { some_metadata: 'remove' });
   const paymailAddress = await adminClient.createPaymail(user.xpub, user.paymail, 'Regression tests', '', {});
@@ -87,14 +87,9 @@ export const createUser = async (paymail: string, paymailDomain: string, instanc
 };
 
 // removeRegisteredPaymail soft deletes paymail from the SPV Wallet.
-export const removeRegisteredPaymail = async (
-  paymail: string,
-  paymailId: string,
-  instanceURL: string,
-  adminXPriv: string,
-) => {
-  const adminClient = new SPVWalletAdminAPI(instanceURL, adminXPriv);
-  await adminClient.deletePaymail(paymailId, paymail);
+export const removeRegisteredPaymail = async (paymailId: string, instanceURL: string, adminXPriv: string) => {
+  const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
+  await adminClient.deletePaymail(paymailId);
 };
 
 // getBalance retrieves the balance from the SPV Wallet.

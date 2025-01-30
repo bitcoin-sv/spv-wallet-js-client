@@ -30,7 +30,7 @@ import {
     ErrorSyncMerkleRootsTimeout,
     ErrorTxIdsDontMatchToDraft,
     ErrorWrongTOTP,
-    ErrorInvalidOptions,
+    ErrorInvalidClientOptions,
   } from './errors';
   import { HD, P2PKH, Transaction, PrivateKey } from '@bsv/sdk';
   import { DEFAULT_TOTP_DIGITS, DEFAULT_TOTP_PERIOD, generateTotpForContact, validateTotpForContact } from './totp';
@@ -80,7 +80,7 @@ import {
         return new HttpClient(this.logger, serverUrl, signingKey);
       }
   
-      throw new ErrorInvalidOptions(this.logger, options);
+      throw new ErrorInvalidClientOptions(this.logger, options);
     }
   
     /**
@@ -550,4 +550,3 @@ import {
       return await this.http.request(`${basePath}${queryString}`, 'GET');
     }
   }
-  

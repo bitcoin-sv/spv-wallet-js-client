@@ -539,21 +539,7 @@ export interface Webhook {
   banned: boolean;
 }
 
-export interface OptionalAdminKey extends Partial<AdminKey> {}
-
-export interface XpubWithoutSigningOld extends OptionalAdminKey {
-  xPub: string;
-}
-
-export interface XprivWithSigningOld extends OptionalAdminKey {
-  xPriv: string;
-}
-
-export interface AccessKeyWithSigningOld extends OptionalAdminKey {
-  accessKey: string;
-}
-
-export type ClientOptionsOld = XpubWithoutSigningOld | XprivWithSigningOld | AccessKeyWithSigningOld | AdminKey;
+export type AdminClientOptions = AdminKey;
 
 export interface XpubWithoutSigning {
   xPriv?: never;

@@ -34,7 +34,7 @@ const CREDENTIALS = {
 const clients = {
   alice: new SPVWalletUserAPI(CONFIG.server, { xPriv: CREDENTIALS.alice.xPriv }),
   bob: new SPVWalletUserAPI(CONFIG.server, { xPriv: CREDENTIALS.bob.xPriv }),
-  admin: new SPVWalletAdminAPI(CONFIG.server, exampleAdminKey )
+  admin: new SPVWalletAdminAPI(CONFIG.server, {adminKey : exampleAdminKey} )
 };
 
 const getPaymail = (name: string) => `${name}@${CONFIG.paymailDomain}`;

@@ -17,7 +17,7 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const client = new SPVWalletAdminAPI(server, exampleAdminKey);
+const client = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
 
 const wh = new WebhookManager(client, 'http://localhost:5005/notification', {
   tokenValue: 'Authorization',
@@ -59,7 +59,7 @@ try {
     wh.handleIncomingEvents(fastifyHttpHandler);
   });
 
-  const allWebhooks = await client.getWebhooks();
+  const allWebhooks = await client.webhooks();
   console.log('Subscribed webhooks list\n');
   for (const w of allWebhooks) {
     console.log(`URL: ${w.url}, banned: ${w.banned}\n`);

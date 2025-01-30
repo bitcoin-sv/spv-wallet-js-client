@@ -1,4 +1,4 @@
-import { SPVWalletUserAPI } from './user_api';
+import { SPVWalletUserAPI } from './user-api';
 import fetchMock from 'jest-fetch-mock';
 import { MerkleRoot } from './types';
 import { ErrorStaleLastEvaluatedKey, ErrorSyncMerkleRootsTimeout } from './errors';

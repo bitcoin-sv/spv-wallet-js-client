@@ -9,7 +9,7 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const adminClient = new SPVWalletAdminAPI(server, exampleAdminKey);
+const adminClient = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
 
 const newXPubRes = await adminClient.createXPub(exampleXPub, { some_metadata: 'example' });
 console.log('AdminNewXpub response:', newXPubRes);
