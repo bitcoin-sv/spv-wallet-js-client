@@ -41,8 +41,8 @@ export const getEnvVariables = () => {
   }
 
   if (rtConfig.clientOneURL === '' || rtConfig.clientTwoURL === '') {
-    rtConfig.clientOneURL = 'http://localhost:3003/v1';
-    rtConfig.clientTwoURL = 'http://localhost:3003/v1';
+    rtConfig.clientOneURL = 'http://localhost:3003/api/v1';
+    rtConfig.clientTwoURL = 'http://localhost:3003/api/v1';
   }
 
   rtConfig.clientOneURL = addPrefixIfNeeded(rtConfig.clientOneURL);
