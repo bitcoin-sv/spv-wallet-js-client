@@ -16,7 +16,7 @@
     "get-balance": "yarn run:example get-balance.ts",
     "user-get-handled-paymail-domains": "yarn run:example user-get-handled-paymail-domains.ts",
     "sync-merkleroots": "yarn run:example sync-merkleroots.ts",
-    "user-update-xpub-metadata": "yarn run:example update-user-xpub-metadata.ts",
+    "update-user-xpub-metadata": "yarn run:example update-user-xpub-metadata.ts",
     "get-shared-config": "yarn run:example get-shared-config.ts",
     "list-transactions": "yarn run:example list-transactions.ts",
     "create-transaction": "yarn run:example create-transaction.ts",
