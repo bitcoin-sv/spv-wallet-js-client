@@ -1,4 +1,5 @@
-import { SpvWalletClient } from '../client';
+import { SPVWalletAdminAPI } from '../admin-api';
+import { SPVWalletUserAPI } from '../user-api';
 import { generateKeys } from '../utils/keys';
 import { TransactionFilter } from '../filters';
 import { QueryPageParams } from '../types';
@@ -52,11 +53,11 @@ export const getEnvVariables = () => {
 
 // getPaymailDomain retrieves the shared configuration from the SPV Wallet.
 export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
-  const wc = new SpvWalletClient(clientUrl, {
+  const wc = new SPVWalletUserAPI(clientUrl, {
     xPriv: xpriv,
   });
 
-  const sharedConfig = await wc.GetSharedConfig();
+  const sharedConfig = await wc.sharedConfig();
 
   if (sharedConfig.paymailDomains.length != 1) {
     throw new Error(`expected 1 paymail domain, got ${sharedConfig.paymailDomains.length}`);
@@ -76,12 +77,10 @@ export const createUser = async (paymail: string, paymailDomain: string, instanc
     paymailId: '',
   };
 
-  const adminClient = new SpvWalletClient(instanceUrl, {
-    adminKey: adminXPriv,
-  });
+  const adminClient = new SPVWalletAdminAPI(instanceUrl, { adminKey: adminXPriv });
 
-  await adminClient.AdminNewXpub(user.xpub, { some_metadata: 'remove' });
-  const paymailAddress = await adminClient.AdminCreatePaymail(user.xpub, user.paymail, 'Regression tests', '', {});
+  await adminClient.createXPub(user.xpub, { some_metadata: 'remove' });
+  const paymailAddress = await adminClient.createPaymail(user.xpub, user.paymail, 'Regression tests', '', {});
   user.paymailId = paymailAddress.id;
 
   return user;
@@ -89,35 +88,35 @@ export const createUser = async (paymail: string, paymailDomain: string, instanc
 
 // removeRegisteredPaymail soft deletes paymail from the SPV Wallet.
 export const removeRegisteredPaymail = async (paymailId: string, instanceURL: string, adminXPriv: string) => {
-  const adminClient = new SpvWalletClient(instanceURL, { adminKey: adminXPriv, xPriv: adminXPriv });
-  await adminClient.AdminDeletePaymail(paymailId);
+  const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
+  await adminClient.deletePaymail(paymailId);
 };
 
 // getBalance retrieves the balance from the SPV Wallet.
 export const getBalance = async (fromInstance: string, fromXPriv: string) => {
-  const client = new SpvWalletClient(fromInstance, { xPriv: fromXPriv });
+  const client = new SPVWalletUserAPI(fromInstance, { xPriv: fromXPriv });
 
-  const xpubInfo = await client.GetUserInfo();
+  const xpubInfo = await client.xPub();
 
   return Number(xpubInfo.currentBalance);
 };
 
 // getTransactions retrieves the transactions from the SPV Wallet.
 export const getTransactions = async (fromInstance: string, fromXPriv: string) => {
-  const client = new SpvWalletClient(fromInstance, { xPriv: fromXPriv });
+  const client = new SPVWalletUserAPI(fromInstance, { xPriv: fromXPriv });
 
   const metadata = new Map<string, any>();
   const conditions: TransactionFilter = {};
   const queryParams: QueryPageParams = {};
 
-  const txs = await client.GetTransactions(conditions, metadata, queryParams);
+  const txs = await client.transactions(conditions, metadata, queryParams);
 
   return txs;
 };
 
 // sendFunds sends funds from one paymail to another
 export const sendFunds = async (fromInstance: string, fromXPriv: string, toPaymail: string, howMuch: number) => {
-  const client = new SpvWalletClient(fromInstance, { xPriv: fromXPriv });
+  const client = new SPVWalletUserAPI(fromInstance, { xPriv: fromXPriv });
 
   const balance = await getBalance(fromInstance, fromXPriv);
   if (balance < howMuch) {
@@ -127,14 +126,14 @@ export const sendFunds = async (fromInstance: string, fromXPriv: string, toPayma
   const recipients = [{ to: toPaymail, satoshis: howMuch }];
   const metadata = { description: 'regression-test' };
 
-  const transaction = await client.SendToRecipients(
+  const transaction = await client.sendToRecipients(
     {
       outputs: recipients,
     },
     metadata,
   );
 
-  const tx = await client.GetTransactionById(transaction.id);
+  const tx = await client.transaction(transaction.id);
 
   return tx;
 };

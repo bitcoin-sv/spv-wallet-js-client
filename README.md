@@ -14,8 +14,8 @@
 
 - [About](#about)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Options](#options)
+- [Client Usage](#client-usage)
+- [Admin Usage](#admin-usage)
 - [Development](#development)
 - [Code Standards](#code-standards)
 - [Contributing](#contributing)
@@ -28,15 +28,22 @@ Using this library, you can build your own solutions that utilize this non-custo
 
 For comprehensive information and guidance, please refer to the [SPV Wallet Documentation](https://docs.bsvblockchain.org/network-topology/applications/spv-wallet).
 
-### Key features
+### Client Features (SPVWalletUserAPI)
+- Managing transactions (draft, send, finalize)
+- Listing and managing UTXOs
+- Managing contacts and paymails
+- Generating and managing access keys
+- Handling merkle roots
+- Managing user xPub information
 
-- Sending transactions (standard and OP_RETURN);
-- Listing transactions, UTXOs, destinations;
-- Getting balance;
-- Managing SPV Wallet as an admin;
-  - Registering xPubs;
-  - Creating Paymails;
-- Generating keys (xPriv, xPub).
+### Admin Features (SPVWalletAdminAPI) 
+- Managing xPubs (create, list)
+- Managing paymails (create, delete, list)
+- Managing contacts (create, update, delete)
+- Viewing transactions and UTXOs
+- Managing webhooks
+- Accessing server statistics
+- Managing system configurations
 
 ## Installation
 
@@ -46,94 +53,87 @@ To use this package in your application, you can add it using `yarn`.
 yarn add @bsv/spv-wallet-js-client
 ```
 
-## Usage
+## Client Usage
 
-You can find the examples of usage in the [examples](./examples) directory.
-
-The main concept is to create a new instance of the `SpvWalletClient` class and use its methods to interact with the SPV Wallet server.
+The client API provides standard wallet operations for end users.
 
 ```typescript
-import { SpvWalletClient } from '@bsv/spv-wallet-js-client';
+import { SPVWalletUserAPI } from '@bsv/spv-wallet-js-client';
 
 const spvWalletServerUrl = 'http://localhost:3003';
 
-// Create a new instance of the SPV Wallet client
-const client = new SpvWalletClient(spvWalletServerUrl, {
-  // connecting with the xPriv is one of the options (see below)
+// Create a new instance of the SPV Wallet user client
+const userClient = new SPVWalletUserAPI(spvWalletServerUrl, {
   xPriv: 'xpriv.....',
 });
 
-// Use the client to interact with the SPV Wallet server
-// For example, check the balance
-const userInfo = await client.GetUser();
+// Example: Get user balance
+const userInfo = await userClient.xPub();
 console.log('Current balance:', userInfo.currentBalance);
 ```
 
 > During creation or usage of the client an exception can be thrown - see [handle-exceptions example](./examples/handle-exceptions.ts) how to handle these situations.
 > Additionally you can check [./src/errors.ts](./src/errors.ts) file where custom errors are defined.
 
-## Options
+### Client Options
 
-### SPV Wallet URL
-
-The **first argument** of the `SpvWalletClient` constructor is the URL of the SPV Wallet server.
-
-> Note the `/api/v1` or /v1 suffix is not required, it will be resolved automatically.
-
-### Keys configuration
-
-The **second argument** is an object which is responsible for configuring what key to use.
-It is typescripted so it will help you with the options.
-
-Generally, there are two kinds of requests:
-
-- **User requests** - to interact with the wallet as a user
-- **Admin requests** - to manage the SPV Wallet
-
-To make user requests, you need to provide **one** of the following options:
-
-- `xPriv` string - which allows you to make all non-admin requests
-- `accessKey` string - same as `xPriv` but without the ability to call methods: `SignTransaction` and `SendToRecipients`
-- `xPub` string - in this case, your requests will not be signed and you also won't be able to call `SignTransaction` and `SendToRecipients`
-
-Regerdless of the option you choose, you can always add the admin key to the options object.
-
-See the examples of different ways to create the client:
+To make user requests, provide one of:
+- `xPriv` string - Full access to non-admin operations
+- `accessKey` string - Limited access (no transaction finalization/sending)
+- `xPub` string - Read-only access with unsigned requests
 
 ```typescript
-const client = new SpvWalletClient(spvWalletServerUrl, {
-  // all non-admin requests will work
+// Full access with xPriv
+const userClient = new SPVWalletUserAPI(spvWalletServerUrl, {
   xPriv: 'xpriv.....',
 });
-const client = new SpvWalletClient(spvWalletServerUrl, {
-  // all non-admin requests will work except SignTransaction and SendToRecipients
+
+// Limited access with accessKey
+const userClient = new SPVWalletUserAPI(spvWalletServerUrl, {
   accessKey: 'accesskey.....',
 });
-const client = new SpvWalletClient(spvWalletServerUrl, {
-  // part non-admin requests will work and they will not be signed
+
+// Read-only access with xPub
+const userClient = new SPVWalletUserAPI(spvWalletServerUrl, {
   xPub: 'xpub.....',
-});
-const client = new SpvWalletClient(spvWalletServerUrl, {
-  // all non-admin and admin requests will work
-  xPriv: 'xpriv.....',
-  adminKey: 'adminkey.....',
-});
-const client = new SpvWalletClient(spvWalletServerUrl, {
-  // only admin requests will work
-  adminKey: 'adminkey.....',
 });
 ```
 
-### Optional logger configuration
+## Admin Usage
 
-The **third optional argument** is responsible for a logger configuration.
-You can either configure log level (default `info`) or provide your own logger which implements `Logger interface` (see [./src/logger.ts](./src/logger.ts))
+The admin API provides administrative operations for managing the SPV Wallet system.
 
-Unless you provide your own logger, the standard `console` will be used.
+```typescript
+import { SPVWalletAdminAPI } from '@bsv/spv-wallet-js-client';
 
-> To disable logging, you can set the log level to `disabled`.
+const spvWalletServerUrl = 'http://localhost:3003';
 
-Check the example presenting how to define [custom-logger](./examples/custom-logger.ts).
+// Create a new instance of the SPV Wallet admin client
+const adminClient = new SPVWalletAdminAPI(spvWalletServerUrl, 'adminkey.....');
+
+// Example: Get server statistics
+const stats = await adminClient.stats();
+console.log('Server stats:', stats);
+```
+
+### Admin Options
+
+Admin operations require an admin key string as the second parameter when initializing the client:
+
+```typescript
+const adminClient = new SPVWalletAdminAPI(spvWalletServerUrl, 'adminkey.....');
+```
+
+### Optional Logger Configuration
+
+Both client and admin APIs accept an optional logger configuration:
+```typescript
+const client = new SPVWalletUserAPI(url, options, {
+  level: 'debug' // or 'info', 'warn', 'error', 'disabled'
+});
+```
+
+You can also provide a custom logger implementing the `Logger` interface.
 
 ## Development
 

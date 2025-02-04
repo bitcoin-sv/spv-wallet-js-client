@@ -2,8 +2,8 @@ import {
   ErrorResponse,
   MerkleRoot,
   MerkleRootsRepository,
-  SpvWalletClient,
   SpvWalletError,
+  SPVWalletUserAPI,
 } from '../dist/typescript-npm-package.cjs.js';
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
@@ -16,7 +16,7 @@ if (!exampleXPriv) {
   process.exit(1);
 }
 
-const client = new SpvWalletClient(server, {
+const client = new SPVWalletUserAPI(server, {
   xPriv: exampleXPriv,
 });
 
@@ -69,7 +69,7 @@ try {
   console.log('\n\nINITIAL STATE LENGTH: ', db.merkleRoots.length, '\n\n');
   console.log('\nInitial State Last 5 MerkleRoots (or fewer):\n', getLastFiveOrFewer(db.merkleRoots), '\n\n');
 
-  await client.SyncMerkleRoots(repository);
+  await client.syncMerkleRoots(repository);
 
   console.log('\nAFTER SYNC', db.merkleRoots.length, '\n\n');
   console.log('\nAFTER SYNC Last 5 MerkleRoots (or fewer):\n', getLastFiveOrFewer(db.merkleRoots), '\n\n');

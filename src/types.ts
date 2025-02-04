@@ -56,7 +56,7 @@ export interface MerkleRootsRepository {
     "metadata": [
       {
         "k": "user_agent",
-        "v": "SpvWalletClient v1.0.0"
+        "v": "SPVWalletUserAPI v1.0.0"
       },
     ],
     "current_balance": 99848517,
@@ -153,7 +153,7 @@ export interface Metadata {
     "metadata": [
       {
         "k": "user_agent",
-        "v": "SpvWalletClient v1.0.0"
+        "v": "SPVWalletUserAPI v1.0.0"
       },
     ],
     "currentBalance": 99848517,
@@ -539,21 +539,27 @@ export interface Webhook {
   banned: boolean;
 }
 
-export interface OptionalAdminKey extends Partial<AdminKey> {}
+export type AdminClientOptions = AdminKey;
 
-export interface XpubWithoutSigning extends OptionalAdminKey {
+export interface XpubWithoutSigning {
+  xPriv?: never;
   xPub: string;
+  accessKey?: never;
 }
 
-export interface XprivWithSigning extends OptionalAdminKey {
-  xPriv: string;
+export interface XprivWithSigning {
+  xPriv?: string;
+  xPub?: never;
+  accessKey?: never;
 }
 
-export interface AccessKeyWithSigning extends OptionalAdminKey {
+export interface AccessKeyWithSigning {
+  xPriv?: never;
+  xPub?: never;
   accessKey: string;
 }
 
-export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning | AdminKey;
+export type ClientOptions = XpubWithoutSigning | XprivWithSigning | AccessKeyWithSigning;
 
 /**
  * Query page params to limit and order database list results.

@@ -1,4 +1,4 @@
-import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
+import { SPVWalletAdminAPI, SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
 import { exampleAdminKey } from './example-keys.js';
 
 interface VerificationResults {
@@ -32,9 +32,9 @@ const CREDENTIALS = {
 };
 
 const clients = {
-  alice: new SpvWalletClient(CONFIG.server, { xPriv: CREDENTIALS.alice.xPriv }),
-  bob: new SpvWalletClient(CONFIG.server, { xPriv: CREDENTIALS.bob.xPriv }),
-  admin: new SpvWalletClient(CONFIG.server, { adminKey: exampleAdminKey })
+  alice: new SPVWalletUserAPI(CONFIG.server, { xPriv: CREDENTIALS.alice.xPriv }),
+  bob: new SPVWalletUserAPI(CONFIG.server, { xPriv: CREDENTIALS.bob.xPriv }),
+  admin: new SPVWalletAdminAPI(CONFIG.server, {adminKey : exampleAdminKey} )
 };
 
 const getPaymail = (name: string) => `${name}@${CONFIG.paymailDomain}`;
@@ -47,26 +47,26 @@ const logSecureMessage = (from: string, to: string, totp: string) => {
 async function setupUsers() {
   console.log('0. Setting up users (optional - uncomment if users are not registered)');
 
-  await clients.admin.AdminNewXpub(CREDENTIALS.alice.xPub, {});
-  await clients.admin.AdminCreatePaymail(CREDENTIALS.alice.xPub, getPaymail('alice'), 'Alice', '', {});
+  await clients.admin.createXPub(CREDENTIALS.alice.xPub, {});
+  await clients.admin.createPaymail(CREDENTIALS.alice.xPub, getPaymail('alice'), 'Alice', '', {});
 
-  await clients.admin.AdminNewXpub(CREDENTIALS.bob.xPub, {});
-  await clients.admin.AdminCreatePaymail(CREDENTIALS.bob.xPub, getPaymail('bob'), 'Bob', '', {});
+  await clients.admin.createXPub(CREDENTIALS.bob.xPub, {});
+  await clients.admin.createPaymail(CREDENTIALS.bob.xPub, getPaymail('bob'), 'Bob', '', {});
 }
 
 async function verificationFlow() {
   console.log('1. Creating initial contacts');
-  await clients.alice.UpsertContact(getPaymail('bob'), 'Bob Smith', getPaymail('alice'), {});
-  await clients.bob.UpsertContact(getPaymail('alice'), 'Alice Smith', getPaymail('bob'), {});
+  await clients.alice.upsertContact(getPaymail('bob'), 'Bob Smith', getPaymail('alice'), {});
+  await clients.bob.upsertContact(getPaymail('alice'), 'Alice Smith', getPaymail('bob'), {});
 
   console.log('\n2. Alice initiates verification');
-  const bobContact = await clients.alice.GetContactByPaymail(getPaymail('bob'));
-  const aliceTotpForBob = clients.alice.GenerateTotpForContact(bobContact, CONFIG.TOTP_PERIOD, CONFIG.TOTP_DIGITS);
+  const bobContact = await clients.alice.contactWithPaymail(getPaymail('bob'));
+  const aliceTotpForBob = clients.alice.generateTotpForContact(bobContact, CONFIG.TOTP_PERIOD, CONFIG.TOTP_DIGITS);
   logSecureMessage('Alice', 'Bob', aliceTotpForBob);
 
   console.log('3. Bob validates Alice\'s TOTP');
-  const aliceContact = await clients.bob.GetContactByPaymail(getPaymail('alice'));
-  const bobValidatedAlicesTotp = clients.bob.ValidateTotpForContact(
+  const aliceContact = await clients.bob.contactWithPaymail(getPaymail('alice'));
+  const bobValidatedAlicesTotp = clients.bob.validateTotpForContact(
     aliceContact,
     aliceTotpForBob,
     bobContact.paymail,
@@ -76,7 +76,7 @@ async function verificationFlow() {
   console.log('Validation status:', bobValidatedAlicesTotp);
 
   console.log('\n4. Bob initiates verification');
-  const bobTotpForAlice = clients.bob.GenerateTotpForContact(
+  const bobTotpForAlice = clients.bob.generateTotpForContact(
     aliceContact,
     CONFIG.TOTP_PERIOD,
     CONFIG.TOTP_DIGITS
@@ -84,7 +84,7 @@ async function verificationFlow() {
   logSecureMessage('Bob', 'Alice', bobTotpForAlice);
 
   console.log('5. Alice validates Bob\'s TOTP');
-  const aliceValidatedBobsTotp = clients.alice.ValidateTotpForContact(
+  const aliceValidatedBobsTotp = clients.alice.validateTotpForContact(
     bobContact,
     bobTotpForAlice,
     aliceContact.paymail,
@@ -102,11 +102,11 @@ async function finalizeAndCleanup(results: VerificationResults) {
 
   if (isFullyVerified) {
     console.log('\n6. Admin confirms verified contacts');
-    await clients.admin.AdminConfirmContacts(getPaymail('alice'), getPaymail('bob'));
+    await clients.admin.confirmContacts(getPaymail('alice'), getPaymail('bob'));
 
     console.log('\n7. Cleaning up contacts');
-    await clients.alice.RemoveContact(getPaymail('bob'));
-    await clients.bob.RemoveContact(getPaymail('alice'));
+    await clients.alice.removeContact(getPaymail('bob'));
+    await clients.bob.removeContact(getPaymail('alice'));
   }
 }
 

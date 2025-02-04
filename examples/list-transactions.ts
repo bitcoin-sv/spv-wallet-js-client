@@ -1,4 +1,4 @@
-import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
+import { SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
@@ -9,14 +9,15 @@ if (!exampleXPriv) {
   process.exit(1);
 }
 
-const client = new SpvWalletClient(server, {
+const client = new SPVWalletUserAPI(server, {
+  
   xPriv: exampleXPriv,
 });
 
-const txs = await client.GetTransactions({}, {}, {});
+const txs = await client.transactions({}, {}, {});
 console.log('GetTransactions response:', txs);
 
-const txsFiltered = await client.GetTransactions(
+const txsFiltered = await client.transactions(
   {
     blockHeight: 839228,
   },

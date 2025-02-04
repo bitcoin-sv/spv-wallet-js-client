@@ -9,10 +9,8 @@ if (!exampleXPriv) {
   process.exit(1);
 }
 
-const client = new SPVWalletUserAPI(server, {
-  xPriv: exampleXPriv,
-});
+const client = new SPVWalletUserAPI(server, { xPriv: exampleXPriv });
 
-const userInfo = await client.xPub();
-console.log('userInfo', userInfo);
-console.log('Current balance:', userInfo.currentBalance);
+const sharedConfig = await client.sharedConfig();
+
+console.log(sharedConfig.paymailDomains[0]);

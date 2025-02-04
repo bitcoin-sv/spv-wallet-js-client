@@ -1,4 +1,4 @@
-import { DraftTransactionConfig, OpReturn, SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
+import { DraftTransactionConfig, OpReturn, SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
@@ -9,7 +9,7 @@ if (!exampleXPriv) {
   process.exit(1);
 }
 
-const client = new SpvWalletClient(server, {
+const client = new SPVWalletUserAPI(server, {
   xPriv: exampleXPriv,
 });
 
@@ -25,9 +25,9 @@ const transactionConfig: DraftTransactionConfig = {
   ],
 };
 
-const draftTransaction = await client.NewDraftTransaction(transactionConfig, {});
+const draftTransaction = await client.draftTransaction(transactionConfig, {});
 console.log('DraftTransaction response:', draftTransaction);
 
-const finalized = await client.SignTransaction(draftTransaction);
-const transaction = await client.RecordTransaction(finalized, draftTransaction.id, {});
+const finalized = await client.finalizeTransaction(draftTransaction);
+const transaction = await client.recordTransaction(finalized, draftTransaction.id, {});
 console.log('Transaction with OP_RETURN:', transaction);

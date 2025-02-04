@@ -1,22 +1,18 @@
-import { ErrorNoAdminKey, ErrorResponse, SpvWalletClient, SpvWalletError } from '../dist/typescript-npm-package.cjs.js';
-import { exampleXPub } from './example-keys.js';
-import { errMessage } from './utils.js';
-
+import {
+  ErrorNoAdminKey,
+  ErrorResponse,
+  SPVWalletAdminAPI,
+  SpvWalletError,
+} from '../dist/typescript-npm-package.cjs.js';
+import { exampleXPriv } from './example-keys.js';
 const server = 'http://localhost:3003';
 
-if (!exampleXPub) {
-  console.log(errMessage('xPub'));
-  process.exit(1);
-}
-
 try {
-  const client = new SpvWalletClient(server, {
-    xPub: exampleXPub,
-  });
+  const client = new SPVWalletAdminAPI(server, {adminKey : exampleXPriv});
 
   //we're trying to make an admin request without adminKey
-  //the following line will throw ErrorNoAdminKey
-  const status = await client.AdminGetStatus();
+  //the following line will throw ErrorResponse
+  const status = await client.status();
   console.log('Status:', status);
 } catch (e) {
   if (e instanceof SpvWalletError) {

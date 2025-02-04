@@ -1,4 +1,4 @@
-import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
+import { SPVWalletAdminAPI } from '../dist/typescript-npm-package.cjs.js';
 import { exampleAdminKey, exampleXPub, examplePaymail } from './example-keys.js';
 import { errMessage } from './utils.js';
 
@@ -9,12 +9,10 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const adminClient = new SpvWalletClient(server, {
-  adminKey: exampleAdminKey,
-});
+const adminClient = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
 
-const newXPubRes = await adminClient.AdminNewXpub(exampleXPub, { some_metadata: 'example' });
+const newXPubRes = await adminClient.createXPub(exampleXPub, { some_metadata: 'example' });
 console.log('AdminNewXpub response:', newXPubRes);
 
-const createPaymailRes = await adminClient.AdminCreatePaymail(exampleXPub, examplePaymail, 'Some public name', '', {});
+const createPaymailRes = await adminClient.createPaymail(exampleXPub, examplePaymail, 'Some public name', '', {});
 console.log('AdminCreatePaymail response:', createPaymailRes);

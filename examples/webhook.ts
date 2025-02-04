@@ -1,4 +1,4 @@
-import { SpvWalletClient, WebhookManager, WebhookHttpHandler, RawEvent } from '../dist/typescript-npm-package.cjs.js';
+import { SPVWalletAdminAPI, WebhookManager, WebhookHttpHandler, RawEvent } from '../dist/typescript-npm-package.cjs.js';
 import { exampleAdminKey } from './example-keys.js';
 import { errMessage } from './utils.js';
 import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
@@ -17,9 +17,7 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const client = new SpvWalletClient(server, {
-  adminKey: exampleAdminKey,
-});
+const client = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
 
 const wh = new WebhookManager(client, 'http://localhost:5005/notification', {
   tokenValue: 'Authorization',
@@ -61,7 +59,7 @@ try {
     wh.handleIncomingEvents(fastifyHttpHandler);
   });
 
-  const allWebhooks = await client.AdminGetWebhooks();
+  const allWebhooks = await client.webhooks();
   console.log('Subscribed webhooks list\n');
   for (const w of allWebhooks) {
     console.log(`URL: ${w.url}, banned: ${w.banned}\n`);

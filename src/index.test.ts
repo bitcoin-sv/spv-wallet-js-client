@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
-import { NewContact, SpvWalletClient } from './index';
-import { ClientOptions, DraftTx, DraftTransactionConfig } from './types';
+import { NewContact, SPVWalletUserAPI, SPVWalletAdminAPI } from './index';
+import { ClientOptions, AdminClientOptions, DraftTx, DraftTransactionConfig } from './types';
 
 const xPrivString =
   'xprv9s21ZrQH143K49XnCBsjkh7Lqt2Je9iCXBqCUp6xUvb2jCGyeShuqMLiG5Ro6JggbKaud4sg1PmgYGptKTc2FhA3SEGCcaeiTESNDp1Vj2A';
@@ -35,45 +35,44 @@ afterAll(() => {
   fetchMock.disableMocks();
 });
 
-describe('SPVWalletClient class', () => {
+describe('SPVWalletUserAPI class', () => {
   test('instantiate with options', () => {
     const options: ClientOptions = {
-      adminKey: xPrivString,
       xPriv: xPrivString,
     };
-    const spvWalletClient = new SpvWalletClient('https://spv-wallet.org/api/v1', options, { level: 'error' });
-    expect(spvWalletClient).toBeInstanceOf(SpvWalletClient);
+    const userClient = new SPVWalletUserAPI('https://spv-wallet.org/api/v1', options, { level: 'error' });
+    expect(userClient).toBeInstanceOf(SPVWalletUserAPI);
   });
 });
 
-describe('SPVWalletClient routing', () => {
+describe('SPVWallet user routing', () => {
   const options: ClientOptions = {
     xPriv: testClient.xPrivString,
   };
-  const spvWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });
+  const userClient = new SPVWalletUserAPI(testClient.serverURL, options, { level: 'error' });
 
   it.each`
     spvWalletMethod                | httpMethod  | path                                       | act
-    ${'GetUserInfo'}               | ${'get'}    | ${'users/current'}                         | ${() => spvWalletClient.GetUserInfo()}
-    ${'UpdateXPubMetadata'}        | ${'patch'}  | ${'users/current'}                         | ${() => spvWalletClient.UpdateUserMetadata({})}
-    ${'GetAccessKeyByID'}          | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.GetAccessKeyByID(accessKeyString)}
-    ${'GetAccessKeys'}             | ${'get'}    | ${'users/current/keys'}                    | ${() => spvWalletClient.GetAccessKeys({}, {})}
-    ${'CreateAccessKey'}           | ${'post'}   | ${'users/current/keys'}                    | ${() => spvWalletClient.CreateAccessKey({})}
-    ${'RevokeAccessKey'}           | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => spvWalletClient.RevokeAccessKey(accessKeyString)}
-    ${'GetContactByPaymail'}       | ${'get'}    | ${'contacts/test'}                         | ${() => spvWalletClient.GetContactByPaymail('test')}
-    ${'GetContacts'}               | ${'get'}    | ${'contacts'}                              | ${() => spvWalletClient.GetContacts({}, {}, {})}
-    ${'UpsertContact'}             | ${'put'}    | ${'contacts/test'}                         | ${() => spvWalletClient.UpsertContact('test', '', '', {})}
-    ${'RemoveContact'}             | ${'delete'} | ${'contacts/test'}                         | ${() => spvWalletClient.RemoveContact('test')}
-    ${'AcceptContactInvitation'}   | ${'post'}   | ${'invitations/test/contacts'}             | ${() => spvWalletClient.AcceptContactInvitation('test')}
-    ${'RejectContactInvitation'}   | ${'delete'} | ${'invitations/test/contacts'}             | ${() => spvWalletClient.RejectContactInvitation('test')}
-    ${'UnconfirmContact'}          | ${'delete'} | ${'contacts/test/confirmation'}            | ${() => spvWalletClient.UnconfirmContact('test')}
-    ${'GetTransactionById'}        | ${'get'}    | ${'transactions/id'}                       | ${() => spvWalletClient.GetTransactionById('id')}
-    ${'GetTransactions'}           | ${'get'}    | ${'transactions'}                          | ${() => spvWalletClient.GetTransactions({}, {}, {})}
-    ${'NewDraftTransaction'}       | ${'post'}   | ${'transactions/drafts'}                   | ${() => spvWalletClient.NewDraftTransaction({} as DraftTransactionConfig, {})}
-    ${'RecordTransaction'}         | ${'post'}   | ${'transactions'}                          | ${() => spvWalletClient.RecordTransaction('', '', {})}
-    ${'UpdateTransactionMetadata'} | ${'patch'}  | ${'transactions/id'}                       | ${() => spvWalletClient.UpdateTransactionMetadata('id', {})}
-    ${'GetUtxos'}                  | ${'get'}    | ${'utxos'}                                 | ${() => spvWalletClient.GetUtxos({}, {}, {})}
-    ${'GetSharedConfig'}           | ${'get'}    | ${'configs/shared'}                        | ${() => spvWalletClient.GetSharedConfig()}
+    ${'getUserInfo'}               | ${'get'}    | ${'users/current'}                         | ${() => userClient.xPub()}
+    ${'updateXPubMetadata'}        | ${'patch'}  | ${'users/current'}                         | ${() => userClient.updateXPubMetadata({})}
+    ${'getAccessKeyById'}          | ${'get'}    | ${'users/current/keys/' + accessKeyString} | ${() => userClient.accessKey(accessKeyString)}
+    ${'getAccessKeys'}             | ${'get'}    | ${'users/current/keys'}                    | ${() => userClient.accessKeys({}, {})}
+    ${'createAccessKey'}           | ${'post'}   | ${'users/current/keys'}                    | ${() => userClient.generateAccessKey({})}
+    ${'revokeAccessKey'}           | ${'delete'} | ${'users/current/keys/' + accessKeyString} | ${() => userClient.revokeAccessKey(accessKeyString)}
+    ${'getContactByPaymail'}       | ${'get'}    | ${'contacts/test'}                         | ${() => userClient.contactWithPaymail('test')}
+    ${'getContacts'}               | ${'get'}    | ${'contacts'}                              | ${() => userClient.contacts({}, {}, {})}
+    ${'upsertContact'}             | ${'put'}    | ${'contacts/test'}                         | ${() => userClient.upsertContact('test', '', '', {})}
+    ${'removeContact'}             | ${'delete'} | ${'contacts/test'}                         | ${() => userClient.removeContact('test')}
+    ${'acceptContactInvitation'}   | ${'post'}   | ${'invitations/test/contacts'}             | ${() => userClient.acceptInvitation('test')}
+    ${'rejectContactInvitation'}   | ${'delete'} | ${'invitations/test/contacts'}             | ${() => userClient.rejectInvitation('test')}
+    ${'unconfirmContact'}          | ${'delete'} | ${'contacts/test/confirmation'}            | ${() => userClient.unconfirmContact('test')}
+    ${'getTransactionById'}        | ${'get'}    | ${'transactions/id'}                       | ${() => userClient.transaction('id')}
+    ${'getTransactions'}           | ${'get'}    | ${'transactions'}                          | ${() => userClient.transactions({}, {}, {})}
+    ${'newDraftTransaction'}       | ${'post'}   | ${'transactions/drafts'}                   | ${() => userClient.draftTransaction({} as DraftTransactionConfig, {})}
+    ${'recordTransaction'}         | ${'post'}   | ${'transactions'}                          | ${() => userClient.recordTransaction('', '', {})}
+    ${'updateTransactionMetadata'} | ${'patch'}  | ${'transactions/id'}                       | ${() => userClient.updateTransactionMetadata('id', {})}
+    ${'getUtxos'}                  | ${'get'}    | ${'utxos'}                                 | ${() => userClient.utxos({}, {}, {})}
+    ${'getSharedConfig'}           | ${'get'}    | ${'configs/shared'}                        | ${() => userClient.sharedConfig()}
   `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
     setupHttpMock(httpMethod, path);
@@ -91,33 +90,33 @@ describe('SPVWalletClient routing', () => {
   });
 });
 
-describe('SPVWalletClient admin routing', () => {
-  const options: ClientOptions = {
+describe('SPVWallet admin routing', () => {
+  const options : AdminClientOptions = {
     adminKey: testClient.xPrivString,
   };
-  const adminSPVWalletClient = new SpvWalletClient(testClient.serverURL, options, { level: 'error' });
+  const adminClient = new SPVWalletAdminAPI(testClient.serverURL, options, { level: 'error' });
 
   it.each`
-    spvWalletMethod            | httpMethod  | path                              | act
-    ${'AdminNewXpub'}          | ${'post'}   | ${'admin/users'}                  | ${() => adminSPVWalletClient.AdminNewXpub('', {})}
-    ${'AdminGetStatus'}        | ${'get'}    | ${'admin/status'}                 | ${() => adminSPVWalletClient.AdminGetStatus()}
-    ${'AdminGetStats'}         | ${'get'}    | ${'admin/stats'}                  | ${() => adminSPVWalletClient.AdminGetStats()}
-    ${'AdminGetAccessKeys'}    | ${'get'}    | ${'admin/users/keys'}             | ${() => adminSPVWalletClient.AdminGetAccessKeys({}, {}, {})}
-    ${'AdminGetContacts'}      | ${'get'}    | ${'admin/contacts'}               | ${() => adminSPVWalletClient.AdminGetContacts({}, {}, {})}
-    ${'AdminCreateContact'}    | ${'post'}   | ${'admin/contacts/test'}          | ${() => adminSPVWalletClient.AdminCreateContact('test', {} as NewContact)}
-    ${'AdminUpdateContact'}    | ${'patch'}  | ${'admin/contacts/1'}             | ${() => adminSPVWalletClient.AdminUpdateContact('1', '', {})}
-    ${'AdminDeleteContact'}    | ${'delete'} | ${'admin/contacts/1'}             | ${() => adminSPVWalletClient.AdminDeleteContact('1')}
-    ${'AdminAcceptContact'}    | ${'patch'}  | ${'admin/invitations/1'}          | ${() => adminSPVWalletClient.AdminAcceptContact('1')}
-    ${'AdminRejectContact'}    | ${'patch'}  | ${'admin/invitations/1'}          | ${() => adminSPVWalletClient.AdminRejectContact('1')}
-    ${'AdminGetPaymail'}       | ${'get'}    | ${'admin/paymails/test'}          | ${() => adminSPVWalletClient.AdminGetPaymail('test')}
-    ${'AdminGetPaymails'}      | ${'get'}    | ${'admin/paymails'}               | ${() => adminSPVWalletClient.AdminGetPaymails({}, {}, {})}
-    ${'AdminCreatePaymail'}    | ${'post'}   | ${'admin/paymails'}               | ${() => adminSPVWalletClient.AdminCreatePaymail('', '', '', '', {})}
-    ${'AdminDeletePaymail'}    | ${'delete'} | ${'admin/paymails/test'}          | ${() => adminSPVWalletClient.AdminDeletePaymail('test')}
-    ${'AdminGetTransactions'}  | ${'get'}    | ${'admin/transactions'}           | ${() => adminSPVWalletClient.AdminGetTransactions({}, {}, {})}
-    ${'AdminGetUtxos'}         | ${'get'}    | ${'admin/utxos'}                  | ${() => adminSPVWalletClient.AdminGetUtxos({}, {}, {})}
-    ${'AdminGetXPubs'}         | ${'get'}    | ${'admin/users'}                  | ${() => adminSPVWalletClient.AdminGetXPubs({}, {}, {})}
-    ${'AdminSubscribeWebhook'} | ${'post'}   | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminSubscribeWebhook('', '', '')}
-    ${'AdminDeleteWebhook'}    | ${'delete'} | ${'admin/webhooks/subscriptions'} | ${() => adminSPVWalletClient.AdminDeleteWebhook('')}
+    spvWalletMethod         | httpMethod  | path                              | act
+    ${'createXPub'}         | ${'post'}   | ${'admin/users'}                  | ${() => adminClient.createXPub('', {})}
+    ${'status'}             | ${'get'}    | ${'admin/status'}                 | ${() => adminClient.status()}
+    ${'stats'}              | ${'get'}    | ${'admin/stats'}                  | ${() => adminClient.stats()}
+    ${'accessKeys'}         | ${'get'}    | ${'admin/users/keys'}             | ${() => adminClient.accessKeys({}, {}, {})}
+    ${'contacts'}           | ${'get'}    | ${'admin/contacts'}               | ${() => adminClient.contacts({}, {}, {})}
+    ${'createContact'}      | ${'post'}   | ${'admin/contacts/test'}          | ${() => adminClient.createContact('test', {} as NewContact)}
+    ${'contactUpdate'}      | ${'put'}    | ${'admin/contacts/1'}             | ${() => adminClient.contactUpdate('1', '', {})}
+    ${'deleteContact'}      | ${'delete'} | ${'admin/contacts/1'}             | ${() => adminClient.deleteContact('1')}
+    ${'acceptInvitation'}   | ${'post'}   | ${'admin/invitations/1'}          | ${() => adminClient.acceptInvitation('1')}
+    ${'rejectInvitation'}   | ${'delete'} | ${'admin/invitations/1'}          | ${() => adminClient.rejectInvitation('1')}
+    ${'paymail'}            | ${'get'}    | ${'admin/paymails/test'}          | ${() => adminClient.paymail('test')}
+    ${'paymails'}           | ${'get'}    | ${'admin/paymails'}               | ${() => adminClient.paymails({}, {}, {})}
+    ${'createPaymail'}      | ${'post'}   | ${'admin/paymails'}               | ${() => adminClient.createPaymail('', '', '', '', {})}
+    ${'deletePaymail'}      | ${'delete'} | ${'admin/paymails/test'}          | ${() => adminClient.deletePaymail('test')}
+    ${'transactions'}       | ${'get'}    | ${'admin/transactions'}           | ${() => adminClient.transactions({}, {}, {})}
+    ${'utxos'}              | ${'get'}    | ${'admin/utxos'}                  | ${() => adminClient.utxos({}, {}, {})}
+    ${'xPubs'}              | ${'get'}    | ${'admin/users'}                  | ${() => adminClient.xPubs({}, {}, {})}
+    ${'subscribeWebhook'}   | ${'post'}   | ${'admin/webhooks/subscriptions'} | ${() => adminClient.subscribeWebhook('', '', '')}
+    ${'unsubscribeWebhook'} | ${'delete'} | ${'admin/webhooks/subscriptions'} | ${() => adminClient.unsubscribeWebhook('')}
   `('$spvWalletMethod', async ({ path, httpMethod, act }) => {
     // given
     setupHttpMock(httpMethod, path);
@@ -137,7 +136,7 @@ describe('SPVWalletClient admin routing', () => {
 
 describe('Finalize transaction', () => {
   test('draftTxJSON', async () => {
-    const spvWalletClient = new SpvWalletClient(
+    const userClient = new SPVWalletUserAPI(
       serverURL,
       {
         xPriv: xPrivString,
@@ -146,12 +145,12 @@ describe('Finalize transaction', () => {
     );
 
     const draftTransaction: DraftTx = JSON.parse(draftTxJSON);
-    const transaction = await spvWalletClient.SignTransaction(draftTransaction);
+    const transaction = await userClient.finalizeTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 
   test('draftTxJSON2', async () => {
-    const spvWalletClient = new SpvWalletClient(
+    const userClient = new SPVWalletUserAPI(
       serverURL,
       {
         xPriv: xPrivString,
@@ -160,7 +159,7 @@ describe('Finalize transaction', () => {
     );
 
     const draftTransaction: DraftTx = JSON.parse(draftTxJSON2);
-    const transaction = await spvWalletClient.SignTransaction(draftTransaction);
+    const transaction = await userClient.finalizeTransaction(draftTransaction);
     expect(typeof transaction).toBe('string');
   });
 });

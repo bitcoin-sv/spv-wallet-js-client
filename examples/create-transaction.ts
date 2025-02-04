@@ -1,4 +1,9 @@
-import { ErrorNoAdminKey, ErrorResponse, SpvWalletClient, SpvWalletError } from '../dist/typescript-npm-package.cjs.js';
+import {
+  ErrorNoAdminKey,
+  ErrorResponse,
+  SPVWalletUserAPI,
+  SpvWalletError,
+} from '../dist/typescript-npm-package.cjs.js';
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
@@ -9,27 +14,27 @@ if (!exampleXPriv) {
   process.exit(1);
 }
 
-const client = new SpvWalletClient(server, {
+const client = new SPVWalletUserAPI(server, {
+  
   xPriv: exampleXPriv,
 });
 
 try {
-  const newTransaction = await client.SendToRecipients(
+  const newTransaction = await client.sendToRecipients(
     {
       outputs: [
         {
           to: 'receiver@example.com',
           satoshis: 1,
-        }
-      ]
+        },
+      ],
     },
     { some_metadata: 'example' },
   );
   console.log('SendToRecipients response:', newTransaction);
 
-  const tx = await client.GetTransactionById(newTransaction.id);
+  const tx = await client.transaction(newTransaction.id);
   console.log('GetTransaction response:', tx);
-
 } catch (e) {
   if (e instanceof SpvWalletError) {
     // You can check the type of the error and do something specific

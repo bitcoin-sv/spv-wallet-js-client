@@ -1,4 +1,4 @@
-import { SpvWalletClient } from '../dist/typescript-npm-package.cjs.js';
+import { SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
 import { exampleXPriv } from './example-keys.js';
 import { errMessage } from './utils.js';
 
@@ -9,9 +9,9 @@ if (!exampleXPriv) {
   process.exit(1);
 }
 
-const client = new SpvWalletClient(server, {
+const client = new SPVWalletUserAPI(server, {
   xPriv: exampleXPriv,
 });
 
-const sharedConfig = await client.GetSharedConfig();
+const sharedConfig = await client.sharedConfig();
 console.log('Shared config:', sharedConfig);

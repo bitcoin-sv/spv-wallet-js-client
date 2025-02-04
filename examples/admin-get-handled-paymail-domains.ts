@@ -9,6 +9,8 @@ if (!exampleAdminKey) {
   process.exit(1);
 }
 
-const adminClient = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
+const client = new SPVWalletAdminAPI(server, {adminKey : exampleAdminKey});
 
-await adminClient.deletePaymail("d43ed481ba08aae1db02d880ebefe962f9796168387bb293a95024cb02b953ef");
+const sharedConfig = await client.sharedConfig();
+
+console.log(sharedConfig.paymailDomains[0]);
