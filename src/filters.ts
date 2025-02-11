@@ -44,7 +44,7 @@ export interface AdminPaymailFilter extends ModelFilter {
 
 export interface PaymailFilter extends ModelFilter {
   id?: string;
-  aliast?: string;
+  alias?: string;
   domain?: string;
   publicName?: string;
 }
