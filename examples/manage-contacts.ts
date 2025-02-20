@@ -1,5 +1,6 @@
 import { SPVWalletAdminAPI, SPVWalletUserAPI } from '../dist/typescript-npm-package.cjs.js';
 import { exampleAdminKey } from './example-keys.js';
+import { CreateXpubID } from '../examples/utils.js';
 
 interface VerificationResults {
   bobValidatedAlicesTotp: boolean;
@@ -104,8 +105,22 @@ async function finalizeAndCleanup(results: VerificationResults) {
     console.log('\n6. Admin confirms verified contacts');
     await clients.admin.confirmContacts(getPaymail('alice'), getPaymail('bob'));
 
-    console.log('\n7. Cleaning up contacts');
-    await clients.alice.removeContact(getPaymail('bob'));
+    console.log('\n7. Deleting contact and unconfirm other side');
+
+    const aliceToBobContactResponse = await clients.admin.contacts({
+      xpubId: CreateXpubID(CREDENTIALS.alice.xPub),
+      paymail: getPaymail('bob')
+    }, {}, {});
+    await clients.admin.deleteContact(aliceToBobContactResponse.content[0].id);
+
+    const bobToAliceContactResponse = await clients.admin.contacts({
+      xpubId: CreateXpubID(CREDENTIALS.bob.xPub),
+      paymail: getPaymail('alice')
+    }, {}, {});
+    await clients.admin.unconfirmContact(bobToAliceContactResponse.content[0].id);
+
+
+    console.log('\n8. Cleaning up contacts');
     await clients.bob.removeContact(getPaymail('alice'));
   }
 }

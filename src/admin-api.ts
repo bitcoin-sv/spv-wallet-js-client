@@ -375,6 +375,16 @@ export class SPVWalletAdminAPI {
   }
 
   /**
+   * Unconfirm contact
+   *
+   * @param {string} id - ID of the contact to unconfirm
+   * @returns {Promise<void>}
+   */
+    async unconfirmContact(id: string): Promise<void> {
+      return await this.http.adminRequest(`/admin/contacts/unconfirm/${id}`, 'PATCH');
+    }
+
+  /**
    * Get shared configuration
    *
    * @returns {Promise<SharedConfig>} Shared configuration settings
