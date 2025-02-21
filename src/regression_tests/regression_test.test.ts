@@ -9,6 +9,11 @@ import {
   RegressionTestUser,
   removeRegisteredPaymail,
   sendFunds,
+  addContact,
+  getContact,
+  validateTotp,
+  confirmContact,
+  removeContact,
 } from './utils';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
@@ -141,5 +146,39 @@ describe('TestRegression', () => {
       },
       TEST_TIMEOUT_MS,
     );
+  });
+
+  /**
+  * USER TESTS
+  */
+  describe('User Operations', () => {
+    test('User should add a contact', async () => {
+      await addContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail, 'Bob');
+      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
+      expect(contact).toBeDefined();
+      expect(contact.paymail).toBe(userTwo.paymail);
+    });
+
+    test('User should validate contact using TOTP', async () => {
+      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
+      const totp = await validateTotp(rtConfig.clientTwoURL, userTwo.xpriv, userOne.paymail, contact);
+
+      expect(totp).toBe(true);
+    });
+
+    test('User should remove a contact', async () => {
+      await removeContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
+      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
+      expect(contact).toBeUndefined();
+    });
+  });
+
+  /**
+  * ADMIN TESTS
+  */
+  describe('Admin Operations', () => {
+    test('Admin should confirm a contact', async () => {
+      await confirmContact(rtConfig.clientOneURL, ADMIN_XPRIV, userOne.paymail, userTwo.paymail);
+    });
   });
 });
