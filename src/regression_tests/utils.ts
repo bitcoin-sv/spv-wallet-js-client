@@ -169,7 +169,7 @@ export const addContact = async (
   contactName: string
 ) => {
   const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  await client.upsertContact(contactPaymail, contactName, '');
+  await client.upsertContact(contactPaymail, contactName, '', {});
 };
 
 // Get a contact by paymail
@@ -205,4 +205,15 @@ export const confirmContact = async (
 export const removeContact = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
   const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
   await client.removeContact(contactPaymail);
+};
+
+// Generate a TOTP for a contact
+export const generateTotp = async (
+  instanceUrl: string,
+  xPriv: string,
+  contactPaymail: string
+) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const contact = await client.contactWithPaymail(contactPaymail);
+  return client.generateTotpForContact(contact, 1200, 4);
 };
