@@ -165,16 +165,17 @@ const isValidURL = (rawURL: string) => {
 export const addContact = async (
   instanceUrl: string,
   xPriv: string,
+  paymail: string,
   contactPaymail: string,
   contactName: string
 ) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  await client.upsertContact(contactPaymail, contactName, '');
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
+  await client.upsertContact(paymail, contactName, contactPaymail, {});
 };
 
 // Get a contact by paymail
 export const getContact = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
   return await client.contactWithPaymail(contactPaymail);
 };
 
@@ -185,24 +186,52 @@ export const validateTotp = async (
   contactPaymail: string,
   receivedTotp: string
 ) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
   const contact = await client.contactWithPaymail(contactPaymail);
   return client.validateTotpForContact(contact, receivedTotp, contactPaymail, 1200, 4);
 };
 
-// Confirm a contact as an Admin
 export const confirmContact = async (
   instanceUrl: string,
-  adminXPriv: string,
+  xPriv: string,
   userPaymail: string,
+  contactPaymail: string,
+  receivedTotp: string
+) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const contact = await client.contactWithPaymail(contactPaymail);
+  if (!contact) {
+    throw new Error(`Contact ${contactPaymail} not found!`);
+  }
+  const isConfirmed = await client.confirmContact(contact, receivedTotp, userPaymail, 1200, 4);
+  return isConfirmed;
+};
+
+export const unconfirmContact = async (
+  instanceUrl: string,
+  xPriv: string,
   contactPaymail: string
 ) => {
-  const adminClient = new SPVWalletAdminAPI(instanceUrl, { adminKey: adminXPriv });
-  await adminClient.confirmContacts(userPaymail, contactPaymail);
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  await client.unconfirmContact(contactPaymail);
 };
 
 // Remove a contact
 export const removeContact = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
   await client.removeContact(contactPaymail);
+};
+
+// Generate a TOTP for a contact
+export const generateTotp = async (
+  instanceUrl: string,
+  xPriv: string,
+  contactPaymail: string
+) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const contact = await client.contactWithPaymail(contactPaymail);
+  if (!contact) {
+    throw new Error(`Contact ${contactPaymail} not found!`);
+  }
+  return client.generateTotpForContact(contact, 1200, 4);
 };

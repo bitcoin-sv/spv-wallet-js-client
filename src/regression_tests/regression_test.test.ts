@@ -14,6 +14,8 @@ import {
   validateTotp,
   confirmContact,
   removeContact,
+  unconfirmContact,
+  generateTotp as generateTotpForContact,
 } from './utils';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
@@ -26,7 +28,9 @@ const ADMIN_XPUB =
 let paymailDomainInstanceOne = '';
 let paymailDomainInstanceTwo = '';
 let userOne: RegressionTestUser;
+let userOneContact: RegressionTestUser;
 let userTwo: RegressionTestUser;
+let userTwoContact: RegressionTestUser;
 let rtConfig: RegressionTestConfig;
 
 const sendAndVerifyFunds = async (
@@ -58,8 +62,16 @@ afterAll(async () => {
     await expect(removeRegisteredPaymail(userOne.paymailId, rtConfig.clientOneURL, ADMIN_XPRIV)).resolves.not.toThrow();
   }
 
+  if (userOneContact) {
+    await expect(removeRegisteredPaymail(userOneContact.paymailId, rtConfig.clientOneURL, ADMIN_XPRIV)).resolves.not.toThrow();
+  }
+
   if (userTwo) {
     await expect(removeRegisteredPaymail(userTwo.paymailId, rtConfig.clientTwoURL, ADMIN_XPRIV)).resolves.not.toThrow();
+  }
+
+  if (userTwoContact) {
+    await expect(removeRegisteredPaymail(userTwoContact.paymailId, rtConfig.clientTwoURL, ADMIN_XPRIV)).resolves.not.toThrow();
   }
 });
 
@@ -79,12 +91,22 @@ describe('TestRegression', () => {
   describe('Create Users', () => {
     test('Should create user for instance one', async () => {
       const userName = 'instanceOneUser1';
-      userOne = await createUser(userName, paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
+      userOne = await createUser(userName.toLowerCase(), paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
     });
 
     test('Should create user for instance two', async () => {
       const userName = 'instanceTwoUser1';
-      userTwo = await createUser(userName, paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
+      userTwo = await createUser(userName.toLowerCase(), paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
+    });
+
+    test('Should create user for instance one', async () => {
+      const userName = 'instanceOneUser2';
+      userOneContact = await createUser(userName.toLowerCase(), paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
+    });
+
+    test('Should create user for instance two', async () => {
+      const userName = 'instanceTwoUser2';
+      userTwoContact = await createUser(userName.toLowerCase(), paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
     });
   });
 
@@ -148,37 +170,64 @@ describe('TestRegression', () => {
     );
   });
 
-  /**
-  * USER TESTS
-  */
-  describe('User Operations', () => {
-    test('User should add a contact', async () => {
-      await addContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail, 'Bob');
-      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
+  describe('User Operations instance one', () => {
+    let userOneTotpForContact: string;
+
+    test('UserOne should add UserOneContact as contact', async () => {
+      await addContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail, userOne.paymail, 'Bob');
+      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
       expect(contact).toBeDefined();
-      expect(contact.paymail).toBe(userTwo.paymail);
+      expect(contact.paymail).toBe(userOneContact.paymail);
     });
 
-    test('User should validate contact using TOTP', async () => {
-      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
-      const totp = await validateTotp(rtConfig.clientTwoURL, userTwo.xpriv, userOne.paymail, contact);
-
-      expect(totp).toBe(true);
+    test('UserOne should validate contact (UserOneContact) using TOTP', async () => {
+      userOneTotpForContact = await generateTotpForContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
+      expect(userOneTotpForContact).toBeDefined();
+      const isValid = await validateTotp(rtConfig.clientOneURL, userOne.xpriv, userOne.paymail, userOneTotpForContact);
+      expect(isValid).toBe(true);
     });
 
-    test('User should remove a contact', async () => {
-      await removeContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
-      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
+    test('UserOne should confirm contact between UserOne and UserOneContact', async () => {
+      expect(userOneTotpForContact).toBeDefined();
+      const isConfirmed = await confirmContact(rtConfig.clientOneURL, userOne.xpriv, userOne.paymail, userOneContact.paymail, userOneTotpForContact);
+      expect(isConfirmed).toBe(true);
+    });
+
+    test('UserOne should unconfirm contact between UserOne and UserOneContact', async () => {
+      await unconfirmContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
+      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
+      expect(contact).toBeDefined();
+    });
+
+    test('UserOne should remove UserOneContact from contacts', async () => {
+      await removeContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
+      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
       expect(contact).toBeUndefined();
     });
   });
 
-  /**
-  * ADMIN TESTS
-  */
-  describe('Admin Operations', () => {
-    test('Admin should confirm a contact', async () => {
-      await confirmContact(rtConfig.clientOneURL, ADMIN_XPRIV, userOne.paymail, userTwo.paymail);
-    });
-  });
+  // describe('User Operations for Instance Two', () => {
+  //   test('UserTwo should add UserTwoContact as contact', async () => {
+  //     await addContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail, userTwo.paymail, 'Alice');
+  //     const contact = await getContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail);
+  //     expect(contact).toBeDefined();
+  //     expect(contact.paymail).toBe(userTwoContact.paymail);
+  //   });
+  //   test('UserTwo should validate contact (UserTwoContact) using TOTP', async () => {
+  //     const generatedTotp = await generateTotp(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail);
+  //     expect(generatedTotp).toBeDefined();
+  //     const isValid = await validateTotp(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail, generatedTotp);
+  //     expect(isValid).toBe(true);
+  //   });
+  //   test('Admin should confirm contact between UserTwo and UserTwoContact', async () => {
+  //     await confirmContact(rtConfig.clientTwoURL, ADMIN_XPRIV, userTwo.paymail, userTwoContact.paymail);
+  //     const contact = await getContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail);
+  //     expect(contact).toBeDefined();
+  //   });
+  //   test('UserTwo should remove UserTwoContact', async () => {
+  //     await removeContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail);
+  //     const contact = await getContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail);
+  //     expect(contact).toBeUndefined();
+  //   });
+  // });
 });
