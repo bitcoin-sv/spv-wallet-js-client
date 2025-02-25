@@ -169,10 +169,7 @@ export const addContact = async (
   contactName: string
 ) => {
   const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  console.log(`Adding contact: ${contactName} (${contactPaymail})`);
   await client.upsertContact(contactPaymail, contactName, '', {});
-  const contact = await client.contactWithPaymail(contactPaymail);
-  console.log(`✅ Contact added:`, contact);
 };
 
 // Get a contact by paymail
