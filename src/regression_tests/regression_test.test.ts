@@ -27,7 +27,9 @@ const ADMIN_XPUB =
 let paymailDomainInstanceOne = '';
 let paymailDomainInstanceTwo = '';
 let userOne: RegressionTestUser;
+let userOneContact: RegressionTestUser;
 let userTwo: RegressionTestUser;
+let userTwoContact: RegressionTestUser;
 let rtConfig: RegressionTestConfig;
 
 const sendAndVerifyFunds = async (
@@ -59,8 +61,16 @@ afterAll(async () => {
     await expect(removeRegisteredPaymail(userOne.paymailId, rtConfig.clientOneURL, ADMIN_XPRIV)).resolves.not.toThrow();
   }
 
+  if (userOneContact) {
+    await expect(removeRegisteredPaymail(userOneContact.paymailId, rtConfig.clientOneURL, ADMIN_XPRIV)).resolves.not.toThrow();
+  }
+
   if (userTwo) {
     await expect(removeRegisteredPaymail(userTwo.paymailId, rtConfig.clientTwoURL, ADMIN_XPRIV)).resolves.not.toThrow();
+  }
+
+  if (userTwoContact) {
+    await expect(removeRegisteredPaymail(userTwoContact.paymailId, rtConfig.clientTwoURL, ADMIN_XPRIV)).resolves.not.toThrow();
   }
 });
 
@@ -86,6 +96,16 @@ describe('TestRegression', () => {
     test('Should create user for instance two', async () => {
       const userName = 'instanceTwoUser1';
       userTwo = await createUser(userName, paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
+    });
+
+    test('Should create user for instance one', async () => {
+      const userName = 'instanceOneUser2';
+      userOneContact = await createUser(userName, paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
+    });
+
+    test('Should create user for instance two', async () => {
+      const userName = 'instanceTwoUser2';
+      userTwoContact = await createUser(userName, paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
     });
   });
 
@@ -150,9 +170,16 @@ describe('TestRegression', () => {
   });
 
   describe('User Operations', () => {
-    test('User should add a contact', async () => {
-      await addContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail, 'Bob');
-      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userTwo.paymail);
+    test('User should add a contact one', async () => {
+      await addContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail, 'Bob');
+      const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
+      expect(contact).toBeDefined();
+      expect(contact.paymail).toBe(userOne.paymail);
+    });
+
+    test('User should add a contact two', async () => {
+      await addContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail, 'Bob');
+      const contact = await getContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail);
       expect(contact).toBeDefined();
       expect(contact.paymail).toBe(userTwo.paymail);
     });
