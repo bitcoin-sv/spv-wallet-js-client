@@ -165,11 +165,12 @@ const isValidURL = (rawURL: string) => {
 export const addContact = async (
   instanceUrl: string,
   xPriv: string,
+  paymail: string,
   contactPaymail: string,
   contactName: string
 ) => {
   const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  await client.upsertContact(contactPaymail, contactName, '', {});
+  await client.upsertContact(paymail, contactName, contactPaymail, {});
 };
 
 // Get a contact by paymail
