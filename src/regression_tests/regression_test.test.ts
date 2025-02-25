@@ -174,14 +174,14 @@ describe('TestRegression', () => {
       await addContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail, userOne.paymail, 'Bob');
       const contact = await getContact(rtConfig.clientOneURL, userOne.xpriv, userOneContact.paymail);
       expect(contact).toBeDefined();
-      expect(contact.paymail).toBe(userOne.paymail);
+      expect(contact.paymail).toBe(userOneContact.paymail);
     });
 
     test('User should add a contact two', async () => {
       await addContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail, userTwo.paymail, 'Alice');
       const contact = await getContact(rtConfig.clientTwoURL, userTwo.xpriv, userTwoContact.paymail);
       expect(contact).toBeDefined();
-      expect(contact.paymail).toBe(userTwo.paymail);
+      expect(contact.paymail).toBe(userTwoContact.paymail);
     });
   });
 });
