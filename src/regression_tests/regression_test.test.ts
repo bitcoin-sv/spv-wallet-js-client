@@ -90,22 +90,22 @@ describe('TestRegression', () => {
   describe('Create Users', () => {
     test('Should create user for instance one', async () => {
       const userName = 'instanceOneUser1';
-      userOne = await createUser(userName, paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
+      userOne = await createUser(userName.toLowerCase(), paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
     });
 
     test('Should create user for instance two', async () => {
       const userName = 'instanceTwoUser1';
-      userTwo = await createUser(userName, paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
+      userTwo = await createUser(userName.toLowerCase(), paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
     });
 
     test('Should create user for instance one', async () => {
       const userName = 'instanceOneUser2';
-      userOneContact = await createUser(userName, paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
+      userOneContact = await createUser(userName.toLowerCase(), paymailDomainInstanceOne, rtConfig.clientOneURL, ADMIN_XPRIV);
     });
 
     test('Should create user for instance two', async () => {
       const userName = 'instanceTwoUser2';
-      userTwoContact = await createUser(userName, paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
+      userTwoContact = await createUser(userName.toLowerCase(), paymailDomainInstanceTwo, rtConfig.clientTwoURL, ADMIN_XPRIV);
     });
   });
 
