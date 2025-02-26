@@ -156,7 +156,7 @@ import {
      * @param {string} requesterPaymail - Paymail of the person requesting confirmation
      * @param {number} [period=DEFAULT_TOTP_PERIOD] - TOTP period in seconds
      * @param {number} [digits=DEFAULT_TOTP_DIGITS] - Number of digits in TOTP
-     * @returns {Promise<boolean>} True if confirmation successful
+     * @returns {Promise<void>} True if confirmation successful
      * @throws {ErrorWrongTOTP} If TOTP validation fails
      */
     async confirmContact(
@@ -165,13 +165,13 @@ import {
       requesterPaymail: string,
       period: number = DEFAULT_TOTP_PERIOD,
       digits: number = DEFAULT_TOTP_DIGITS,
-    ): Promise<boolean> {
+    ): Promise<void> {
       const isTotpValid = this.validateTotpForContact(contact, passcode, requesterPaymail, period, digits);
       if (!isTotpValid) {
         throw new ErrorWrongTOTP();
       }
   
-      return await this.http.request(`contacts/${requesterPaymail}/confirmation`, 'POST');
+      return await this.http.request(`contacts/${contact.paymail}/confirmation`, 'POST');
     }
   
     /**
