@@ -29,10 +29,10 @@ const ADMIN_XPUB =
 let slPaymailDomainInstance = '';
 // PG = PostgreSQL
 let pgPaymailDomainInstance = '';
-// SL = SQLite
-let Bob: RegressionTestUser;
+// Alice & Bob are users for SQLite instance
 let Alice: RegressionTestUser;
-// PG = PostgreSQL
+let Bob: RegressionTestUser;
+// Tom & Jerry are users for PostgreSQL instance
 let Tom: RegressionTestUser;
 let Jerry: RegressionTestUser;
 
