@@ -95,22 +95,22 @@ describe('TestRegression', () => {
 
   describe('Create Users', () => {
     test('Should create user for instance one', async () => {
-      const userName = 'instanceBob';
+      const userName = 'Bob';
       Bob = await createUser(userName, slPaymailDomainInstance, rtConfig.slClientURL, ADMIN_XPRIV);
     });
 
     test('Should create user for instance one', async () => {
-      const userName = 'instanceAlice';
+      const userName = 'Alice';
       Alice = await createUser(userName, slPaymailDomainInstance, rtConfig.slClientURL, ADMIN_XPRIV);
     });
 
     test('Should create user for instance two', async () => {
-      const userName = 'instanceTom';
+      const userName = 'Tom';
       Tom = await createUser(userName, pgPaymailDomainInstance, rtConfig.pgClientURL, ADMIN_XPRIV);
     });
 
     test('Should create user for instance two', async () => {
-      const userName = 'instanceJerry';
+      const userName = 'Jerry';
       Jerry = await createUser(userName, pgPaymailDomainInstance, rtConfig.pgClientURL, ADMIN_XPRIV);
     });
   });

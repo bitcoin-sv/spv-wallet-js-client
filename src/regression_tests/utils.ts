@@ -189,24 +189,10 @@ export const getContacts = async (instanceUrl: string, xPriv: string, contactPay
   const queryParams = {};
 
   const contactList = await client.contacts(conditions, metadata, queryParams);
-  if (!contactList || !contactList.content || contactList.content.length === 0) {
-    return [];
-  }
-  return contactList.content;
+  return contactList?.content ? contactList.content : [];
 };
 
-// Generate and validate a contact's TOTP
-export const validateTotp = async (
-  instanceUrl: string,
-  xPriv: string,
-  receivedTotp: string,
-  contactPaymail: string
-) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
-  const contact = await client.contactWithPaymail(contactPaymail);
-  return client.validateTotpForContact(contact, receivedTotp, contactPaymail, TOTP_PERIOD, TOTP_DIGITS);
-};
-
+// confirm a contact
 export const confirmContact = async (
   instanceUrl: string,
   xPriv: string,
@@ -222,6 +208,7 @@ export const confirmContact = async (
   await client.confirmContact(contact, receivedTotp, requesterPaymail, TOTP_PERIOD, TOTP_DIGITS);
 };
 
+// Unconfirm a contact
 export const unconfirmContact = async (
   instanceUrl: string,
   xPriv: string,
