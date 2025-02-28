@@ -316,7 +316,7 @@ describe('TestRegression', () => {
     test('Admin should remove Bob from Alice’s contacts', async () => {
         await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
-        console.log('Admin remove contact: ', contacts);
+        console.log('Admin remove contact: ', contacts,"bob id to verify:", BobId);
         expect(contacts).toHaveLength(0);
     });
 });
