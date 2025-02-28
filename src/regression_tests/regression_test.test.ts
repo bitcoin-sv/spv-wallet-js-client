@@ -266,9 +266,9 @@ describe('TestRegression', () => {
     let BobId = '';
     test('Admin should add Bob as Alice’s contact', async () => {
         const newContact = {
-            paymail: "conntact-paymail@13592643747-1-sl.regression.4chain.pl",
-            fullName: 'Alicefullname',
-            creatorPaymail: "creator-paymail@13592643747-1-sl.regression.4chain.pl",
+            paymail: Alice.paymail,
+            fullName: 'Bob',
+            creatorPaymail: Bob.paymail,
         };
         const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail, newContact);
         expect(contact).toBeDefined();
