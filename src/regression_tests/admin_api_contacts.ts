@@ -1,6 +1,5 @@
 import { SPVWalletAdminAPI } from '../admin-api';
-import { Metadata, QueryPageParams, NewContact, Contact } from '../types';
-import { AdminContactFilter } from '../filters';
+import { NewContact, Contact } from '../types';
 
 /**
  * Fetches all contacts from the SPV Wallet based on filters.
@@ -13,13 +12,11 @@ import { AdminContactFilter } from '../filters';
  * @returns {Promise<Contact[]>} - List of contacts.
  */
 export const getContacts = async (
-  conditions: AdminContactFilter,
-  params: QueryPageParams,
   instanceURL: string,
   adminXPriv: string
 ): Promise<Contact[]> => {
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
-  const contactsPage = await adminClient.contacts(conditions, {}, params);
+  const contactsPage = await adminClient.contacts({}, {}, {});
   return contactsPage.content;
 };
 

@@ -273,7 +273,7 @@ describe('TestRegression', () => {
     });
 
     test('Admin should retrieve all contacts of Alice', async () => {
-      const contacts = await getContactsAdmin({}, {}, rtConfig.slClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
       expect(contacts).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
     });
 
@@ -292,20 +292,20 @@ describe('TestRegression', () => {
     });
 
     test('Admin should confirm contact connection between Alice and Bob', async () => {
-      await confirmContactConnectionAdmin(Alice.paymail, Bob.paymail, rtConfig.slClientURL, ADMIN_XPRIV);
-      const contacts = await getContactsAdmin({}, {}, rtConfig.slClientURL, ADMIN_XPRIV);
+      await confirmContactAdmin(Alice.paymail, Bob.paymail, rtConfig.slClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
     });
 
     test('Admin should unconfirm contact between Alice and Bob', async () => {
       await unconfirmContactAdmin(Bob.paymail, rtConfig.slClientURL, ADMIN_XPRIV);
-      const contacts = await getContactsAdmin({}, {}, rtConfig.slClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('unconfirmed');
     });
 
     test('Admin should remove Bob from Alice’s contacts', async () => {
       await deleteContactAdmin(Bob.paymail, rtConfig.slClientURL, ADMIN_XPRIV);
-      const contacts = await getContactsAdmin({}, {}, rtConfig.slClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Bob.paymail)).toBeUndefined();
     });
   });
@@ -322,7 +322,7 @@ describe('TestRegression', () => {
     });
 
     test('Admin should retrieve all contacts of Tom', async () => {
-      const contacts = await getContactsAdmin({}, {}, rtConfig.pgClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
       expect(contacts).toContainEqual(expect.objectContaining({ paymail: Jerry.paymail }));
     });
 
@@ -342,19 +342,19 @@ describe('TestRegression', () => {
 
     test('Admin should confirm contact connection between Tom and Jerry', async () => {
       await confirmContactAdmin(Tom.paymail, Jerry.paymail, rtConfig.pgClientURL, ADMIN_XPRIV);
-      const contacts = await getContactsAdmin({}, {}, rtConfig.pgClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Jerry.paymail)?.status).toBe('confirmed');
     });
 
     test('Admin should unconfirm contact between Tom and Jerry', async () => {
       await unconfirmContactAdmin(Jerry.paymail, rtConfig.pgClientURL, ADMIN_XPRIV);
-      const contacts = await getContactsAdmin({}, {}, rtConfig.pgClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Jerry.paymail)?.status).toBe('unconfirmed');
     });
 
     test('Admin should remove Jerry from Tom’s contacts', async () => {
       await deleteContactAdmin(Jerry.paymail, rtConfig.pgClientURL, ADMIN_XPRIV);
-      const contacts = await getContactsAdmin({}, {}, rtConfig.pgClientURL, ADMIN_XPRIV);
+      const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Jerry.paymail)).toBeUndefined();
     });
   });
