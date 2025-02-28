@@ -284,6 +284,7 @@ describe('TestRegression', () => {
       };
       const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail, newContact);
       expect(contact).toBeDefined();
+      console.log('Admin add contact: ', contact);
     });
 
     test('Admin should retrieve all contacts of Alice', async () => {
@@ -300,9 +301,11 @@ describe('TestRegression', () => {
       const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
       expect(updatedContact.fullName).toBe('Bob Updated');
       BobId = updatedContact.id
+      console.log('Admin add updated contact: ', updatedContact);
     });
 
     test('Admin should confirm contact connection between Alice and Bob', async () => {
+      console.log('Admin confirm contacts: ', Alice.paymail, Bob.paymail);
         await confirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail, Bob.paymail);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');

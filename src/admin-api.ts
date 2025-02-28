@@ -371,7 +371,9 @@ export class SPVWalletAdminAPI {
    * @returns {Promise<void>}
    */
   async confirmContacts(paymailA: string, paymailB: string): Promise<void> {
-    return await this.http.adminRequest('/admin/contacts/confirmations', 'POST', { paymailA, paymailB });
+    const resp = await this.http.adminRequest('/admin/contacts/confirmations', 'POST', { paymailA, paymailB });
+    console.log("confirm response", resp);
+    return resp
   }
 
   /**

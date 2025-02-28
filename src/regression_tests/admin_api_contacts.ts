@@ -122,8 +122,6 @@ export const confirmContact = async (
   paymailB: string
 ): Promise<void> => {
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
-  console.log('paymailA', paymailA);
-  console.log('paymailB', paymailB);
   await adminClient.confirmContacts(paymailA, paymailB);
 };
 
