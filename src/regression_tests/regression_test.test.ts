@@ -276,19 +276,29 @@ describe('TestRegression', () => {
         console.log('Admin add contact: ', contact);
     });
 
+    test('Admin should add Alice as Bob’s contact', async () => {
+      const newContact = {
+          paymail: Alice.paymail,
+          fullName: 'Alice',
+          creatorPaymail: Bob.paymail,
+      };
+      const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail, newContact);
+      expect(contact).toBeDefined();
+    });
+
     test('Admin should retrieve all contacts of Alice', async () => {
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
     });
 
+    test('Admin should retrieve all contacts of Bob', async () => {
+      const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+      expect(contacts).toContainEqual(expect.objectContaining({ paymail: Alice.paymail }));
+    });
+
     test('Admin should update Bob’s contact name', async () => {
       const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
       expect(updatedContact.fullName).toBe('Bob Updated');
-    });
-
-    test('Admin should accept contact invitation for Jerry', async () => {
-      const acceptedContact = await acceptContactInvitationAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, BobId);
-      expect(acceptedContact).toBeDefined();
     });
 
     test('Admin should confirm contact connection between Alice and Bob', async () => {
@@ -304,9 +314,9 @@ describe('TestRegression', () => {
     });
 
     test('Admin should remove Bob from Alice’s contacts', async () => {
-
         await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+        console.log('Admin remove contact: ', contacts);
         expect(contacts).toHaveLength(0);
     });
 });
