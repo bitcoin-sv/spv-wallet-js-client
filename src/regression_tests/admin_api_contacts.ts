@@ -19,7 +19,7 @@ export const getContacts = async (
   adminXPriv: string
 ): Promise<Contact[]> => {
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
-  const contactsPage = await adminClient.contacts(conditions, params);
+  const contactsPage = await adminClient.contacts(conditions, {}, params);
   return contactsPage.content;
 };
 
