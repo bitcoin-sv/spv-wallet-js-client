@@ -48,7 +48,7 @@ export const updateContact = async (
  * @param {string} adminXPriv - Admin private key.
  * @returns {Promise<void>}
  */
-export const deleteContact = async (contactId: string, instanceURL: string, adminXPriv: string): Promise<void> => {
+export const deleteContact = async (instanceURL: string, adminXPriv: string, contactId: string): Promise<void> => {
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
   await adminClient.deleteContact(contactId);
 };
@@ -93,10 +93,10 @@ export const rejectContactInvitation = async (invitationId: string, instanceURL:
  * @returns {Promise<Contact>} - The created contact.
  */
 export const createContact = async (
-  contactPaymail: string,
-  newContact: NewContact,
   instanceURL: string,
-  adminXPriv: string
+  adminXPriv: string,
+  contactPaymail: string,
+  newContact: NewContact
 ): Promise<Contact> => {
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
   return await adminClient.createContact(contactPaymail, newContact);
@@ -112,10 +112,10 @@ export const createContact = async (
  * @returns {Promise<void>}
  */
 export const confirmContact = async (
-  paymailA: string,
-  paymailB: string,
   instanceURL: string,
-  adminXPriv: string
+  adminXPriv: string,
+  paymailA: string,
+  paymailB: string
 ): Promise<void> => {
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
   await adminClient.confirmContacts(paymailA, paymailB);
@@ -130,9 +130,9 @@ export const confirmContact = async (
  * @returns {Promise<void>}
  */
 export const unconfirmContact = async (
-  contactId: string,
   instanceURL: string,
-  adminXPriv: string
+  adminXPriv: string,
+  contactId: string
 ): Promise<void> => {
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
   await adminClient.unconfirmContact(contactId);
