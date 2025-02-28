@@ -288,7 +288,6 @@ describe('TestRegression', () => {
     });
 
     test('Admin should remove Bob contact', async () => {
-      console.log('delete BobId::', BobId);
       await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
       const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Bob.paymail)).toBeFalsy();
