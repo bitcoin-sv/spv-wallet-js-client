@@ -266,11 +266,11 @@ describe('TestRegression', () => {
     let BobId = '';
     test('Admin should add Bob as Alice’s contact', async () => {
         const newContact = {
-            paymail: Bob.paymail,
-            fullName: 'Bob',
-            creatorPaymail: Alice.paymail,
+            paymail: "conntact-paymail@13592643747-1-sl.regression.4chain.pl",
+            fullName: 'Alicefullname',
+            creatorPaymail: "creator-paymail@13592643747-1-sl.regression.4chain.pl",
         };
-        const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail, newContact);
+        const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, "passed.contactPaymail@13592643747-1-sl.regression.4chain.pl", newContact);
         expect(contact).toBeDefined();
         BobId = contact.id;
         console.log('BobId::', BobId, 'contact::', contact);
@@ -317,6 +317,7 @@ describe('TestRegression', () => {
     });
 
     test('Admin should remove Bob contact', async () => {
+      console.log('delete BobId::', BobId);
       await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
       const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
       expect(contacts.find(c => c.paymail === Bob.paymail)).toBeFalsy();
