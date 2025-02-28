@@ -1,4 +1,5 @@
 import { SPVWalletUserAPI } from '../user-api';
+import { Contact } from '../types';
 
 const TOTP_DIGITS = 4;
 const TOTP_PERIOD = 1200;
@@ -19,9 +20,9 @@ export const addContact = async (
   contactPaymail: string,
   contactName: string,
   requesterPaymail: string
-): Promise<void> => {
+): Promise<Contact> => {
   const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  await client.upsertContact(contactPaymail, contactName, requesterPaymail, {});
+  return await client.upsertContact(contactPaymail, contactName, requesterPaymail, {});
 };
 
 /**
@@ -30,7 +31,7 @@ export const addContact = async (
  * @param {string} instanceUrl - The base URL of the SPV Wallet.
  * @param {string} xPriv - The user's private key.
  * @param {string} contactPaymail - The paymail address of the contact.
- * @returns {Promise<any>} - The contact details.
+ * @returns {Promise<Contact>} - The contact details.
  */
 export const getContact = async (instanceUrl: string, xPriv: string, contactPaymail: string): Promise<any> => {
   const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
@@ -43,7 +44,7 @@ export const getContact = async (instanceUrl: string, xPriv: string, contactPaym
  * @param {string} instanceUrl - The base URL of the SPV Wallet.
  * @param {string} xPriv - The user's private key.
  * @param {string} contactPaymail - The paymail address of the contact.
- * @returns {Promise<any[]>} - A list of matching contacts.
+ * @returns {Promise<Contact[]>} - A list of matching contacts.
  */
 export const getContacts = async (instanceUrl: string, xPriv: string, contactPaymail: string): Promise<any[]> => {
   const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
