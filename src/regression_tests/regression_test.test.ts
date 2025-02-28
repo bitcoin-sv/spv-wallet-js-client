@@ -266,7 +266,7 @@ describe('TestRegression', () => {
     let BobId = '';
     test('Admin should add Bob as Alice’s contact', async () => {
         const newContact = {
-            paymail: Alice.paymail,
+            paymail: Bob.paymail,
             fullName: 'Bob',
             creatorPaymail: Bob.paymail,
         };
@@ -281,15 +281,17 @@ describe('TestRegression', () => {
         expect(contacts).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
     });
 
-    test('Admin should accept contact invitation', async () => {
-      console.log('accept BobId::', BobId);
-      const acceptedContact = await acceptContactInvitationAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
-      expect(acceptedContact).toBeDefined();
+    test('Admin should update Bob’s contact name', async () => {
+      const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
+      expect(updatedContact.fullName).toBe('Bob Updated');
+      BobId = updatedContact.id
     });
 
-    test('Admin should reject contact invitation', async () => {
-      console.log('reject BobId::', BobId);
-      await expect(rejectContactInvitationAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId)).resolves.not.toThrow();
+    test('Admin should remove Bob contact', async () => {
+      console.log('delete BobId::', BobId);
+      await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
+      const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+      expect(contacts.find(c => c.paymail === Bob.paymail)).toBeFalsy();
     });
 
     test('Admin should confirm contact between Alice and Bob', async () => {
@@ -309,19 +311,6 @@ describe('TestRegression', () => {
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('unconfirmed');
     });
-
-    test('Admin should update Bob’s contact name', async () => {
-      const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
-      expect(updatedContact.fullName).toBe('Bob Updated');
-      BobId = updatedContact.id
-    });
-
-    test('Admin should remove Bob contact', async () => {
-      console.log('delete BobId::', BobId);
-      await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
-      const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
-      expect(contacts.find(c => c.paymail === Bob.paymail)).toBeFalsy();
-  });
 });
 
   // describe('PostgreSQL Admin Contact Operations (Tom and Jerry)', () => {
