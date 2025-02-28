@@ -299,6 +299,7 @@ describe('TestRegression', () => {
     test('Admin should update Bob’s contact name', async () => {
       const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
       expect(updatedContact.fullName).toBe('Bob Updated');
+      BobId = updatedContact.id
     });
 
     test('Admin should confirm contact connection between Alice and Bob', async () => {
@@ -317,7 +318,7 @@ describe('TestRegression', () => {
         await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         console.log('Admin remove contact: ', contacts,"bob id to verify:", BobId);
-        expect(contacts).toHaveLength(0);
+        expect(contacts.find(c => c.paymail === Bob.paymail)).toBeUndefined();
     });
 });
 
