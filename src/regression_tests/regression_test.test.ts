@@ -286,8 +286,13 @@ describe('TestRegression', () => {
       expect(updatedContact.fullName).toBe('Bob Updated');
     });
 
+    test('Admin should accept contact invitation for Jerry', async () => {
+      const acceptedContact = await acceptContactInvitationAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, BobId);
+      expect(acceptedContact).toBeDefined();
+    });
+
     test('Admin should confirm contact connection between Alice and Bob', async () => {
-        await confirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail.toLowerCase(), Bob.paymail.toLowerCase());
+        await confirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail, Bob.paymail);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
     });
@@ -302,7 +307,7 @@ describe('TestRegression', () => {
 
         await deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
-        expect(contacts.find(c => c.paymail === Bob.paymail)).toBeUndefined();
+        expect(contacts).toHaveLength(0);
     });
 });
 
