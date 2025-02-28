@@ -273,7 +273,6 @@ describe('TestRegression', () => {
         const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail, newContact);
         expect(contact).toBeDefined();
         BobId = contact.id;
-        console.log('BobId::', BobId, 'contact::', contact);
     });
 
     test('Admin should retrieve all contacts', async () => {
@@ -284,7 +283,7 @@ describe('TestRegression', () => {
     test('Admin should update Bob’s contact name', async () => {
       const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
       expect(updatedContact.fullName).toBe('Bob Updated');
-      BobId = updatedContact.id
+      console.log('BobId::', BobId, 'contact::', updatedContact.id);
     });
 
     test('Admin should remove Bob contact', async () => {
@@ -298,15 +297,16 @@ describe('TestRegression', () => {
         expect(aliceContact).toBeDefined();
         const bobContact = await addContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail, 'Bob', Alice.paymail);
         expect(bobContact).toBeDefined();
+        BobId = bobContact.id;
 
         await confirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail, Bob.paymail);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
-        console.log('contacts', contacts);
+        expect(contacts.find(c => c.paymail === Alice.paymail)?.status).toBe('confirmed');
     });
 
     test('Admin should unconfirm contact between Alice and Bob', async () => {
-        await unconfirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail);
+        await unconfirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('unconfirmed');
     });
