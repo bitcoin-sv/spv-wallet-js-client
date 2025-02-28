@@ -270,7 +270,7 @@ describe('TestRegression', () => {
             fullName: 'Alicefullname',
             creatorPaymail: "creator-paymail@13592643747-1-sl.regression.4chain.pl",
         };
-        const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, "passed.contactPaymail@13592643747-1-sl.regression.4chain.pl", newContact);
+        const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail, newContact);
         expect(contact).toBeDefined();
         BobId = contact.id;
         console.log('BobId::', BobId, 'contact::', contact);
