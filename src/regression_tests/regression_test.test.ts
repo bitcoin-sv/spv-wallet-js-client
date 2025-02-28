@@ -304,6 +304,8 @@ describe('TestRegression', () => {
     });
 
     test('Admin should unconfirm contact between Alice and Bob', async () => {
+        const contacts1 = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+        console.log('contacts::', contacts1);
         await unconfirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         console.log('contacts::', contacts);
