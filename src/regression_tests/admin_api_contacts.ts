@@ -114,7 +114,7 @@ export const createContact = async (
  * @param {string} adminXPriv - Admin private key.
  * @returns {Promise<void>}
  */
-export const confirmContactConnection = async (
+export const confirmContact = async (
   paymailA: string,
   paymailB: string,
   instanceURL: string,
