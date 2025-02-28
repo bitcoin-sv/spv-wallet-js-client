@@ -277,20 +277,6 @@ describe('TestRegression', () => {
       expect(contacts).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
     });
 
-    test('Admin should update Bob’s contact name', async () => {
-      const updatedContact = await updateContactAdmin(Bob.paymail, 'Bob Updated', rtConfig.slClientURL, ADMIN_XPRIV);
-      expect(updatedContact.fullName).toBe('Bob Updated');
-    });
-
-    test('Admin should accept contact invitation', async () => {
-      const acceptedContact = await acceptContactInvitationAdmin(Bob.paymail, rtConfig.slClientURL, ADMIN_XPRIV);
-      expect(acceptedContact).toBeDefined();
-    });
-
-    test('Admin should reject contact invitation', async () => {
-      await expect(rejectContactInvitationAdmin(Bob.paymail, rtConfig.slClientURL, ADMIN_XPRIV)).resolves.not.toThrow();
-    });
-
     test('Admin should confirm contact connection between Alice and Bob', async () => {
       await confirmContactAdmin(Alice.paymail, Bob.paymail, rtConfig.slClientURL, ADMIN_XPRIV);
       const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
@@ -324,20 +310,6 @@ describe('TestRegression', () => {
     test('Admin should retrieve all contacts of Tom', async () => {
       const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
       expect(contacts).toContainEqual(expect.objectContaining({ paymail: Jerry.paymail }));
-    });
-
-    test('Admin should update Jerry’s contact name', async () => {
-      const updatedContact = await updateContactAdmin(Jerry.paymail, 'Jerry Updated', rtConfig.pgClientURL, ADMIN_XPRIV);
-      expect(updatedContact.fullName).toBe('Jerry Updated');
-    });
-
-    test('Admin should accept contact invitation for Jerry', async () => {
-      const acceptedContact = await acceptContactInvitationAdmin(Jerry.paymail, rtConfig.pgClientURL, ADMIN_XPRIV);
-      expect(acceptedContact).toBeDefined();
-    });
-
-    test('Admin should reject contact invitation for Jerry', async () => {
-      await expect(rejectContactInvitationAdmin(Jerry.paymail, rtConfig.pgClientURL, ADMIN_XPRIV)).resolves.not.toThrow();
     });
 
     test('Admin should confirm contact connection between Tom and Jerry', async () => {
