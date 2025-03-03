@@ -9,13 +9,6 @@ import {
   RegressionTestUser,
   removeRegisteredPaymail,
   sendFunds,
-  addContact,
-  getContact,
-  confirmContact,
-  removeContact,
-  unconfirmContact,
-  getContacts,
-  generateTotp as generateTotpForContact,
 } from './utils';
 import {
   addContact,
@@ -31,7 +24,7 @@ import {
   createContact as createContactAdmin,
   updateContact as updateContactAdmin,
   deleteContact as deleteContactAdmin,
-  confirmContact as confirmContactAdmin,
+  confirmContacts,
 } from './admin_api_contacts';
 import {
   getAccessKeysAdmin,
@@ -305,7 +298,7 @@ describe('TestRegression', () => {
         const bobContact = await addContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail, 'Bob', Alice.paymail);
         expect(bobContact).toBeDefined();
 
-        await confirmContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail, Bob.paymail);
+        await confirmContacts(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail, Bob.paymail);
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
         expect(contacts.find(c => c.paymail === Alice.paymail)?.status).toBe('confirmed');
@@ -345,7 +338,7 @@ describe('TestRegression', () => {
         const tomContact = await addContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail, 'Tom', Jerry.paymail);
         expect(tomContact).toBeDefined();
 
-        await confirmContactAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, Jerry.paymail, Tom.paymail);
+        await confirmContacts(rtConfig.pgClientURL, ADMIN_XPRIV, Jerry.paymail, Tom.paymail);
         const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Tom.paymail)?.status).toBe('confirmed');
         expect(contacts.find(c => c.paymail === Jerry.paymail)?.status).toBe('confirmed');
