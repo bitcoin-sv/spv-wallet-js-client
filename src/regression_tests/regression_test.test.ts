@@ -26,7 +26,6 @@ import {
   deleteContact as deleteContactAdmin,
   confirmContacts as confirmContactsAdmin,
 } from './admin_api_contacts';
-import { Contact } from '../types';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
 const TEST_TIMEOUT_MS = 2 * 60 * 1000;
