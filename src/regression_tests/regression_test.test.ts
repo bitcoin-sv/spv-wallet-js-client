@@ -194,75 +194,95 @@ describe('TestRegression', () => {
   describe('SQLite User Operations instance for Bob and Alice', () => {
 
     test('Bob should add Alice as contact', async () => {
-      const contact = await addContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail, 'Alice', Bob.paymail);
-      expect(contact).toBeDefined();
-      const contacts = await getContacts(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-      expect(contacts).toHaveLength(1);
-    });
+        const contact = await addContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail, 'Alice', Bob.paymail);
+        expect(contact).toBeDefined();
+        const contacts = await getContacts(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        expect(contacts).toHaveLength(1);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Alice should add Bob as contact', async () => {
-      const contact = await addContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail, 'Bob', Alice.paymail);
-      expect(contact).toBeDefined();
-      const contacts = await getContacts(rtConfig.slClientURL, Alice.xpriv, Bob.paymail);
-      expect(contacts).toHaveLength(1);
-    });
+        const contact = await addContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail, 'Bob', Alice.paymail);
+        expect(contact).toBeDefined();
+        const contacts = await getContacts(rtConfig.slClientURL, Alice.xpriv, Bob.paymail);
+        expect(contacts).toHaveLength(1);
+    },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Bob should confirm contact between Bob and Alice', async () => {
-      const totpForBob = await generateTotpForContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail);
-      expect(totpForBob).toBeDefined();
-      await confirmContact(rtConfig.slClientURL, Bob.xpriv, Bob.paymail, Alice.paymail, totpForBob);
-      const contact = await getContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-      expect(contact.status).toBe('confirmed');
-    });
+        const totpForBob = await generateTotpForContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail);
+        expect(totpForBob).toBeDefined();
+        await confirmContact(rtConfig.slClientURL, Bob.xpriv, Bob.paymail, Alice.paymail, totpForBob);
+        const contact = await getContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        expect(contact.status).toBe('confirmed');
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Bob should unconfirm contact between Bob and Alice', async () => {
-      await unconfirmContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-      const contact = await getContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-      expect(contact.status).toBe('unconfirmed');
-    });
+        await unconfirmContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        const contact = await getContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        expect(contact.status).toBe('unconfirmed');
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Bob should remove Alice from contacts', async () => {
-      await removeContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-      const contacts = await getContacts(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-      expect(contacts).toHaveLength(0);
-    });
+        await removeContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        const contacts = await getContacts(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        expect(contacts).toHaveLength(0);
+      },
+      TEST_TIMEOUT_MS,
+    );
   });
 
   describe('PostgresSOL User Operations instance for Tom and Jerry', () => {
 
     test('Tom should add Jerry as contact', async () => {
-      const contact = await addContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail, 'Jerry', Tom.paymail);
-      expect(contact).toBeDefined();
-      const contacts = await getContacts(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-      expect(contacts).toHaveLength(1);
-    });
+        const contact = await addContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail, 'Jerry', Tom.paymail);
+        expect(contact).toBeDefined();
+        const contacts = await getContacts(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        expect(contacts).toHaveLength(1);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Jerry should add Tom as contact', async () => {
-      const contact = await addContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail, 'Tom', Jerry.paymail);
-      expect(contact).toBeDefined();
-      const contacts = await getContacts(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail);
-      expect(contacts).toHaveLength(1);
-    });
+        const contact = await addContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail, 'Tom', Jerry.paymail);
+        expect(contact).toBeDefined();
+        const contacts = await getContacts(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail);
+        expect(contacts).toHaveLength(1);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Tom should confirm contact between Tom and Jerry', async () => {
-      const totpForTom = await generateTotpForContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail);
-      expect(totpForTom).toBeDefined();
-      await confirmContact(rtConfig.pgClientURL, Tom.xpriv, Tom.paymail, Jerry.paymail, totpForTom);
-      const contact = await getContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-      expect(contact.status).toBe('confirmed');
-    });
+        const totpForTom = await generateTotpForContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail);
+        expect(totpForTom).toBeDefined();
+        await confirmContact(rtConfig.pgClientURL, Tom.xpriv, Tom.paymail, Jerry.paymail, totpForTom);
+        const contact = await getContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        expect(contact.status).toBe('confirmed');
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Tom should unconfirm contact between Tom and Jerry', async () => {
-      await unconfirmContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-      const contact = await getContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-      expect(contact.status).toBe('unconfirmed');
-    });
+        await unconfirmContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        const contact = await getContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        expect(contact.status).toBe('unconfirmed');
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Tom should remove Jerry from contacts', async () => {
-      await removeContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-      const contacts = await getContacts(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-      expect(contacts).toHaveLength(0);
-    });
+        await removeContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        const contacts = await getContacts(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        expect(contacts).toHaveLength(0);
+      },
+      TEST_TIMEOUT_MS,
+    );
   });
 
   describe('SQLite Admin Contact Operations (Bob and Alice)', () => {
@@ -276,21 +296,29 @@ describe('TestRegression', () => {
         const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail, newContact);
         expect(contact).toBeDefined();
         BobId = contact.id;
-    });
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should retrieve all contacts', async () => {
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
-    });
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should update Bob contact name', async () => {
-      const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
-      expect(updatedContact.fullName).toBe('Bob Updated');
-    });
+        const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
+        expect(updatedContact.fullName).toBe('Bob Updated');
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should remove Bob contact', async () => {
       await expect(deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId)).resolves.not.toThrow();
-    });
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should confirm contact between Alice and Bob', async () => {
         const aliceContact = await addContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail, 'Alice', Bob.paymail);
@@ -302,7 +330,9 @@ describe('TestRegression', () => {
         const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
         expect(contacts.find(c => c.paymail === Alice.paymail)?.status).toBe('confirmed');
-    });
+      },
+      TEST_TIMEOUT_MS,
+    );
 });
 
   describe('PostgreSQL Admin Contact Operations (Tom and Jerry)', () => {
@@ -316,17 +346,23 @@ describe('TestRegression', () => {
         const contact = await createContactAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, Tom.paymail, newContact);
         expect(contact).toBeDefined();
         TomId = contact.id;
-    });
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should retrieve all contacts', async () => {
         const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
         expect(contacts).toContainEqual(expect.objectContaining({ paymail: Tom.paymail }));
-    });
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should update Tom contact name', async () => {
-      const updatedContact = await updateContactAdmin(rtConfig.pgClientURL,ADMIN_XPRIV, TomId, 'Tom Updated');
-      expect(updatedContact.fullName).toBe('Tom Updated');
-    });
+        const updatedContact = await updateContactAdmin(rtConfig.pgClientURL,ADMIN_XPRIV, TomId, 'Tom Updated');
+        expect(updatedContact.fullName).toBe('Tom Updated');
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should remove Tom contact', async () => {
       await expect(deleteContactAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, TomId)).resolves.not.toThrow();
@@ -342,85 +378,107 @@ describe('TestRegression', () => {
         const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Tom.paymail)?.status).toBe('confirmed');
         expect(contacts.find(c => c.paymail === Jerry.paymail)?.status).toBe('confirmed');
-    });
+      },
+      TEST_TIMEOUT_MS,
+    );
   });
 
   describe('SQLite Access Key Management', () => {
     let testAccessKeyId: string;
 
     test('User should generate an access key', async () => {
-      const accessKey = await generateAccessKey(rtConfig.slClientURL, Bob.xpriv);
-      expect(accessKey).toBeDefined();
-      expect(accessKey.id).toBeDefined();
-      testAccessKeyId = accessKey.id;
-    });
+        const accessKey = await generateAccessKey(rtConfig.slClientURL, Bob.xpriv);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBeDefined();
+        testAccessKeyId = accessKey.id;
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('User should fetch all access keys', async () => {
-      const accessKeys = await getAccessKeys(rtConfig.slClientURL, Bob.xpriv);
-      expect(Array.isArray(accessKeys)).toBe(true);
-      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
-    });
+        const accessKeys = await getAccessKeys(rtConfig.slClientURL, Bob.xpriv);
+        expect(Array.isArray(accessKeys)).toBe(true);
+        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('User should fetch an access key by ID', async () => {
       if (!testAccessKeyId) return;
-      const accessKey = await getAccessKeyById(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId);
-      expect(accessKey).toBeDefined();
-      expect(accessKey.id).toBe(testAccessKeyId);
-    });
+        const accessKey = await getAccessKeyById(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBe(testAccessKeyId);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('User should revoke an access key', async () => {
-      if (!testAccessKeyId) return;
-      await expect(revokeAccessKey(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId)).resolves.not.toThrow();
-    });
+        if (!testAccessKeyId) return;
+        await expect(revokeAccessKey(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId)).resolves.not.toThrow();
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should fetch all access keys', async () => {
-      const accessKey = await generateAccessKey(rtConfig.slClientURL, Alice.xpriv);
-      expect(accessKey).toBeDefined();
-      expect(accessKey.id).toBeDefined();
+        const accessKey = await generateAccessKey(rtConfig.slClientURL, Alice.xpriv);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBeDefined();
 
-      const accessKeys = await getAccessKeysAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
-      expect(Array.isArray(accessKeys)).toBe(true);
-      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
-    });
+        const accessKeys = await getAccessKeysAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+        expect(Array.isArray(accessKeys)).toBe(true);
+        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+      },
+      TEST_TIMEOUT_MS,
+    );
   });
 
   describe('PostgresSQL Access Key Management', () => {
     let testAccessKeyId: string;
 
     test('User should generate an access key', async () => {
-      const accessKey = await generateAccessKey(rtConfig.pgClientURL, Tom.xpriv);
-      expect(accessKey).toBeDefined();
-      expect(accessKey.id).toBeDefined();
-      testAccessKeyId = accessKey.id;
-    });
+        const accessKey = await generateAccessKey(rtConfig.pgClientURL, Tom.xpriv);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBeDefined();
+        testAccessKeyId = accessKey.id;
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('User should fetch all access keys', async () => {
-      const accessKeys = await getAccessKeys(rtConfig.pgClientURL, Tom.xpriv);
-      expect(Array.isArray(accessKeys)).toBe(true);
-      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
-    });
+        const accessKeys = await getAccessKeys(rtConfig.pgClientURL, Tom.xpriv);
+        expect(Array.isArray(accessKeys)).toBe(true);
+        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('User should fetch an access key by ID', async () => {
-      if (!testAccessKeyId) return;
-      const accessKey = await getAccessKeyById(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId);
-      expect(accessKey).toBeDefined();
-      expect(accessKey.id).toBe(testAccessKeyId);
-    });
+        if (!testAccessKeyId) return;
+        const accessKey = await getAccessKeyById(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBe(testAccessKeyId);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('User should revoke an access key', async () => {
-      if (!testAccessKeyId) return;
-      await expect(revokeAccessKey(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId)).resolves.not.toThrow();
-    });
+        if (!testAccessKeyId) return;
+        await expect(revokeAccessKey(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId)).resolves.not.toThrow();
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('Admin should fetch all access keys', async () => {
-      const accessKey = await generateAccessKey(rtConfig.pgClientURL, Jerry.xpriv);
-      expect(accessKey).toBeDefined();
-      expect(accessKey.id).toBeDefined();
+        const accessKey = await generateAccessKey(rtConfig.pgClientURL, Jerry.xpriv);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBeDefined();
 
-      const accessKeys = await getAccessKeysAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
-      expect(Array.isArray(accessKeys)).toBe(true);
-      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
-      expect(accessKeys[0].id).toBe(accessKey.id);
-    });
+        const accessKeys = await getAccessKeysAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
+        expect(Array.isArray(accessKeys)).toBe(true);
+        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+        expect(accessKeys[0].id).toBe(accessKey.id);
+      },
+      TEST_TIMEOUT_MS,
+    );
   });
 });
