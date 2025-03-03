@@ -9,6 +9,13 @@ import {
   RegressionTestUser,
   removeRegisteredPaymail,
   sendFunds,
+  addContact,
+  getContact,
+  confirmContact,
+  removeContact,
+  unconfirmContact,
+  getContacts,
+  generateTotp as generateTotpForContact,
 } from './utils';
 import {
   addContact,
