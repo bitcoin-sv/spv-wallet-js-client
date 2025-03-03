@@ -24,10 +24,7 @@ import {
   createContact as createContactAdmin,
   updateContact as updateContactAdmin,
   deleteContact as deleteContactAdmin,
-  acceptContactInvitation as acceptContactInvitationAdmin,
-  rejectContactInvitation as rejectContactInvitationAdmin,
   confirmContact as confirmContactAdmin,
-  unconfirmContact as unconfirmContactAdmin,
 } from './admin_api_contacts';
 import { Contact } from '../types';
 
