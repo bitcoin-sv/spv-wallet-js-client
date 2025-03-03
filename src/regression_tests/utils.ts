@@ -71,7 +71,6 @@ export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
 // createUser creates a set of keys and new paymail in the SPV wallet
 export const createUser = async (alias: string, paymailDomain: string, instanceUrl: string, adminXPriv: string) => {
   const keys = generateKeys();
-
   const user: RegressionTestUser = {
     xpriv: keys.xPriv(),
     xpub: keys.xPub.toString(),
