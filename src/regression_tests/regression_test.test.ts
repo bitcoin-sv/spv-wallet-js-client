@@ -26,6 +26,13 @@ import {
   deleteContact as deleteContactAdmin,
   confirmContacts as confirmContactsAdmin,
 } from './admin_api_contacts';
+import {
+  getAccessKeysAdmin,
+  getAccessKeys,
+  generateAccessKey,
+  getAccessKeyById,
+  revokeAccessKey,
+} from './access_key';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
 const TEST_TIMEOUT_MS = 2 * 60 * 1000;
@@ -282,7 +289,7 @@ describe('TestRegression', () => {
     });
 
     test('Admin should remove Bob contact', async () => {
-      expect(deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId)).resolves.not.toThrow();
+      await expect(deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId)).resolves.not.toThrow();
     });
 
     test('Admin should confirm contact between Alice and Bob', async () => {
@@ -322,7 +329,7 @@ describe('TestRegression', () => {
     });
 
     test('Admin should remove Tom contact', async () => {
-      expect(deleteContactAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, TomId)).resolves.not.toThrow();
+      await expect(deleteContactAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, TomId)).resolves.not.toThrow();
     });
 
     test('Admin should confirm contact between Tom and Jerry', async () => {
@@ -335,6 +342,85 @@ describe('TestRegression', () => {
         const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
         expect(contacts.find(c => c.paymail === Tom.paymail)?.status).toBe('confirmed');
         expect(contacts.find(c => c.paymail === Jerry.paymail)?.status).toBe('confirmed');
+    });
+  });
+
+  describe('SQLite Access Key Management', () => {
+    let testAccessKeyId: string;
+
+    test('User should generate an access key', async () => {
+      const accessKey = await generateAccessKey(rtConfig.slClientURL, Bob.xpriv);
+      expect(accessKey).toBeDefined();
+      expect(accessKey.id).toBeDefined();
+      testAccessKeyId = accessKey.id;
+    });
+
+    test('User should fetch all access keys', async () => {
+      const accessKeys = await getAccessKeys(rtConfig.slClientURL, Bob.xpriv);
+      expect(Array.isArray(accessKeys)).toBe(true);
+      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('User should fetch an access key by ID', async () => {
+      if (!testAccessKeyId) return;
+      const accessKey = await getAccessKeyById(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId);
+      expect(accessKey).toBeDefined();
+      expect(accessKey.id).toBe(testAccessKeyId);
+    });
+
+    test('User should revoke an access key', async () => {
+      if (!testAccessKeyId) return;
+      await expect(revokeAccessKey(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId)).resolves.not.toThrow();
+    });
+
+    test('Admin should fetch all access keys', async () => {
+      const accessKey = await generateAccessKey(rtConfig.slClientURL, Alice.xpriv);
+      expect(accessKey).toBeDefined();
+      expect(accessKey.id).toBeDefined();
+
+      const accessKeys = await getAccessKeysAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+      expect(Array.isArray(accessKeys)).toBe(true);
+      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('PostgresSQL Access Key Management', () => {
+    let testAccessKeyId: string;
+
+    test('User should generate an access key', async () => {
+      const accessKey = await generateAccessKey(rtConfig.pgClientURL, Tom.xpriv);
+      expect(accessKey).toBeDefined();
+      expect(accessKey.id).toBeDefined();
+      testAccessKeyId = accessKey.id;
+    });
+
+    test('User should fetch all access keys', async () => {
+      const accessKeys = await getAccessKeys(rtConfig.pgClientURL, Tom.xpriv);
+      expect(Array.isArray(accessKeys)).toBe(true);
+      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('User should fetch an access key by ID', async () => {
+      if (!testAccessKeyId) return;
+      const accessKey = await getAccessKeyById(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId);
+      expect(accessKey).toBeDefined();
+      expect(accessKey.id).toBe(testAccessKeyId);
+    });
+
+    test('User should revoke an access key', async () => {
+      if (!testAccessKeyId) return;
+      await expect(revokeAccessKey(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId)).resolves.not.toThrow();
+    });
+
+    test('Admin should fetch all access keys', async () => {
+      const accessKey = await generateAccessKey(rtConfig.pgClientURL, Jerry.xpriv);
+      expect(accessKey).toBeDefined();
+      expect(accessKey.id).toBeDefined();
+
+      const accessKeys = await getAccessKeysAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
+      expect(Array.isArray(accessKeys)).toBe(true);
+      expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+      expect(accessKeys[0].id).toBe(accessKey.id);
     });
   });
 });

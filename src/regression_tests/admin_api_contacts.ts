@@ -115,7 +115,11 @@ export const createContact = async (
  * @param {string} paymailB - Second contact's paymail.
  * @returns {Promise<void>}
  */
+<<<<<<< HEAD
 export const confirmContacts = async (
+=======
+export const confirmContact = async (
+>>>>>>> main
   instanceURL: string,
   adminXPriv: string,
   paymailA: string,
@@ -124,3 +128,23 @@ export const confirmContacts = async (
   const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
   await adminClient.confirmContacts(paymailA, paymailB);
 };
+<<<<<<< HEAD
+=======
+
+/**
+ * Unconfirms a contact connection.
+ *
+ * @param {string} instanceURL - The base URL of the SPV Wallet.
+ * @param {string} adminXPriv - Admin private key.
+ * @param {string} contactId - ID of the contact to unconfirm.
+ * @returns {Promise<void>}
+ */
+export const unconfirmContact = async (
+  instanceURL: string,
+  adminXPriv: string,
+  contactId: string
+): Promise<void> => {
+  const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
+  await adminClient.unconfirmContact(contactId);
+};
+>>>>>>> main
