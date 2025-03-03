@@ -115,7 +115,7 @@ export const createContact = async (
  * @param {string} paymailB - Second contact's paymail.
  * @returns {Promise<void>}
  */
-export const confirmContact = async (
+export const confirmContacts = async (
   instanceURL: string,
   adminXPriv: string,
   paymailA: string,
