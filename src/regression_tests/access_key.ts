@@ -10,77 +10,59 @@ import { AccessKey, PageModel } from '../types';
  * @returns {Promise<AccessKey[]>} - List of access keys.
  */
 export const getAccessKeysAdmin = async (
-  instanceURL: string,
-  adminXPriv: string,
+  adminClient: SPVWalletAdminAPI
 ): Promise<AccessKey[]> => {
-  const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
   const accessKeysPage: PageModel<AccessKey> = await adminClient.accessKeys({}, {}, {});
   return accessKeysPage.content;
 };
 
 /**
- * Fetches all access keys for the user from the SPV Wallet based on filters.
+ * Fetches all access keys for the user.
  *
- * @param {string} instanceUrl - The base URL of the SPV Wallet.
- * @param {string} xPriv - The user's private key.
+ * @param {SPVWalletUserAPI} client - The user API client.
  * @returns {Promise<AccessKey[]>} - List of access keys.
  */
-export const getAccessKeys = async (
-  instanceUrl: string,
-  xPriv: string,
-): Promise<AccessKey[]> => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  const accessKeysPage: PageModel<AccessKey> = await client.accessKeys({}, {});
-  return accessKeysPage.content;
-};
+export const getAccessKeys = async (client: SPVWalletUserAPI): Promise<AccessKey[]> => {
+    const accessKeysPage: PageModel<AccessKey> = await client.accessKeys({}, {});
+    return accessKeysPage.content;
+  };
 
-/**
- * Generates a new access key for the user.
- *
- * @param {string} instanceUrl - The base URL of the SPV Wallet.
- * @param {string} xPriv - The user's private key.
- * @returns {Promise<AccessKey>} - The newly created access key.
- */
-export const generateAccessKey = async (
-  instanceUrl: string,
-  xPriv: string,
-): Promise<AccessKey> => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  return await client.generateAccessKey({});
-};
+  /**
+   * Generates a new access key for the user.
+   *
+   * @param {SPVWalletUserAPI} client - The user API client.
+   * @returns {Promise<AccessKey>} - The newly created access key.
+   */
+  export const generateAccessKey = async (client: SPVWalletUserAPI): Promise<AccessKey> => {
+    return await client.generateAccessKey({});
+  };
 
-/**
- * Retrieves a specific access key by ID.
- *
- * @param {string} instanceUrl - The base URL of the SPV Wallet.
- * @param {string} xPriv - The user's private key.
- * @param {string} accessKeyId - The ID of the access key to retrieve.
- * @returns {Promise<AccessKey>} - Access key details.
- */
-export const getAccessKeyById = async (
-  instanceUrl: string,
-  xPriv: string,
-  accessKeyId: string
-): Promise<AccessKey> => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  return await client.accessKey(accessKeyId);
-};
+  /**
+   * Retrieves a specific access key by ID.
+   *
+   * @param {SPVWalletUserAPI} client - The user API client.
+   * @param {string} accessKeyId - The ID of the access key to retrieve.
+   * @returns {Promise<AccessKey>} - Access key details.
+   */
+  export const getAccessKeyById = async (
+    client: SPVWalletUserAPI,
+    accessKeyId: string
+  ): Promise<AccessKey> => {
+    return await client.accessKey(accessKeyId);
+  };
 
-/**
- * Revokes an access key.
- *
- * @param {string} instanceUrl - The base URL of the SPV Wallet.
- * @param {string} xPriv - The user's private key.
- * @param {string} accessKeyId - The ID of the access key to revoke.
- * @returns {Promise<void>}
- */
-export const revokeAccessKey = async (
-  instanceUrl: string,
-  xPriv: string,
-  accessKeyId: string
-): Promise<void> => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  await client.revokeAccessKey(accessKeyId);
-};
+  /**
+   * Revokes an access key.
+   *
+   * @param {SPVWalletUserAPI} client - The user API client.
+   * @param {string} accessKeyId - The ID of the access key to revoke.
+   * @returns {Promise<void>}
+   */
+  export const revokeAccessKey = async (
+    client: SPVWalletUserAPI,
+    accessKeyId: string
+  ): Promise<void> => {
+    await client.revokeAccessKey(accessKeyId);
+  };
 
 

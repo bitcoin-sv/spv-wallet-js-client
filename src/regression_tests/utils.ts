@@ -54,11 +54,7 @@ export const getEnvVariables = () => {
 };
 
 // getPaymailDomain retrieves the shared configuration from the SPV Wallet.
-export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
-  const wc = new SPVWalletUserAPI(clientUrl, {
-    xPriv: xpriv,
-  });
-
+export const getPaymailDomain = async (wc: SPVWalletUserAPI) => {
   const sharedConfig = await wc.sharedConfig();
 
   if (sharedConfig.paymailDomains.length != 1) {
@@ -66,6 +62,16 @@ export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
   }
 
   return sharedConfig.paymailDomains[0];
+};
+
+// createUserClient creates a new SPV Wallet user client.
+export const createUserClient = (instanceUrl: string, xPriv: string): SPVWalletUserAPI => {
+  return new SPVWalletUserAPI(instanceUrl, { xPriv });
+};
+
+// createAdminClient creates a new SPV Wallet admin client.
+export const createAdminClient = (instanceUrl: string, adminXPriv: string): SPVWalletAdminAPI => {
+  return new SPVWalletAdminAPI(instanceUrl, { adminKey: adminXPriv });
 };
 
 // createUser creates a set of keys and new paymail in the SPV wallet
@@ -88,24 +94,19 @@ export const createUser = async (alias: string, paymailDomain: string, instanceU
 };
 
 // removeRegisteredPaymail soft deletes paymail from the SPV Wallet.
-export const removeRegisteredPaymail = async (paymailId: string, instanceURL: string, adminXPriv: string) => {
-  const adminClient = new SPVWalletAdminAPI(instanceURL, { adminKey: adminXPriv });
+export const removeRegisteredPaymail = async (adminClient: SPVWalletAdminAPI, paymailId: string) => {
   await adminClient.deletePaymail(paymailId);
 };
 
 // getBalance retrieves the balance from the SPV Wallet.
-export const getBalance = async (fromInstance: string, fromXPriv: string) => {
-  const client = new SPVWalletUserAPI(fromInstance, { xPriv: fromXPriv });
-
+export const getBalance = async (client: SPVWalletUserAPI) => {
   const xpubInfo = await client.xPub();
 
   return Number(xpubInfo.currentBalance);
 };
 
 // getTransactions retrieves the transactions from the SPV Wallet.
-export const getTransactions = async (fromInstance: string, fromXPriv: string) => {
-  const client = new SPVWalletUserAPI(fromInstance, { xPriv: fromXPriv });
-
+export const getTransactions = async (client: SPVWalletUserAPI) => {
   const metadata = new Map<string, any>();
   const conditions: TransactionFilter = {};
   const queryParams: QueryPageParams = {};
@@ -116,10 +117,8 @@ export const getTransactions = async (fromInstance: string, fromXPriv: string) =
 };
 
 // sendFunds sends funds from one paymail to another
-export const sendFunds = async (fromInstance: string, fromXPriv: string, toPaymail: string, howMuch: number) => {
-  const client = new SPVWalletUserAPI(fromInstance, { xPriv: fromXPriv });
-
-  const balance = await getBalance(fromInstance, fromXPriv);
+export const sendFunds = async (client: SPVWalletUserAPI, toPaymail: string, howMuch: number) => {
+  const balance = await getBalance(client);
   if (balance < howMuch) {
     throw new Error(`Insufficient funds: ${balance}`);
   }
@@ -162,77 +161,18 @@ const isValidURL = (rawURL: string) => {
   return EXPLICIT_HTTP_URL_REGEX.test(rawURL);
 };
 
-// Add a contact for a user
-export const addContact = async (
-  instanceUrl: string,
-  xPriv: string,
-  contactPaymail: string,
-  contactName: string,
-  requesterPaymail: string
+export const sendAndVerifyFunds = async (
+  fromClient: SPVWalletUserAPI,
+  targetClient: SPVWalletUserAPI,
+  toPaymail: string,
+  howMuch: number,
 ) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
-  return await client.upsertContact(contactPaymail, contactName, requesterPaymail, {});
-};
+  const transaction = await sendFunds(fromClient, toPaymail, howMuch);
+  expect(transaction.outputValue).toBeLessThanOrEqual(-1);
 
-// Get a contact by paymail
-export const getContact = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
-  return await client.contactWithPaymail(contactPaymail);
-};
+  const balance = await getBalance(targetClient);
+  expect(balance).toBeGreaterThanOrEqual(1);
 
-// Get all contacts matching a paymail using the `contacts()` method
-export const getContacts = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  const conditions = { paymail: contactPaymail };
-  const metadata = {};
-  const queryParams = {};
-
-  const contactList = await client.contacts(conditions, metadata, queryParams);
-  return contactList?.content ? contactList.content : [];
-};
-
-// confirm a contact
-export const confirmContact = async (
-  instanceUrl: string,
-  xPriv: string,
-  requesterPaymail: string,
-  contactToConfirm: string,
-  receivedTotp: string
-) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  const contact = await client.contactWithPaymail(contactToConfirm);
-  if (!contact) {
-    throw new Error(`Contact ${contactToConfirm} not found!`);
-  }
-  await client.confirmContact(contact, receivedTotp, requesterPaymail, TOTP_PERIOD, TOTP_DIGITS);
-};
-
-// Unconfirm a contact
-export const unconfirmContact = async (
-  instanceUrl: string,
-  xPriv: string,
-  contactPaymail: string
-) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  await client.unconfirmContact(contactPaymail);
-};
-
-// Remove a contact
-export const removeContact = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
-  await client.removeContact(contactPaymail);
-};
-
-// Generate a TOTP for a contact
-export const generateTotp = async (
-  instanceUrl: string,
-  xPriv: string,
-  contactPaymail: string
-) => {
-  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
-  const contact = await client.contactWithPaymail(contactPaymail);
-  if (!contact) {
-    throw new Error(`Contact ${contactPaymail} not found!`);
-  }
-  return client.generateTotpForContact(contact, TOTP_PERIOD, TOTP_DIGITS);
+  const { content: transactions } = await getTransactions(targetClient);
+  expect(transactions.length).toBeGreaterThanOrEqual(1);
 };

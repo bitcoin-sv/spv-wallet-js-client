@@ -1,5 +1,10 @@
 import fetchMock from 'jest-fetch-mock';
+import { SPVWalletUserAPI } from '../user-api';
+import { SPVWalletAdminAPI } from '../admin-api';
 import {
+  createUserClient,
+  createAdminClient,
+  sendAndVerifyFunds,
   createUser,
   getBalance,
   getEnvVariables,
@@ -45,120 +50,114 @@ const ADMIN_XPUB =
 let slPaymailDomainInstance = '';
 // PG = PostgreSQL
 let pgPaymailDomainInstance = '';
+
 // Alice & Bob are users for SQLite instance
-let Alice: RegressionTestUser;
 let Bob: RegressionTestUser;
+let Alice: RegressionTestUser;
+let bobClient: SPVWalletUserAPI;
+let aliceClient: SPVWalletUserAPI;
+let slLeaderClient: SPVWalletUserAPI;
+let adminSLClient: SPVWalletAdminAPI;
+
 // Tom & Jerry are users for PostgreSQL instance
 let Tom: RegressionTestUser;
 let Jerry: RegressionTestUser;
+let tomClient: SPVWalletUserAPI;
+let jerryClient: SPVWalletUserAPI;
+let pgLeaderClient: SPVWalletUserAPI;
+let adminPGClient: SPVWalletAdminAPI;
 
 let rtConfig: RegressionTestConfig;
 
-const sendAndVerifyFunds = async (
-  fromInstance: string,
-  fromXPriv: string,
-  toPaymail: string,
-  howMuch: number,
-  targetURL: string,
-  targetXPriv: string,
-) => {
-  const transaction = await sendFunds(fromInstance, fromXPriv, toPaymail, howMuch);
-  expect(transaction.outputValue).toBeLessThanOrEqual(-1);
-
-  const balance = await getBalance(targetURL, targetXPriv);
-  expect(balance).toBeGreaterThanOrEqual(1);
-
-  const { content: transactions } = await getTransactions(targetURL, targetXPriv);
-  expect(transactions.length).toBeGreaterThanOrEqual(1);
-};
-
-beforeAll(() => {
+beforeAll(async () => {
   fetchMock.disableMocks();
   rtConfig = getEnvVariables();
   expect(rtConfig).toBeDefined();
-});
+
+  [slLeaderClient, pgLeaderClient] = await Promise.all([
+    createUserClient(rtConfig.slClientURL, rtConfig.slClientLeaderXPriv),
+    createUserClient(rtConfig.pgClientURL, rtConfig.pgClientLeaderXPriv),
+  ]);
+
+  let slDomainInstClient: SPVWalletUserAPI;
+  let pgDomainInstClient: SPVWalletUserAPI;
+  [slDomainInstClient, pgDomainInstClient] = await Promise.all([
+    createUserClient(rtConfig.slClientURL, ADMIN_XPRIV),
+    createUserClient(rtConfig.pgClientURL, ADMIN_XPRIV),
+  ]);
+
+  [slPaymailDomainInstance, pgPaymailDomainInstance] = await Promise.all([
+    getPaymailDomain(slDomainInstClient),
+    getPaymailDomain(pgDomainInstClient),
+  ]);
+
+  [adminSLClient, adminPGClient] = await Promise.all([
+    createAdminClient(rtConfig.slClientURL, ADMIN_XPRIV),
+    createAdminClient(rtConfig.pgClientURL, ADMIN_XPRIV),
+  ]);
+
+  [Bob, Alice, Tom, Jerry] = await Promise.all([
+    createUser('Bob', slPaymailDomainInstance, rtConfig.slClientURL, ADMIN_XPRIV),
+    createUser('Alice', slPaymailDomainInstance, rtConfig.slClientURL, ADMIN_XPRIV),
+    createUser('Tom', pgPaymailDomainInstance, rtConfig.pgClientURL, ADMIN_XPRIV),
+    createUser('Jerry', pgPaymailDomainInstance, rtConfig.pgClientURL, ADMIN_XPRIV),
+  ]);
+
+  [bobClient, aliceClient, tomClient, jerryClient] = await Promise.all([
+    createUserClient(rtConfig.slClientURL, Bob.xpriv),
+    createUserClient(rtConfig.slClientURL, Alice.xpriv),
+    createUserClient(rtConfig.pgClientURL, Tom.xpriv),
+    createUserClient(rtConfig.pgClientURL, Jerry.xpriv),
+  ]);
+}, TEST_TIMEOUT_MS);
+
 
 afterAll(async () => {
+  const deletionPromises: Promise<void>[] = [];
   if (Bob) {
-    await expect(removeRegisteredPaymail(Bob.paymailId, rtConfig.slClientURL, ADMIN_XPRIV)).resolves.not.toThrow();
+    deletionPromises.push(removeRegisteredPaymail(adminSLClient, Bob.paymailId));
   }
 
   if (Alice) {
-    await expect(removeRegisteredPaymail(Alice.paymailId, rtConfig.slClientURL, ADMIN_XPRIV)).resolves.not.toThrow();
+    deletionPromises.push(removeRegisteredPaymail(adminSLClient, Alice.paymailId));
   }
 
   if (Tom) {
-    await expect(removeRegisteredPaymail(Tom.paymailId, rtConfig.pgClientURL, ADMIN_XPRIV)).resolves.not.toThrow();
+    deletionPromises.push(removeRegisteredPaymail(adminPGClient, Tom.paymailId));
   }
 
   if (Jerry) {
-    await expect(removeRegisteredPaymail(Jerry.paymailId, rtConfig.pgClientURL, ADMIN_XPRIV)).resolves.not.toThrow();
+    deletionPromises.push(removeRegisteredPaymail(adminPGClient, Jerry.paymailId));
   }
+
+  await Promise.all(deletionPromises);
+  deletionPromises.forEach((promise) =>
+    expect(promise).resolves.not.toThrow()
+  );
 });
 
 describe('TestRegression', () => {
-  describe('Initialize Shared Configurations', () => {
-    test('Should get sharedConfig for instance one', async () => {
-      slPaymailDomainInstance = await getPaymailDomain(ADMIN_XPRIV, rtConfig.slClientURL);
-      expect(slPaymailDomainInstance).not.toBe('');
-    });
-
-    test('Should get sharedConfig for instance two', async () => {
-      pgPaymailDomainInstance = await getPaymailDomain(ADMIN_XPRIV, rtConfig.pgClientURL);
-      expect(pgPaymailDomainInstance).not.toBe('');
-    });
-  });
-
-  describe('Create Users', () => {
-    test('Should create user for instance one', async () => {
-      const userName = 'Bob';
-      Bob = await createUser(userName, slPaymailDomainInstance, rtConfig.slClientURL, ADMIN_XPRIV);
-    });
-
-    test('Should create user for instance one', async () => {
-      const userName = 'Alice';
-      Alice = await createUser(userName, slPaymailDomainInstance, rtConfig.slClientURL, ADMIN_XPRIV);
-    });
-
-    test('Should create user for instance two', async () => {
-      const userName = 'Tom';
-      Tom = await createUser(userName, pgPaymailDomainInstance, rtConfig.pgClientURL, ADMIN_XPRIV);
-    });
-
-    test('Should create user for instance two', async () => {
-      const userName = 'Jerry';
-      Jerry = await createUser(userName, pgPaymailDomainInstance, rtConfig.pgClientURL, ADMIN_XPRIV);
-    });
-  });
-
   describe('Perform Transactions', () => {
-    test(
-      'Send money to instance 1',
-      async () => {
+    test.concurrent('Send money to Bob', async () => {
         const amountToSend = 3;
-
         await sendAndVerifyFunds(
-          rtConfig.pgClientURL,
-          rtConfig.pgClientLeaderXPriv,
+          pgLeaderClient,
+          bobClient,
           Bob.paymail,
           amountToSend,
-          rtConfig.slClientURL,
-          Bob.xpriv,
         );
       },
       TEST_TIMEOUT_MS,
     );
 
-    test(
+    test.concurrent(
       'Send money to Tom',
       async () => {
         await sendAndVerifyFunds(
-          rtConfig.slClientURL,
-          rtConfig.slClientLeaderXPriv,
+          slLeaderClient,
+          tomClient,
           Tom.paymail,
           MINIMAL_FUNDS_PER_TRANSACTION,
-          rtConfig.pgClientURL,
-          Tom.xpriv,
         );
       },
       TEST_TIMEOUT_MS,
@@ -168,23 +167,22 @@ describe('TestRegression', () => {
       'Send money from Tom to Bob',
       async () => {
         const transaction = await sendFunds(
-          rtConfig.slClientURL,
-          Bob.xpriv,
+          bobClient,
           Tom.paymail,
           MINIMAL_FUNDS_PER_TRANSACTION,
         );
         expect(transaction.outputValue).toBeLessThanOrEqual(-1);
 
-        const balanceOfTom = await getBalance(rtConfig.pgClientURL, Tom.xpriv);
+        const balanceOfTom = await getBalance(tomClient);
         expect(balanceOfTom).toBeGreaterThanOrEqual(2);
 
-        const { content: transactionsOfTom } = await getTransactions(rtConfig.pgClientURL, Tom.xpriv);
+        const { content: transactionsOfTom } = await getTransactions(tomClient);
         expect(transactionsOfTom.length).toBeGreaterThanOrEqual(2);
 
-        const balanceOfBob = await getBalance(rtConfig.slClientURL, Bob.xpriv);
+        const balanceOfBob = await getBalance(bobClient);
         expect(balanceOfBob).toBeGreaterThanOrEqual(0);
 
-        const { content: transactionsOfBob } = await getTransactions(rtConfig.slClientURL, Bob.xpriv);
+        const { content: transactionsOfBob } = await getTransactions(bobClient);
         expect(transactionsOfBob.length).toBeGreaterThanOrEqual(2);
       },
       TEST_TIMEOUT_MS,
@@ -193,45 +191,45 @@ describe('TestRegression', () => {
 
   describe('SQLite User Operations instance for Bob and Alice', () => {
 
-    test('Bob should add Alice as contact', async () => {
-        const contact = await addContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail, 'Alice', Bob.paymail);
+    test.concurrent('Bob should add Alice as contact', async () => {
+        const contact = await addContact(bobClient, Alice.paymail, 'Alice', Bob.paymail);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        const contacts = await getContacts(bobClient, Alice.paymail);
         expect(contacts).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Alice should add Bob as contact', async () => {
-        const contact = await addContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail, 'Bob', Alice.paymail);
+        const contact = await addContact(aliceClient, Bob.paymail, 'Bob', Alice.paymail);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(rtConfig.slClientURL, Alice.xpriv, Bob.paymail);
+        const contacts = await getContacts(aliceClient, Bob.paymail);
         expect(contacts).toHaveLength(1);
     },
       TEST_TIMEOUT_MS,
     );
 
     test('Bob should confirm contact between Bob and Alice', async () => {
-        const totpForBob = await generateTotpForContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail);
+        const totpForBob = await generateTotpForContact(aliceClient, Bob.paymail);
         expect(totpForBob).toBeDefined();
-        await confirmContact(rtConfig.slClientURL, Bob.xpriv, Bob.paymail, Alice.paymail, totpForBob);
-        const contact = await getContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        await confirmContact(bobClient, Bob.paymail, Alice.paymail, totpForBob);
+        const contact = await getContact(bobClient, Alice.paymail);
         expect(contact.status).toBe('confirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Bob should unconfirm contact between Bob and Alice', async () => {
-        await unconfirmContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-        const contact = await getContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        await unconfirmContact(bobClient, Alice.paymail);
+        const contact = await getContact(bobClient, Alice.paymail);
         expect(contact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Bob should remove Alice from contacts', async () => {
-        await removeContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
-        const contacts = await getContacts(rtConfig.slClientURL, Bob.xpriv, Alice.paymail);
+        await removeContact(bobClient, Alice.paymail);
+        const contacts = await getContacts(bobClient, Alice.paymail);
         expect(contacts).toHaveLength(0);
       },
       TEST_TIMEOUT_MS,
@@ -240,45 +238,45 @@ describe('TestRegression', () => {
 
   describe('PostgresSOL User Operations instance for Tom and Jerry', () => {
 
-    test('Tom should add Jerry as contact', async () => {
-        const contact = await addContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail, 'Jerry', Tom.paymail);
+    test.concurrent('Tom should add Jerry as contact', async () => {
+        const contact = await addContact(tomClient, Jerry.paymail, 'Jerry', Tom.paymail);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        const contacts = await getContacts(tomClient, Jerry.paymail);
         expect(contacts).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Jerry should add Tom as contact', async () => {
-        const contact = await addContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail, 'Tom', Jerry.paymail);
+        const contact = await addContact(jerryClient, Tom.paymail, 'Tom', Jerry.paymail);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail);
+        const contacts = await getContacts(jerryClient, Tom.paymail);
         expect(contacts).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Tom should confirm contact between Tom and Jerry', async () => {
-        const totpForTom = await generateTotpForContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail);
+        const totpForTom = await generateTotpForContact(jerryClient, Tom.paymail);
         expect(totpForTom).toBeDefined();
-        await confirmContact(rtConfig.pgClientURL, Tom.xpriv, Tom.paymail, Jerry.paymail, totpForTom);
-        const contact = await getContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        await confirmContact(tomClient, Tom.paymail, Jerry.paymail, totpForTom);
+        const contact = await getContact(tomClient, Jerry.paymail);
         expect(contact.status).toBe('confirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Tom should unconfirm contact between Tom and Jerry', async () => {
-        await unconfirmContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-        const contact = await getContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        await unconfirmContact(tomClient, Jerry.paymail);
+        const contact = await getContact(tomClient, Jerry.paymail);
         expect(contact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Tom should remove Jerry from contacts', async () => {
-        await removeContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
-        const contacts = await getContacts(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail);
+        await removeContact(tomClient, Jerry.paymail);
+        const contacts = await getContacts(tomClient, Jerry.paymail);
         expect(contacts).toHaveLength(0);
       },
       TEST_TIMEOUT_MS,
@@ -287,13 +285,13 @@ describe('TestRegression', () => {
 
   describe('SQLite Admin Contact Operations (Bob and Alice)', () => {
     let BobId = '';
-    test('Admin should add Bob as contact', async () => {
+    test.concurrent('Admin should add Bob as contact', async () => {
         const newContact = {
             paymail: Bob.paymail,
             fullName: 'Bob',
             creatorPaymail: Bob.paymail,
         };
-        const contact = await createContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, Bob.paymail, newContact);
+        const contact = await createContactAdmin(adminSLClient, Bob.paymail, newContact);
         expect(contact).toBeDefined();
         BobId = contact.id;
       },
@@ -301,33 +299,33 @@ describe('TestRegression', () => {
     );
 
     test('Admin should retrieve all contacts', async () => {
-        const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+        const contacts = await getContactsAdmin(adminSLClient);
         expect(contacts).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should update Bob contact name', async () => {
-        const updatedContact = await updateContactAdmin(rtConfig.slClientURL,ADMIN_XPRIV, BobId, 'Bob Updated');
+        const updatedContact = await updateContactAdmin(adminSLClient, BobId, 'Bob Updated');
         expect(updatedContact.fullName).toBe('Bob Updated');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should remove Bob contact', async () => {
-      await expect(deleteContactAdmin(rtConfig.slClientURL, ADMIN_XPRIV, BobId)).resolves.not.toThrow();
+        await expect(deleteContactAdmin(adminSLClient, BobId)).resolves.not.toThrow();
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should confirm contact between Alice and Bob', async () => {
-        const aliceContact = await addContact(rtConfig.slClientURL, Bob.xpriv, Alice.paymail, 'Alice', Bob.paymail);
+        const aliceContact = await addContact(bobClient, Alice.paymail, 'Alice', Bob.paymail);
         expect(aliceContact).toBeDefined();
-        const bobContact = await addContact(rtConfig.slClientURL, Alice.xpriv, Bob.paymail, 'Bob', Alice.paymail);
+        const bobContact = await addContact(aliceClient, Bob.paymail, 'Bob', Alice.paymail);
         expect(bobContact).toBeDefined();
 
-        await confirmContacts(rtConfig.slClientURL, ADMIN_XPRIV, Alice.paymail, Bob.paymail);
-        const contacts = await getContactsAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
+        await confirmContacts(adminSLClient, Alice.paymail, Bob.paymail);
+        const contacts = await getContactsAdmin(adminSLClient);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
         expect(contacts.find(c => c.paymail === Alice.paymail)?.status).toBe('confirmed');
       },
@@ -337,13 +335,13 @@ describe('TestRegression', () => {
 
   describe('PostgreSQL Admin Contact Operations (Tom and Jerry)', () => {
     let TomId = '';
-    test('Admin should add Tom as contact', async () => {
+    test.concurrent('Admin should add Tom as contact', async () => {
         const newContact = {
             paymail: Tom.paymail,
             fullName: 'Tom',
             creatorPaymail: Tom.paymail,
         };
-        const contact = await createContactAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, Tom.paymail, newContact);
+        const contact = await createContactAdmin(adminPGClient, Tom.paymail, newContact);
         expect(contact).toBeDefined();
         TomId = contact.id;
       },
@@ -351,31 +349,32 @@ describe('TestRegression', () => {
     );
 
     test('Admin should retrieve all contacts', async () => {
-        const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
+        const contacts = await getContactsAdmin(adminPGClient);
         expect(contacts).toContainEqual(expect.objectContaining({ paymail: Tom.paymail }));
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should update Tom contact name', async () => {
-        const updatedContact = await updateContactAdmin(rtConfig.pgClientURL,ADMIN_XPRIV, TomId, 'Tom Updated');
+        const updatedContact = await updateContactAdmin(adminPGClient, TomId, 'Tom Updated');
         expect(updatedContact.fullName).toBe('Tom Updated');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should remove Tom contact', async () => {
-      await expect(deleteContactAdmin(rtConfig.pgClientURL, ADMIN_XPRIV, TomId)).resolves.not.toThrow();
-    });
-
+      await expect(deleteContactAdmin(adminPGClient, TomId)).resolves.not.toThrow();
+      },
+      TEST_TIMEOUT_MS,
+    );
     test('Admin should confirm contact between Tom and Jerry', async () => {
-        const jerryContact = await addContact(rtConfig.pgClientURL, Tom.xpriv, Jerry.paymail, 'Jerry', Tom.paymail);
+        const jerryContact = await addContact(tomClient, Jerry.paymail, 'Jerry', Tom.paymail);
         expect(jerryContact).toBeDefined();
-        const tomContact = await addContact(rtConfig.pgClientURL, Jerry.xpriv, Tom.paymail, 'Tom', Jerry.paymail);
+        const tomContact = await addContact(jerryClient, Tom.paymail, 'Tom', Jerry.paymail);
         expect(tomContact).toBeDefined();
 
-        await confirmContacts(rtConfig.pgClientURL, ADMIN_XPRIV, Jerry.paymail, Tom.paymail);
-        const contacts = await getContactsAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
+        await confirmContacts(adminPGClient, Jerry.paymail, Tom.paymail);
+        const contacts = await getContactsAdmin(adminPGClient);
         expect(contacts.find(c => c.paymail === Tom.paymail)?.status).toBe('confirmed');
         expect(contacts.find(c => c.paymail === Jerry.paymail)?.status).toBe('confirmed');
       },
@@ -385,9 +384,20 @@ describe('TestRegression', () => {
 
   describe('SQLite Access Key Management', () => {
     let testAccessKeyId: string;
+    test.concurrent('Admin should fetch all access keys', async () => {
+        const accessKey = await generateAccessKey(aliceClient);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBeDefined();
+
+        const accessKeys = await getAccessKeysAdmin(adminSLClient);
+        expect(Array.isArray(accessKeys)).toBe(true);
+        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+      },
+      TEST_TIMEOUT_MS,
+    );
 
     test('User should generate an access key', async () => {
-        const accessKey = await generateAccessKey(rtConfig.slClientURL, Bob.xpriv);
+        const accessKey = await generateAccessKey(bobClient);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
         testAccessKeyId = accessKey.id;
@@ -396,7 +406,7 @@ describe('TestRegression', () => {
     );
 
     test('User should fetch all access keys', async () => {
-        const accessKeys = await getAccessKeys(rtConfig.slClientURL, Bob.xpriv);
+        const accessKeys = await getAccessKeys(bobClient);
         expect(Array.isArray(accessKeys)).toBe(true);
         expect(accessKeys.length).toBeGreaterThanOrEqual(1);
       },
@@ -405,7 +415,7 @@ describe('TestRegression', () => {
 
     test('User should fetch an access key by ID', async () => {
       if (!testAccessKeyId) return;
-        const accessKey = await getAccessKeyById(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId);
+        const accessKey = await getAccessKeyById(bobClient, testAccessKeyId);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBe(testAccessKeyId);
       },
@@ -414,19 +424,7 @@ describe('TestRegression', () => {
 
     test('User should revoke an access key', async () => {
         if (!testAccessKeyId) return;
-        await expect(revokeAccessKey(rtConfig.slClientURL, Bob.xpriv, testAccessKeyId)).resolves.not.toThrow();
-      },
-      TEST_TIMEOUT_MS,
-    );
-
-    test('Admin should fetch all access keys', async () => {
-        const accessKey = await generateAccessKey(rtConfig.slClientURL, Alice.xpriv);
-        expect(accessKey).toBeDefined();
-        expect(accessKey.id).toBeDefined();
-
-        const accessKeys = await getAccessKeysAdmin(rtConfig.slClientURL, ADMIN_XPRIV);
-        expect(Array.isArray(accessKeys)).toBe(true);
-        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+        await expect(revokeAccessKey(bobClient, testAccessKeyId)).resolves.not.toThrow();
       },
       TEST_TIMEOUT_MS,
     );
@@ -434,9 +432,20 @@ describe('TestRegression', () => {
 
   describe('PostgresSQL Access Key Management', () => {
     let testAccessKeyId: string;
+    test.concurrent('Admin should fetch all access keys', async () => {
+        const accessKey = await generateAccessKey(jerryClient);
+        expect(accessKey).toBeDefined();
+        expect(accessKey.id).toBeDefined();
 
+        const accessKeys = await getAccessKeysAdmin(adminPGClient);
+        expect(Array.isArray(accessKeys)).toBe(true);
+        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+        expect(accessKeys[0].id).toBe(accessKey.id);
+      },
+      TEST_TIMEOUT_MS,
+    );
     test('User should generate an access key', async () => {
-        const accessKey = await generateAccessKey(rtConfig.pgClientURL, Tom.xpriv);
+        const accessKey = await generateAccessKey(tomClient);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
         testAccessKeyId = accessKey.id;
@@ -445,7 +454,7 @@ describe('TestRegression', () => {
     );
 
     test('User should fetch all access keys', async () => {
-        const accessKeys = await getAccessKeys(rtConfig.pgClientURL, Tom.xpriv);
+        const accessKeys = await getAccessKeys(tomClient);
         expect(Array.isArray(accessKeys)).toBe(true);
         expect(accessKeys.length).toBeGreaterThanOrEqual(1);
       },
@@ -454,7 +463,7 @@ describe('TestRegression', () => {
 
     test('User should fetch an access key by ID', async () => {
         if (!testAccessKeyId) return;
-        const accessKey = await getAccessKeyById(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId);
+        const accessKey = await getAccessKeyById(tomClient, testAccessKeyId);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBe(testAccessKeyId);
       },
@@ -463,20 +472,7 @@ describe('TestRegression', () => {
 
     test('User should revoke an access key', async () => {
         if (!testAccessKeyId) return;
-        await expect(revokeAccessKey(rtConfig.pgClientURL, Tom.xpriv, testAccessKeyId)).resolves.not.toThrow();
-      },
-      TEST_TIMEOUT_MS,
-    );
-
-    test('Admin should fetch all access keys', async () => {
-        const accessKey = await generateAccessKey(rtConfig.pgClientURL, Jerry.xpriv);
-        expect(accessKey).toBeDefined();
-        expect(accessKey.id).toBeDefined();
-
-        const accessKeys = await getAccessKeysAdmin(rtConfig.pgClientURL, ADMIN_XPRIV);
-        expect(Array.isArray(accessKeys)).toBe(true);
-        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
-        expect(accessKeys[0].id).toBe(accessKey.id);
+        await expect(revokeAccessKey(tomClient, testAccessKeyId)).resolves.not.toThrow();
       },
       TEST_TIMEOUT_MS,
     );
