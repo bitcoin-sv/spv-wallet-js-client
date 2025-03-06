@@ -73,3 +73,17 @@ export const confirmContacts = async (
 ): Promise<void> => {
   await adminClient.confirmContacts(paymailA, paymailB);
 };
+
+/**
+ * Unconfirms a contact connection between two paymails.
+ *
+ * @param {SPVWalletAdminAPI} adminClient - The admin API client.
+ * @param {string} id - ID of the contact connection.
+ * @returns {Promise<void>}
+ */
+export const unconfirmContact = async (
+    adminClient: SPVWalletAdminAPI,
+    id: string
+  ): Promise<void> => {
+    await adminClient.unconfirmContact(id);
+  }
