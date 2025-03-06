@@ -48,6 +48,8 @@ const ADMIN_XPRIV =
   'xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK';
 const ADMIN_XPUB =
   'xpub661MyMwAqRbcFgfmdkPgE2m5UjHXu9dj124DbaGLSjaqVESTWfCD4VuNmEbVPkbYLCkykwVZvmA8Pbf8884TQr1FgdG2nPoHR8aB36YdDQh';
+const TOTP_DIGITS = 4;
+const TOTP_PERIOD = 1200;
 
 // SL = SQLite
 let slPaymailDomainInstance = '';
@@ -140,6 +142,9 @@ afterAll(async () => {
 });
 
 describe('TestRegression', () => {
+  const metadata = {
+    test: 'regression',
+  };
   describe('Perform Transactions', () => {
     test.concurrent('Send money to Bob', async () => {
         const amountToSend = 3;
@@ -195,44 +200,46 @@ describe('TestRegression', () => {
   describe('SQLite User Operations instance for Bob and Alice', () => {
 
     test.concurrent('Bob should add Alice as contact', async () => {
-        const contact = await addContact(bobClient, Alice.paymail, 'Alice', Bob.paymail);
+        const contact = await bobClient.upsertContact(Alice.paymail, 'Alice', Bob.paymail, metadata);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(bobClient, Alice.paymail);
+        const contacts = await bobClient.contacts({ paymail: Alice.paymail }, metadata, {});
         expect(contacts).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Alice should add Bob as contact', async () => {
-        const contact = await addContact(aliceClient, Bob.paymail, 'Bob', Alice.paymail);
+        const contact = await aliceClient.upsertContact(Bob.paymail, 'Bob', Alice.paymail, metadata);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(aliceClient, Bob.paymail);
+        const contacts = await aliceClient.contacts({ paymail: Bob.paymail }, metadata, {});
         expect(contacts).toHaveLength(1);
     },
       TEST_TIMEOUT_MS,
     );
 
     test('Bob should confirm contact between Bob and Alice', async () => {
-        const totpForBob = await generateTotpForContact(aliceClient, Bob.paymail);
+        const contact = await aliceClient.contactWithPaymail(Bob.paymail);
+        expect(contact).toBeDefined
+        const totpForBob = aliceClient.generateTotpForContact(contact);
         expect(totpForBob).toBeDefined();
-        await confirmContact(bobClient, Bob.paymail, Alice.paymail, totpForBob);
-        const contact = await getContact(bobClient, Alice.paymail);
-        expect(contact.status).toBe('confirmed');
+        await bobClient.confirmContact(contact, Alice.paymail, totpForBob, TOTP_PERIOD, TOTP_DIGITS);
+        const contactConfirmed = await bobClient.contactWithPaymail(Alice.paymail);
+        expect(contactConfirmed.status).toBe('confirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Bob should unconfirm contact between Bob and Alice', async () => {
-        await unconfirmContact(bobClient, Alice.paymail);
-        const contact = await getContact(bobClient, Alice.paymail);
-        expect(contact.status).toBe('unconfirmed');
+        await bobClient.unconfirmContact(Alice.paymail);
+        const unconfimedContact = await bobClient.contactWithPaymail(Alice.paymail);
+        expect(unconfimedContact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Bob should remove Alice from contacts', async () => {
-        await removeContact(bobClient, Alice.paymail);
-        const contacts = await getContacts(bobClient, Alice.paymail);
+        await bobClient.removeContact(Alice.paymail);
+        const contacts = await bobClient.contacts({ paymail: Alice.paymail }, metadata, {});
         expect(contacts).toHaveLength(0);
       },
       TEST_TIMEOUT_MS,
@@ -242,44 +249,46 @@ describe('TestRegression', () => {
   describe('PostgresSOL User Operations instance for Tom and Jerry', () => {
 
     test.concurrent('Tom should add Jerry as contact', async () => {
-        const contact = await addContact(tomClient, Jerry.paymail, 'Jerry', Tom.paymail);
+        const contact = await tomClient.upsertContact(Jerry.paymail, 'Jerry', Tom.paymail, metadata);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(tomClient, Jerry.paymail);
+        const contacts = await tomClient.contacts({ paymail: Jerry.paymail }, metadata, {});
         expect(contacts).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Jerry should add Tom as contact', async () => {
-        const contact = await addContact(jerryClient, Tom.paymail, 'Tom', Jerry.paymail);
+        const contact = await jerryClient.upsertContact(Tom.paymail, 'Tom', Jerry.paymail, metadata);
         expect(contact).toBeDefined();
-        const contacts = await getContacts(jerryClient, Tom.paymail);
+        const contacts = await jerryClient.contacts({ paymail: Tom.paymail }, metadata, {});
         expect(contacts).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Tom should confirm contact between Tom and Jerry', async () => {
-        const totpForTom = await generateTotpForContact(jerryClient, Tom.paymail);
+        const contact = await jerryClient.contactWithPaymail(Tom.paymail);
+        expect(contact).toBeDefined();
+        const totpForTom = jerryClient.generateTotpForContact(contact);
         expect(totpForTom).toBeDefined();
-        await confirmContact(tomClient, Tom.paymail, Jerry.paymail, totpForTom);
-        const contact = await getContact(tomClient, Jerry.paymail);
-        expect(contact.status).toBe('confirmed');
+        await tomClient.confirmContact(contact, Jerry.paymail, totpForTom, TOTP_PERIOD, TOTP_DIGITS);
+        const contactConfirmed = await tomClient.contactWithPaymail(Jerry.paymail);
+        expect(contactConfirmed.status).toBe('confirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Tom should unconfirm contact between Tom and Jerry', async () => {
-        await unconfirmContact(tomClient, Jerry.paymail);
-        const contact = await getContact(tomClient, Jerry.paymail);
-        expect(contact.status).toBe('unconfirmed');
+        await tomClient.unconfirmContact(Jerry.paymail);
+        const unconfimedContact = await tomClient.contactWithPaymail(Jerry.paymail);
+        expect(unconfimedContact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Tom should remove Jerry from contacts', async () => {
-        await removeContact(tomClient, Jerry.paymail);
-        const contacts = await getContacts(tomClient, Jerry.paymail);
+        await tomClient.removeContact(Jerry.paymail);
+        const contacts = await tomClient.contacts({ paymail: Jerry.paymail }, metadata, {});
         expect(contacts).toHaveLength(0);
       },
       TEST_TIMEOUT_MS,
