@@ -367,6 +367,7 @@ describe('TestRegression', () => {
       },
       TEST_TIMEOUT_MS,
     );
+
     test('Admin should confirm contact between Tom and Jerry', async () => {
         const jerryContact = await addContact(tomClient, Jerry.paymail, 'Jerry', Tom.paymail);
         expect(jerryContact).toBeDefined();
