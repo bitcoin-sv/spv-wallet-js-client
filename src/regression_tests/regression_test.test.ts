@@ -4,6 +4,7 @@ import { SPVWalletAdminAPI } from '../admin-api';
 import {
   createUserClient,
   createAdminClient,
+  createUserClientWithAccessKey,
   sendAndVerifyFunds,
   createUser,
   getBalance,
@@ -30,6 +31,7 @@ import {
   updateContact as updateContactAdmin,
   deleteContact as deleteContactAdmin,
   confirmContacts,
+  unconfirmContact as unconfirmContactAdmin,
 } from './admin_api_contacts';
 import {
   getAccessKeysAdmin,
@@ -38,6 +40,7 @@ import {
   getAccessKeyById,
   revokeAccessKey,
 } from './access_key';
+import { Contact } from '../types';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
 const TEST_TIMEOUT_MS = 2 * 60 * 1000;
@@ -285,6 +288,7 @@ describe('TestRegression', () => {
 
   describe('SQLite Admin Contact Operations (Bob and Alice)', () => {
     let BobId = '';
+    let AliceContact: Contact | undefined;
     test.concurrent('Admin should add Bob as contact', async () => {
         const newContact = {
             paymail: Bob.paymail,
@@ -327,7 +331,17 @@ describe('TestRegression', () => {
         await confirmContacts(adminSLClient, Alice.paymail, Bob.paymail);
         const contacts = await getContactsAdmin(adminSLClient);
         expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
-        expect(contacts.find(c => c.paymail === Alice.paymail)?.status).toBe('confirmed');
+        AliceContact = contacts.find(c => c.paymail === Alice.paymail);
+        expect(AliceContact?.status).toBe('confirmed');
+      },
+      TEST_TIMEOUT_MS,
+    );
+
+    test('Admin should unconfim Alice contact', async () => {
+        if (!AliceContact) return;
+        await unconfirmContactAdmin(adminSLClient, AliceContact.id);
+        const unconfimedContact = await getContact(bobClient, Alice.paymail);
+        expect(unconfimedContact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
     );
@@ -335,6 +349,7 @@ describe('TestRegression', () => {
 
   describe('PostgreSQL Admin Contact Operations (Tom and Jerry)', () => {
     let TomId = '';
+    let JerryContact: Contact | undefined;
     test.concurrent('Admin should add Tom as contact', async () => {
         const newContact = {
             paymail: Tom.paymail,
@@ -377,7 +392,17 @@ describe('TestRegression', () => {
         await confirmContacts(adminPGClient, Jerry.paymail, Tom.paymail);
         const contacts = await getContactsAdmin(adminPGClient);
         expect(contacts.find(c => c.paymail === Tom.paymail)?.status).toBe('confirmed');
-        expect(contacts.find(c => c.paymail === Jerry.paymail)?.status).toBe('confirmed');
+        JerryContact = contacts.find(c => c.paymail === Jerry.paymail);
+        expect(JerryContact?.status).toBe('confirmed');
+      },
+      TEST_TIMEOUT_MS,
+    );
+
+    test('Admin should unconfim Jerry contact', async () => {
+        if (!JerryContact) return;
+        await unconfirmContactAdmin(adminPGClient, JerryContact.id);
+        const unconfimedContact = await getContact(tomClient, Jerry.paymail);
+        expect(unconfimedContact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
     );
@@ -385,6 +410,7 @@ describe('TestRegression', () => {
 
   describe('SQLite Access Key Management', () => {
     let testAccessKeyId: string;
+    let testAccessKey: string | undefined;
     test.concurrent('Admin should fetch all access keys', async () => {
         const accessKey = await generateAccessKey(aliceClient);
         expect(accessKey).toBeDefined();
@@ -402,6 +428,7 @@ describe('TestRegression', () => {
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
         testAccessKeyId = accessKey.id;
+        testAccessKey = accessKey.key;
       },
       TEST_TIMEOUT_MS,
     );
@@ -423,6 +450,16 @@ describe('TestRegression', () => {
       TEST_TIMEOUT_MS,
     );
 
+    test('User should login via access key and be able to list transactions', async () => {
+        if (!testAccessKey) return;
+        const client = createUserClientWithAccessKey(rtConfig.slClientURL, testAccessKey);
+        const txs = await client.transactions({}, {}, {});
+        expect(txs).toBeDefined();
+        expect(txs.content).toBeDefined();
+      },
+      TEST_TIMEOUT_MS,
+    );
+
     test('User should revoke an access key', async () => {
         if (!testAccessKeyId) return;
         await expect(revokeAccessKey(bobClient, testAccessKeyId)).resolves.not.toThrow();
@@ -433,6 +470,7 @@ describe('TestRegression', () => {
 
   describe('PostgresSQL Access Key Management', () => {
     let testAccessKeyId: string;
+    let testAccessKey: string | undefined
     test.concurrent('Admin should fetch all access keys', async () => {
         const accessKey = await generateAccessKey(jerryClient);
         expect(accessKey).toBeDefined();
@@ -445,11 +483,13 @@ describe('TestRegression', () => {
       },
       TEST_TIMEOUT_MS,
     );
+
     test('User should generate an access key', async () => {
         const accessKey = await generateAccessKey(tomClient);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
         testAccessKeyId = accessKey.id;
+        testAccessKey = accessKey.key
       },
       TEST_TIMEOUT_MS,
     );
@@ -467,6 +507,16 @@ describe('TestRegression', () => {
         const accessKey = await getAccessKeyById(tomClient, testAccessKeyId);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBe(testAccessKeyId);
+      },
+      TEST_TIMEOUT_MS,
+    );
+
+    test('User should login via access key and be able to list transactions', async () => {
+      if (!testAccessKey) return;
+        const client = createUserClientWithAccessKey(rtConfig.pgClientURL, testAccessKey);
+        const txs = await client.transactions({}, {}, {});
+        expect(txs).toBeDefined();
+        expect(txs.content).toBeDefined();
       },
       TEST_TIMEOUT_MS,
     );
