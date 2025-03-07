@@ -19,11 +19,6 @@ import {
 import {
   addContact,
   getContact,
-  confirmContact,
-  removeContact,
-  unconfirmContact,
-  getContacts,
-  generateTotp as generateTotpForContact,
 } from './user_api_contacts';
 import {
   getContacts as getContactsAdmin,
@@ -220,7 +215,7 @@ describe('TestRegression', () => {
     test('Bob should confirm contact between Bob and Alice', async () => {
         const contact = await aliceClient.contactWithPaymail(Bob.paymail);
         expect(contact).toBeDefined
-        const totpForBob = aliceClient.generateTotpForContact(contact);
+        const totpForBob = aliceClient.generateTotpForContact(contact, TOTP_PERIOD, TOTP_DIGITS);
         expect(totpForBob).toBeDefined();
         await bobClient.confirmContact(contact, Alice.paymail, totpForBob, TOTP_PERIOD, TOTP_DIGITS);
         const contactConfirmed = await bobClient.contactWithPaymail(Alice.paymail);
@@ -269,7 +264,7 @@ describe('TestRegression', () => {
     test('Tom should confirm contact between Tom and Jerry', async () => {
         const contact = await jerryClient.contactWithPaymail(Tom.paymail);
         expect(contact).toBeDefined();
-        const totpForTom = jerryClient.generateTotpForContact(contact);
+        const totpForTom = jerryClient.generateTotpForContact(contact, TOTP_PERIOD, TOTP_DIGITS);
         expect(totpForTom).toBeDefined();
         await tomClient.confirmContact(contact, Jerry.paymail, totpForTom, TOTP_PERIOD, TOTP_DIGITS);
         const contactConfirmed = await tomClient.contactWithPaymail(Jerry.paymail);
@@ -304,7 +299,7 @@ describe('TestRegression', () => {
             fullName: 'Bob',
             creatorPaymail: Bob.paymail,
         };
-        const contact = await createContactAdmin(adminSLClient, Bob.paymail, newContact);
+        const contact = await adminSLClient.createContact(Bob.paymail, newContact);
         expect(contact).toBeDefined();
         BobId = contact.id;
       },
@@ -312,35 +307,35 @@ describe('TestRegression', () => {
     );
 
     test('Admin should retrieve all contacts', async () => {
-        const contacts = await getContactsAdmin(adminSLClient);
-        expect(contacts).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
+        const contacts = await adminSLClient.contacts({}, metadata, {});
+        expect(contacts.content).toContainEqual(expect.objectContaining({ paymail: Bob.paymail }));
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should update Bob contact name', async () => {
-        const updatedContact = await updateContactAdmin(adminSLClient, BobId, 'Bob Updated');
+        const updatedContact = await adminSLClient.contactUpdate(BobId, 'Bob Updated', metadata);
         expect(updatedContact.fullName).toBe('Bob Updated');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should remove Bob contact', async () => {
-        await expect(deleteContactAdmin(adminSLClient, BobId)).resolves.not.toThrow();
+        await expect(adminSLClient.deleteContact(BobId)).resolves.not.toThrow();
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should confirm contact between Alice and Bob', async () => {
-        const aliceContact = await addContact(bobClient, Alice.paymail, 'Alice', Bob.paymail);
+        const aliceContact = await bobClient.upsertContact(Alice.paymail, 'Alice', Bob.paymail, metadata);
         expect(aliceContact).toBeDefined();
-        const bobContact = await addContact(aliceClient, Bob.paymail, 'Bob', Alice.paymail);
+        const bobContact = await aliceClient.upsertContact(Bob.paymail, 'Bob', Alice.paymail, metadata);
         expect(bobContact).toBeDefined();
 
-        await confirmContacts(adminSLClient, Alice.paymail, Bob.paymail);
-        const contacts = await getContactsAdmin(adminSLClient);
-        expect(contacts.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
-        AliceContact = contacts.find(c => c.paymail === Alice.paymail);
+        await adminSLClient.confirmContacts(Alice.paymail, Bob.paymail);
+        const contacts = await adminSLClient.contacts({}, metadata, {});
+        expect(contacts.content.find(c => c.paymail === Bob.paymail)?.status).toBe('confirmed');
+        AliceContact = contacts.content.find(c => c.paymail === Alice.paymail);
         expect(AliceContact?.status).toBe('confirmed');
       },
       TEST_TIMEOUT_MS,
@@ -348,8 +343,8 @@ describe('TestRegression', () => {
 
     test('Admin should unconfim Alice contact', async () => {
         if (!AliceContact) return;
-        await unconfirmContactAdmin(adminSLClient, AliceContact.id);
-        const unconfimedContact = await getContact(bobClient, Alice.paymail);
+        await expect(adminSLClient.unconfirmContact(AliceContact.id)).resolves.not.toThrow();
+        const unconfimedContact = await bobClient.contactWithPaymail(Alice.paymail);
         expect(unconfimedContact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
