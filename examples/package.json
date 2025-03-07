@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   },
   "dependencies": {
     "fastify": "^5.2.1"
