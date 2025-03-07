@@ -243,11 +243,12 @@ describe('TestRegression', () => {
     );
 
     test('Tom should confirm contact between Tom and Jerry', async () => {
-        const contact = await jerryClient.contactWithPaymail(Tom.paymail);
-        expect(contact).toBeDefined();
-        const totpForTom = jerryClient.generateTotpForContact(contact, TOTP_PERIOD, TOTP_DIGITS);
+        const tomContact = await jerryClient.contactWithPaymail(Tom.paymail);
+        expect(tomContact).toBeDefined();
+        const totpForTom = jerryClient.generateTotpForContact(tomContact, TOTP_PERIOD, TOTP_DIGITS);
         expect(totpForTom).toBeDefined();
-        await tomClient.confirmContact(contact, Jerry.paymail, totpForTom, TOTP_PERIOD, TOTP_DIGITS);
+        const jerryContact = await tomClient.contactWithPaymail(Jerry.paymail);
+        await tomClient.confirmContact(jerryContact, totpForTom, Tom.paymail, TOTP_PERIOD, TOTP_DIGITS);
         const contactConfirmed = await tomClient.contactWithPaymail(Jerry.paymail);
         expect(contactConfirmed.status).toBe('confirmed');
       },
