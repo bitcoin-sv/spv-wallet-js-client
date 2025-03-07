@@ -4,14 +4,16 @@ import { generateKeys } from '../utils/keys';
 import { TransactionFilter } from '../filters';
 import { QueryPageParams } from '../types';
 
-const CLIENT_ONE_URL_ENV_VAR = 'CLIENT_ONE_URL';
-const CLIENT_TWO_URL_ENV_VAR = 'CLIENT_TWO_URL';
-const CLIENT_ONE_LEADER_XPRIV_ENV_VAR = 'CLIENT_ONE_LEADER_XPRIV';
-const CLIENT_TWO_LEADER_XPRIV_ENV_VAR = 'CLIENT_TWO_LEADER_XPRIV';
+const CLIENT_SL_URL_ENV_VAR = 'CLIENT_ONE_URL';
+const CLIENT_PG_URL_ENV_VAR = 'CLIENT_TWO_URL';
+const CLIENT_SL_LEADER_XPRIV_ENV_VAR = 'CLIENT_ONE_LEADER_XPRIV';
+const CLIENT_PG_LEADER_XPRIV_ENV_VAR = 'CLIENT_TWO_LEADER_XPRIV';
 const AT_SIGN = '@';
 const DOMAIN_PREFIX = 'https://';
 const ERR_EMPTY_XPRIV_ENV_VARIABLES = 'missing xpriv variables';
 const EXPLICIT_HTTP_URL_REGEX = RegExp('^https?://');
+const TOTP_DIGITS = 4;
+const TOTP_PERIOD = 1200;
 
 export interface RegressionTestUser {
   xpriv: string;
@@ -21,32 +23,32 @@ export interface RegressionTestUser {
 }
 
 export interface RegressionTestConfig {
-  clientOneURL: string;
-  clientTwoURL: string;
-  clientOneLeaderXPriv: string;
-  clientTwoLeaderXPriv: string;
+  slClientURL: string;
+  pgClientURL: string;
+  slClientLeaderXPriv: string;
+  pgClientLeaderXPriv: string;
 }
 
 // getEnvVariables retrieves the environment variables needed for the regression tests.
 export const getEnvVariables = () => {
   const rtConfig: RegressionTestConfig = {
-    clientOneURL: process.env[CLIENT_ONE_URL_ENV_VAR] || '',
-    clientTwoURL: process.env[CLIENT_TWO_URL_ENV_VAR] || '',
-    clientOneLeaderXPriv: process.env[CLIENT_ONE_LEADER_XPRIV_ENV_VAR] || '',
-    clientTwoLeaderXPriv: process.env[CLIENT_TWO_LEADER_XPRIV_ENV_VAR] || '',
+    slClientURL: process.env[CLIENT_SL_URL_ENV_VAR] || '',
+    pgClientURL: process.env[CLIENT_PG_URL_ENV_VAR] || '',
+    slClientLeaderXPriv: process.env[CLIENT_SL_LEADER_XPRIV_ENV_VAR] || '',
+    pgClientLeaderXPriv: process.env[CLIENT_PG_LEADER_XPRIV_ENV_VAR] || '',
   };
 
-  if (rtConfig.clientOneLeaderXPriv === '' || rtConfig.clientTwoLeaderXPriv === '') {
+  if (rtConfig.slClientLeaderXPriv === '' || rtConfig.pgClientLeaderXPriv === '') {
     throw new Error(ERR_EMPTY_XPRIV_ENV_VARIABLES);
   }
 
-  if (rtConfig.clientOneURL === '' || rtConfig.clientTwoURL === '') {
-    rtConfig.clientOneURL = 'http://localhost:3003/api/v1';
-    rtConfig.clientTwoURL = 'http://localhost:3003/api/v1';
+  if (rtConfig.slClientURL === '' || rtConfig.pgClientURL === '') {
+    rtConfig.slClientURL = 'http://localhost:3003/api/v1';
+    rtConfig.pgClientURL = 'http://localhost:3003/api/v1';
   }
 
-  rtConfig.clientOneURL = addPrefixIfNeeded(rtConfig.clientOneURL);
-  rtConfig.clientTwoURL = addPrefixIfNeeded(rtConfig.clientTwoURL);
+  rtConfig.slClientURL = addPrefixIfNeeded(rtConfig.slClientURL);
+  rtConfig.pgClientURL = addPrefixIfNeeded(rtConfig.pgClientURL);
 
   return rtConfig;
 };
@@ -67,13 +69,12 @@ export const getPaymailDomain = async (xpriv: string, clientUrl: string) => {
 };
 
 // createUser creates a set of keys and new paymail in the SPV wallet
-export const createUser = async (paymail: string, paymailDomain: string, instanceUrl: string, adminXPriv: string) => {
+export const createUser = async (alias: string, paymailDomain: string, instanceUrl: string, adminXPriv: string) => {
   const keys = generateKeys();
-
   const user: RegressionTestUser = {
     xpriv: keys.xPriv(),
     xpub: keys.xPub.toString(),
-    paymail: preparePaymail(paymail, paymailDomain),
+    paymail: preparePaymail(alias, paymailDomain),
     paymailId: '',
   };
 
@@ -145,7 +146,7 @@ const preparePaymail = (paymailAlias: string, domain: string) => {
     domain = splitedDomain[1];
   }
   const url = paymailAlias + AT_SIGN + domain;
-  return url;
+  return url.toLowerCase();
 };
 
 // addPrefixIfNeeded adds the HTTPS prefix to the URL if it is missing.
@@ -159,4 +160,79 @@ const addPrefixIfNeeded = (url: string) => {
 // isValidURL validates the URL if it has http or https prefix.
 const isValidURL = (rawURL: string) => {
   return EXPLICIT_HTTP_URL_REGEX.test(rawURL);
+};
+
+// Add a contact for a user
+export const addContact = async (
+  instanceUrl: string,
+  xPriv: string,
+  contactPaymail: string,
+  contactName: string,
+  requesterPaymail: string
+) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
+  return await client.upsertContact(contactPaymail, contactName, requesterPaymail, {});
+};
+
+// Get a contact by paymail
+export const getContact = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
+  return await client.contactWithPaymail(contactPaymail);
+};
+
+// Get all contacts matching a paymail using the `contacts()` method
+export const getContacts = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const conditions = { paymail: contactPaymail };
+  const metadata = {};
+  const queryParams = {};
+
+  const contactList = await client.contacts(conditions, metadata, queryParams);
+  return contactList?.content ? contactList.content : [];
+};
+
+// confirm a contact
+export const confirmContact = async (
+  instanceUrl: string,
+  xPriv: string,
+  requesterPaymail: string,
+  contactToConfirm: string,
+  receivedTotp: string
+) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const contact = await client.contactWithPaymail(contactToConfirm);
+  if (!contact) {
+    throw new Error(`Contact ${contactToConfirm} not found!`);
+  }
+  await client.confirmContact(contact, receivedTotp, requesterPaymail, TOTP_PERIOD, TOTP_DIGITS);
+};
+
+// Unconfirm a contact
+export const unconfirmContact = async (
+  instanceUrl: string,
+  xPriv: string,
+  contactPaymail: string
+) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  await client.unconfirmContact(contactPaymail);
+};
+
+// Remove a contact
+export const removeContact = async (instanceUrl: string, xPriv: string, contactPaymail: string) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv: xPriv });
+  await client.removeContact(contactPaymail);
+};
+
+// Generate a TOTP for a contact
+export const generateTotp = async (
+  instanceUrl: string,
+  xPriv: string,
+  contactPaymail: string
+) => {
+  const client = new SPVWalletUserAPI(instanceUrl, { xPriv });
+  const contact = await client.contactWithPaymail(contactPaymail);
+  if (!contact) {
+    throw new Error(`Contact ${contactPaymail} not found!`);
+  }
+  return client.generateTotpForContact(contact, TOTP_PERIOD, TOTP_DIGITS);
 };
