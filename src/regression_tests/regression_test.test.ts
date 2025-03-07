@@ -16,25 +16,6 @@ import {
   removeRegisteredPaymail,
   sendFunds,
 } from './utils';
-import {
-  addContact,
-  getContact,
-} from './user_api_contacts';
-import {
-  getContacts as getContactsAdmin,
-  createContact as createContactAdmin,
-  updateContact as updateContactAdmin,
-  deleteContact as deleteContactAdmin,
-  confirmContacts,
-  unconfirmContact as unconfirmContactAdmin,
-} from './admin_api_contacts';
-import {
-  getAccessKeysAdmin,
-  getAccessKeys,
-  generateAccessKey,
-  getAccessKeyById,
-  revokeAccessKey,
-} from './access_key';
 import { Contact } from '../types';
 
 const MINIMAL_FUNDS_PER_TRANSACTION = 2;
@@ -217,7 +198,7 @@ describe('TestRegression', () => {
         expect(contact).toBeDefined
         const totpForBob = aliceClient.generateTotpForContact(contact, TOTP_PERIOD, TOTP_DIGITS);
         expect(totpForBob).toBeDefined();
-        await bobClient.confirmContact(contact, Alice.paymail, totpForBob, TOTP_PERIOD, TOTP_DIGITS);
+        await bobClient.confirmContact(contact, totpForBob, Bob.paymail, TOTP_PERIOD, TOTP_DIGITS);
         const contactConfirmed = await bobClient.contactWithPaymail(Alice.paymail);
         expect(contactConfirmed.status).toBe('confirmed');
       },
@@ -360,7 +341,7 @@ describe('TestRegression', () => {
             fullName: 'Tom',
             creatorPaymail: Tom.paymail,
         };
-        const contact = await createContactAdmin(adminPGClient, Tom.paymail, newContact);
+        const contact = await adminPGClient.createContact(Tom.paymail, newContact);
         expect(contact).toBeDefined();
         TomId = contact.id;
       },
@@ -368,35 +349,35 @@ describe('TestRegression', () => {
     );
 
     test('Admin should retrieve all contacts', async () => {
-        const contacts = await getContactsAdmin(adminPGClient);
-        expect(contacts).toContainEqual(expect.objectContaining({ paymail: Tom.paymail }));
+        const contacts = await adminPGClient.contacts({}, metadata, {});
+        expect(contacts.content).toContainEqual(expect.objectContaining({ paymail: Tom.paymail }));
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should update Tom contact name', async () => {
-        const updatedContact = await updateContactAdmin(adminPGClient, TomId, 'Tom Updated');
+        const updatedContact = await adminPGClient.contactUpdate(TomId, 'Tom Updated', metadata);
         expect(updatedContact.fullName).toBe('Tom Updated');
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should remove Tom contact', async () => {
-      await expect(deleteContactAdmin(adminPGClient, TomId)).resolves.not.toThrow();
+        await expect(adminPGClient.deleteContact(TomId)).resolves.not.toThrow();
       },
       TEST_TIMEOUT_MS,
     );
 
     test('Admin should confirm contact between Tom and Jerry', async () => {
-        const jerryContact = await addContact(tomClient, Jerry.paymail, 'Jerry', Tom.paymail);
+        const jerryContact = await tomClient.upsertContact(Jerry.paymail, 'Jerry', Tom.paymail, metadata);
         expect(jerryContact).toBeDefined();
-        const tomContact = await addContact(jerryClient, Tom.paymail, 'Tom', Jerry.paymail);
+        const tomContact = await jerryClient.upsertContact(Tom.paymail, 'Tom', Jerry.paymail, metadata);
         expect(tomContact).toBeDefined();
 
-        await confirmContacts(adminPGClient, Jerry.paymail, Tom.paymail);
-        const contacts = await getContactsAdmin(adminPGClient);
-        expect(contacts.find(c => c.paymail === Tom.paymail)?.status).toBe('confirmed');
-        JerryContact = contacts.find(c => c.paymail === Jerry.paymail);
+        await adminPGClient.confirmContacts(Jerry.paymail, Tom.paymail);
+        const contacts = await adminPGClient.contacts({}, metadata, {});
+        expect(contacts.content.find(c => c.paymail === Tom.paymail)?.status).toBe('confirmed');
+        JerryContact = contacts.content.find(c => c.paymail === Jerry.paymail);
         expect(JerryContact?.status).toBe('confirmed');
       },
       TEST_TIMEOUT_MS,
@@ -404,8 +385,8 @@ describe('TestRegression', () => {
 
     test('Admin should unconfim Jerry contact', async () => {
         if (!JerryContact) return;
-        await unconfirmContactAdmin(adminPGClient, JerryContact.id);
-        const unconfimedContact = await getContact(tomClient, Jerry.paymail);
+        await adminPGClient.unconfirmContact(JerryContact.id);
+        const unconfimedContact = await tomClient.contactWithPaymail(Jerry.paymail);
         expect(unconfimedContact.status).toBe('unconfirmed');
       },
       TEST_TIMEOUT_MS,
@@ -416,19 +397,19 @@ describe('TestRegression', () => {
     let testAccessKeyId: string;
     let testAccessKey: string | undefined;
     test.concurrent('Admin should fetch all access keys', async () => {
-        const accessKey = await generateAccessKey(aliceClient);
+        const accessKey = await aliceClient.generateAccessKey(metadata);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
 
-        const accessKeys = await getAccessKeysAdmin(adminSLClient);
-        expect(Array.isArray(accessKeys)).toBe(true);
-        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+        const accessKeys = await adminSLClient.accessKeys({}, metadata, {});
+        expect(Array.isArray(accessKeys.content)).toBe(true);
+        expect(accessKeys.content.length).toBeGreaterThanOrEqual(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('User should generate an access key', async () => {
-        const accessKey = await generateAccessKey(bobClient);
+        const accessKey = await bobClient.generateAccessKey(metadata);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
         testAccessKeyId = accessKey.id;
@@ -438,16 +419,16 @@ describe('TestRegression', () => {
     );
 
     test('User should fetch all access keys', async () => {
-        const accessKeys = await getAccessKeys(bobClient);
-        expect(Array.isArray(accessKeys)).toBe(true);
-        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+        const accessKeys = await bobClient.accessKeys({}, {});
+        expect(Array.isArray(accessKeys.content)).toBe(true);
+        expect(accessKeys.content.length).toBeGreaterThanOrEqual(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('User should fetch an access key by ID', async () => {
       if (!testAccessKeyId) return;
-        const accessKey = await getAccessKeyById(bobClient, testAccessKeyId);
+        const accessKey = await bobClient.accessKey(testAccessKeyId);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBe(testAccessKeyId);
       },
@@ -466,7 +447,7 @@ describe('TestRegression', () => {
 
     test('User should revoke an access key', async () => {
         if (!testAccessKeyId) return;
-        await expect(revokeAccessKey(bobClient, testAccessKeyId)).resolves.not.toThrow();
+        await expect(bobClient.revokeAccessKey(testAccessKeyId)).resolves.not.toThrow();
       },
       TEST_TIMEOUT_MS,
     );
@@ -476,20 +457,20 @@ describe('TestRegression', () => {
     let testAccessKeyId: string;
     let testAccessKey: string | undefined
     test.concurrent('Admin should fetch all access keys', async () => {
-        const accessKey = await generateAccessKey(jerryClient);
+        const accessKey = await jerryClient.generateAccessKey(metadata);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
 
-        const accessKeys = await getAccessKeysAdmin(adminPGClient);
-        expect(Array.isArray(accessKeys)).toBe(true);
-        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
-        expect(accessKeys[0].id).toBe(accessKey.id);
+        const accessKeys = await adminPGClient.accessKeys({}, metadata, {});
+        expect(Array.isArray(accessKeys.content)).toBe(true);
+        expect(accessKeys.content.length).toBeGreaterThanOrEqual(1);
+        expect(accessKeys.content[0].id).toBe(accessKey.id);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('User should generate an access key', async () => {
-        const accessKey = await generateAccessKey(tomClient);
+        const accessKey = await tomClient.generateAccessKey(metadata);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBeDefined();
         testAccessKeyId = accessKey.id;
@@ -499,16 +480,16 @@ describe('TestRegression', () => {
     );
 
     test('User should fetch all access keys', async () => {
-        const accessKeys = await getAccessKeys(tomClient);
-        expect(Array.isArray(accessKeys)).toBe(true);
-        expect(accessKeys.length).toBeGreaterThanOrEqual(1);
+        const accessKeys = await tomClient.accessKeys({}, {});
+        expect(Array.isArray(accessKeys.content)).toBe(true);
+        expect(accessKeys.content.length).toBeGreaterThanOrEqual(1);
       },
       TEST_TIMEOUT_MS,
     );
 
     test('User should fetch an access key by ID', async () => {
         if (!testAccessKeyId) return;
-        const accessKey = await getAccessKeyById(tomClient, testAccessKeyId);
+        const accessKey = await tomClient.accessKey(testAccessKeyId);
         expect(accessKey).toBeDefined();
         expect(accessKey.id).toBe(testAccessKeyId);
       },
@@ -527,7 +508,7 @@ describe('TestRegression', () => {
 
     test('User should revoke an access key', async () => {
         if (!testAccessKeyId) return;
-        await expect(revokeAccessKey(tomClient, testAccessKeyId)).resolves.not.toThrow();
+        await expect(tomClient.revokeAccessKey(testAccessKeyId)).resolves.not.toThrow();
       },
       TEST_TIMEOUT_MS,
     );
