@@ -194,11 +194,12 @@ describe('TestRegression', () => {
     );
 
     test('Bob should confirm contact between Bob and Alice', async () => {
-        const contact = await aliceClient.contactWithPaymail(Bob.paymail);
-        expect(contact).toBeDefined
-        const totpForBob = aliceClient.generateTotpForContact(contact, TOTP_PERIOD, TOTP_DIGITS);
+        const bobContact = await aliceClient.contactWithPaymail(Bob.paymail);
+        expect(bobContact).toBeDefined
+        const totpForBob = aliceClient.generateTotpForContact(bobContact, TOTP_PERIOD, TOTP_DIGITS);
         expect(totpForBob).toBeDefined();
-        await bobClient.confirmContact(contact, totpForBob, Bob.paymail, TOTP_PERIOD, TOTP_DIGITS);
+        const aliceContact = await bobClient.contactWithPaymail(Alice.paymail);
+        await bobClient.confirmContact(aliceContact, totpForBob, Bob.paymail, TOTP_PERIOD, TOTP_DIGITS);
         const contactConfirmed = await bobClient.contactWithPaymail(Alice.paymail);
         expect(contactConfirmed.status).toBe('confirmed');
       },
@@ -216,7 +217,7 @@ describe('TestRegression', () => {
     test('Bob should remove Alice from contacts', async () => {
         await bobClient.removeContact(Alice.paymail);
         const contacts = await bobClient.contacts({ paymail: Alice.paymail }, metadata, {});
-        expect(contacts).toHaveLength(0);
+        expect(contacts.content).toHaveLength(0);
       },
       TEST_TIMEOUT_MS,
     );
@@ -266,7 +267,7 @@ describe('TestRegression', () => {
     test('Tom should remove Jerry from contacts', async () => {
         await tomClient.removeContact(Jerry.paymail);
         const contacts = await tomClient.contacts({ paymail: Jerry.paymail }, metadata, {});
-        expect(contacts).toHaveLength(0);
+        expect(contacts.content).toHaveLength(0);
       },
       TEST_TIMEOUT_MS,
     );
