@@ -50,19 +50,11 @@ export interface PaymailFilter extends ModelFilter {
 }
 
 export type TransactionStatus =
-  | 'UNKNOWN'
-  | 'QUEUED'
-  | 'RECEIVED'
-  | 'STORED'
-  | 'ANNOUNCED_TO_NETWORK'
-  | 'REQUESTED_BY_NETWORK'
-  | 'SENT_TO_NETWORK'
-  | 'ACCEPTED_BY_NETWORK'
-  | 'SEEN_ON_NETWORK'
+  | 'CREATED'
+  | 'BROADCASTED'
   | 'MINED'
-  | 'SEEN_IN_ORPHAN_MEMPOOL'
-  | 'CONFIRMED'
-  | 'REJECTED';
+  | 'REVERTED'
+  | 'PROBLEMATIC';
 
 export interface TransactionFilter extends ModelFilter {
   id?: string;
