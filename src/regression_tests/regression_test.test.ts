@@ -203,7 +203,7 @@ describe('TestRegression', () => {
         const contact = await bobClient.upsertContact(Alice.paymail, 'Alice', Bob.paymail, metadata);
         expect(contact).toBeDefined();
         const contacts = await bobClient.contacts({ paymail: Alice.paymail }, metadata, {});
-        expect(contacts).toHaveLength(1);
+        expect(contacts.content).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
@@ -212,7 +212,7 @@ describe('TestRegression', () => {
         const contact = await aliceClient.upsertContact(Bob.paymail, 'Bob', Alice.paymail, metadata);
         expect(contact).toBeDefined();
         const contacts = await aliceClient.contacts({ paymail: Bob.paymail }, metadata, {});
-        expect(contacts).toHaveLength(1);
+        expect(contacts.content).toHaveLength(1);
     },
       TEST_TIMEOUT_MS,
     );
@@ -252,7 +252,7 @@ describe('TestRegression', () => {
         const contact = await tomClient.upsertContact(Jerry.paymail, 'Jerry', Tom.paymail, metadata);
         expect(contact).toBeDefined();
         const contacts = await tomClient.contacts({ paymail: Jerry.paymail }, metadata, {});
-        expect(contacts).toHaveLength(1);
+        expect(contacts.content).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
@@ -261,7 +261,7 @@ describe('TestRegression', () => {
         const contact = await jerryClient.upsertContact(Tom.paymail, 'Tom', Jerry.paymail, metadata);
         expect(contact).toBeDefined();
         const contacts = await jerryClient.contacts({ paymail: Tom.paymail }, metadata, {});
-        expect(contacts).toHaveLength(1);
+        expect(contacts.content).toHaveLength(1);
       },
       TEST_TIMEOUT_MS,
     );
